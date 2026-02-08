@@ -179,7 +179,7 @@ class Profile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=24, unique=True)
+    phone = models.CharField(max_length=24, unique=True, null=True, blank=True)
 
     # PIN Authentication
     pin = models.CharField(max_length=128, blank=True, help_text="Hashed PIN for authentication")
