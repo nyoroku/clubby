@@ -2189,7 +2189,7 @@ def public_challenge_live_stream(request, challenge_id):
         'now': timezone.now(),
     }
 
-    return render(request, 'club/challenge_live_stream_public..html', context)
+    return render(request, 'club/challenge_live_stream_public.html', context)
 
 
 @login_required

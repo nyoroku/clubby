@@ -1,89 +1,100 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login/Register - Loyalty Club</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>Login - Melvins Club</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <section class="hero is-info is-fullheight">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns is-centered">
-                    <div class="column is-5-tablet is-4-desktop">
-                        {% if partnership %}
-                        <div class="notification is-success">
-                            <p class="has-text-centered">
-                                <strong>🎉 Registering via {{ partnership.name }}!</strong>
-                                <br>
-                                <small>Partner Code: {{ partnership_code }}</small>
-                            </p>
-                        </div>
-                        {% endif %}
 
-                        <div class="box">
-                            <h1 class="title has-text-centered">Welcome!</h1>
-                            <p class="subtitle has-text-centered">Login or Register</p>
+<body
+    class="min-h-screen bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-[#2d2424] flex items-center justify-center p-4">
 
-                            {% if messages %}
-                                {% for message in messages %}
-                                <div class="notification is-{{ message.tags }}">
-                                    <button class="delete"></button>
-                                    {{ message }}
-                                </div>
-                                {% endfor %}
-                            {% endif %}
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">Welcome Back! 👋</h1>
+            <p class="text-white/60">Enter your phone number to login</p>
+        </div>
 
-                            <form method="post">
-                                {% csrf_token %}
+        <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+            {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                <div
+                    class="p-3 rounded-xl {% if message.tags == 'error' %}bg-red-500/20 border border-red-500/30{% else %}bg-emerald-500/20 border border-emerald-500/30{% endif %} text-center">
+                    <p class="text-white text-sm font-bold">{{ message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
-                                {% if partnership_code %}
-                                <input type="hidden" name="partnership_code" value="{{ partnership_code }}">
-                                {% endif %}
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
 
-                                <div class="field">
-                                    <label class="label">Phone Number</label>
-                                    <div class="control">
-                                        <input class="input is-large" type="tel" name="phone"
-                                               placeholder="0712345678" required autofocus>
-                                    </div>
-                                    <p class="help">Enter your Kenyan phone number</p>
-                                </div>
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-2">Phone Number</label>
+                    <input type="tel" name="phone" placeholder="0712345678" required autofocus
+                        class="w-full bg-black/20 border border-white/20 rounded-xl px-4 py-4 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition text-lg">
+                    <p class="text-white/40 text-xs mt-2">We'll send you a one-time PIN</p>
+                </div>
 
-                                <div class="field">
-                                    <div class="control">
-                                        <button type="submit" class="button is-info is-fullwidth is-medium">
-                                            <strong>Send OTP</strong>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                <button type="submit"
+                    class="w-full py-4 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                    Send PIN
+                </button>
+            </form>
 
-                            <hr>
-                            <div class="has-text-centered">
-                                <p class="is-size-7">
-                                    Want to become a partner?
-                                    <a href="{% url 'club:partner_register_otp' %}">Register as Partner</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="mt-6 text-center border-t border-white/10 pt-6">
+                <p class="text-white/60 text-sm mb-2">New here? <a href="{% url 'club:partner_register_otp' %}"
+                        class="text-melvins-gold hover:underline font-bold">Join as a Partner</a></p>
+                <!-- Allow Google Auth if configured (optional, keeping minimal for now) -->
+                <div class="mt-4">
+                    <a href="{% url 'social:begin' 'google-oauth2' %}"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-800 rounded-lg text-sm font-bold hover:bg-gray-100 transition">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 2.15 0 4.12.78 5.63 2.09l2.02-2.02C17.76 2.8 15.01 1.6 12 1.6 6.36 1.6 1.76 6.2 1.76 12c0 5.8 4.6 10.4 10.24 10.4 5.71 0 10.16-4.13 10.16-10.4 0-.69-.06-1.42-.16-1.89z" />
+                        </svg>
+                        Login with Google
+                    </a>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <script>
-        document.querySelectorAll('.notification .delete').forEach(btn => {
-            btn.addEventListener('click', () => btn.parentElement.remove());
-        });
+        // Auto-hide messages
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.bg-red-500\\/20, .bg-emerald-500\\/20');
+            alerts.forEach(el => el.style.display = 'none');
+        }, 5000);
     </script>
 </body>
+
 </html>
-
-
-
-
-

@@ -1,113 +1,150 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Redemptions</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>Redemptions - Melvins Club</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <nav class="navbar is-success">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="{% url 'club:listing_partner_dashboard' %}">
-                <strong>← Back to Dashboard</strong>
-            </a>
+
+<body class="min-h-screen bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-[#2d2424] text-white">
+
+    <nav class="bg-melvins-maroon-dark/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center h-16">
+                <a href="{% url 'club:listing_partner_dashboard' %}"
+                    class="flex items-center gap-2 text-white/80 hover:text-white transition">
+                    <span>←</span>
+                    <span class="font-bold">Back to Dashboard</span>
+                </a>
+            </div>
         </div>
     </nav>
 
-    <section class="section">
-        <div class="container">
-            <h1 class="title">Product Redemptions</h1>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white mb-2">Product Redemptions</h1>
+                <p class="text-white/60">Manage and track your product redemptions</p>
+            </div>
 
             <!-- Filter -->
-            <div class="box">
-                <form method="get">
-                    <div class="field has-addons">
-                        <div class="control">
-                            <div class="select">
-                                <select name="status" onchange="this.form.submit()">
-                                    <option value="">All Status</option>
-                                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
-                                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
-                                    <option value="fulfilled" {% if status_filter == 'fulfilled' %}selected{% endif %}>Fulfilled</option>
-                                    <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="control">
-                            <button type="submit" class="button is-info">Filter</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Redemptions Table -->
-            <div class="box">
-                {% if redemptions %}
-                <div class="table-container">
-                    <table class="table is-fullwidth is-striped is-hoverable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Product</th>
-                                <th>Customer</th>
-                                <th>Code</th>
-                                <th>Points</th>
-                                <th>Amount</th>
-                                <th>Your Earning</th>
-                                <th>Commission</th>
-                                <th>Status</th>
-                                <th>Paid</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for redemption in redemptions %}
-                            <tr>
-                                <td>{{ redemption.created_at|date:"M d, Y H:i" }}</td>
-                                <td>{{ redemption.product.name }}</td>
-                                <td>
-                                    {{ redemption.profile.first_name }} {{ redemption.profile.second_name }}
-                                    <br><small>{{ redemption.profile.phone }}</small>
-                                </td>
-                                <td><code>{{ redemption.redemption_code }}</code></td>
-                                <td>{{ redemption.points_deducted }}</td>
-                                <td>KES {{ redemption.amount_charged|floatformat:2 }}</td>
-                                <td><strong class="has-text-success">KES {{ redemption.partner_earning|floatformat:2 }}</strong></td>
-                                <td><small>KES {{ redemption.Melvins Club_commission|floatformat:2 }}</small></td>
-                                <td>
-                                    <span class="tag {% if redemption.status == 'fulfilled' %}is-success{% elif redemption.status == 'pending' %}is-warning{% elif redemption.status == 'cancelled' %}is-danger{% else %}is-info{% endif %}">
-                                        {{ redemption.get_status_display }}
-                                    </span>
-                                </td>
-                                <td>
-                                    {% if redemption.paid_to_partner %}
-                                    <span class="tag is-success">✓ Paid</span>
-                                    <br><small>{{ redemption.paid_at|date:"M d, Y" }}</small>
-                                    {% else %}
-                                    <span class="tag is-warning">Pending</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <div class="notification is-info is-light">
-                    <p class="has-text-centered">No redemptions found</p>
-                </div>
-                {% endif %}
-            </div>
+            <form method="get" class="flex items-center gap-2">
+                <select name="status"
+                    class="bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-melvins-gold transition"
+                    onchange="this.form.submit()">
+                    <option value="" class="text-black">All Status</option>
+                    <option value="pending" class="text-black" {% if status_filter=='pending' %}selected{% endif %}>
+                        Pending</option>
+                    <option value="approved" class="text-black" {% if status_filter=='approved' %}selected{% endif %}>
+                        Approved</option>
+                    <option value="fulfilled" class="text-black" {% if status_filter=='fulfilled' %}selected{% endif %}>
+                        Fulfilled</option>
+                    <option value="cancelled" class="text-black" {% if status_filter=='cancelled' %}selected{% endif %}>
+                        Cancelled</option>
+                </select>
+            </form>
         </div>
-    </section>
+
+        <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl overflow-hidden">
+            {% if redemptions %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-white/50 bg-white/5 uppercase tracking-wider">
+                        <tr>
+                            <th class="px-6 py-4">Date</th>
+                            <th class="px-6 py-4">Product</th>
+                            <th class="px-6 py-4">Customer</th>
+                            <th class="px-6 py-4">Code</th>
+                            <th class="px-6 py-4">Points</th>
+                            <th class="px-6 py-4">Amount</th>
+                            <th class="px-6 py-4">Your Earning</th>
+                            <th class="px-6 py-4">Commission</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10">
+                        {% for redemption in redemptions %}
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="px-6 py-4 whitespace-nowrap">{{ redemption.created_at|date:"M d, H:i" }}</td>
+                            <td class="px-6 py-4 font-bold">{{ redemption.product.name }}</td>
+                            <td class="px-6 py-4">
+                                <p class="font-bold">{{ redemption.profile.first_name }} {{
+                                    redemption.profile.second_name }}</p>
+                                <p class="text-xs text-white/50">{{ redemption.profile.phone }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="font-mono font-bold bg-white/10 px-2 py-1 rounded text-melvins-gold">{{
+                                    redemption.redemption_code }}</span>
+                            </td>
+                            <td class="px-6 py-4">{{ redemption.points_deducted }}</td>
+                            <td class="px-6 py-4">KES {{ redemption.amount_charged|floatformat:2 }}</td>
+                            <td class="px-6 py-4 font-bold text-emerald-400">KES {{
+                                redemption.partner_earning|floatformat:2 }}</td>
+                            <td class="px-6 py-4 text-white/50">KES {{
+                                redemption.Melvins_commission_earned|floatformat:2 }}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 rounded-full text-xs font-bold
+                                    {% if redemption.status == 'fulfilled' %}bg-emerald-500/20 text-emerald-400
+                                    {% elif redemption.status == 'pending' %}bg-amber-500/20 text-amber-400
+                                    {% elif redemption.status == 'cancelled' %}bg-red-500/20 text-red-400
+                                    {% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                                    {{ redemption.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if redemption.paid_to_partner %}
+                                <div class="flex flex-col">
+                                    <span class="text-emerald-400 font-bold text-xs">✓ Paid</span>
+                                    <span class="text-white/40 text-[10px]">{{ redemption.paid_at|date:"M d" }}</span>
+                                </div>
+                                {% else %}
+                                <span class="text-amber-400 font-bold text-xs">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-16">
+                <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">📭</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-1">No redemptions found</h3>
+                <p class="text-white/40 text-sm">When customers redeem your products, they will appear here.</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
 </body>
+
 </html>
-
-
-
-
-
-
-
-

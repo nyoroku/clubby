@@ -1,119 +1,136 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Complete Your Profile</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>Complete Your Profile - Melvins Club</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <section class="section">
-        <div class="container">
-            <div class="columns is-centered">
-                <div class="column is-8-tablet is-6-desktop">
-                    <div class="box">
-                        <h1 class="title">Complete Your Partner Profile</h1>
-                        <p class="subtitle">Just a few more details...</p>
 
-                        {% if messages %}
-                            {% for message in messages %}
-                            <div class="notification is-{{ message.tags }}">
-                                <button class="delete"></button>
-                                {{ message }}
-                            </div>
-                            {% endfor %}
-                        {% endif %}
+<body
+    class="min-h-screen bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-[#2d2424] flex items-center justify-center p-4">
 
-                        <form method="post">
-                            {% csrf_token %}
+    <div class="w-full max-w-2xl bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-white mb-2">Complete Your Partner Profile</h1>
+            <p class="text-white/60 text-sm">Just a few more details to get you started</p>
+        </div>
 
-                            <div class="field">
-                                <label class="label">Business/Partner Name *</label>
-                                <div class="control">
-                                    <input class="input" type="text" name="name"
-                                           placeholder="e.g., Java House, John's Influence" required>
-                                </div>
-                            </div>
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div
+                class="p-3 rounded-xl {% if message.tags == 'error' %}bg-red-500/20 text-red-100 border border-red-500/30{% else %}bg-emerald-500/20 text-emerald-100 border border-emerald-500/30{% endif %}">
+                <p class="text-sm font-medium">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
-                            <div class="field">
-                                <label class="label">Partner Type *</label>
-                                <div class="control">
-                                    <div class="select is-fullwidth">
-                                        <select name="partner_type" id="partner_type" required>
-                                            <option value="">Select type...</option>
-                                            <option value="influencer">Influencer (Earn from referrals)</option>
-                                            <option value="shop">Shop/Retailer (Accept redemptions + earn from referrals)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <p class="help">Choose how you want to participate</p>
-                            </div>
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
 
-                            <div class="field">
-                                <label class="label">Contact Person *</label>
-                                <div class="control">
-                                    <input class="input" type="text" name="contact_person"
-                                           placeholder="Full name of contact person" required>
-                                </div>
-                            </div>
+            <!-- Business Name -->
+            <div>
+                <label class="block text-white/80 text-sm font-bold mb-2">Business/Partner Name *</label>
+                <input type="text" name="name" required placeholder="e.g., Java House, John's Influence"
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold focus:ring-1 focus:ring-melvins-gold transition">
+            </div>
 
-                            <div class="field">
-                                <label class="label">Email</label>
-                                <div class="control">
-                                    <input class="input" type="email" name="email"
-                                           placeholder="your@email.com">
-                                </div>
-                            </div>
+            <!-- Partner Type -->
+            <div>
+                <label class="block text-white/80 text-sm font-bold mb-2">Partner Type *</label>
+                <select name="partner_type" id="partner_type" required
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-melvins-gold transition">
+                    <option value="" class="text-black">Select type...</option>
+                    <option value="influencer" class="text-black">Influencer (Earn from referrals)</option>
+                    <option value="shop" class="text-black">Shop/Retailer (Accept redemptions + earn)</option>
+                </select>
+                <p class="text-white/40 text-xs mt-1">Choose how you want to participate</p>
+            </div>
 
-                            <div id="shop-fields" style="display: none;">
-                                <div class="notification is-info is-light">
-                                    <strong>Shop Information</strong> - Help customers find your location
-                                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Contact Person -->
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-2">Contact Person *</label>
+                    <input type="text" name="contact_person" required placeholder="Full name"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition">
+                </div>
 
-                                <div class="field">
-                                    <label class="label">County</label>
-                                    <div class="control">
-                                        <div class="select is-fullwidth">
-                                            <select name="county">
-                                                <option value="">Select county...</option>
-                                                {% for value, label in county_choices %}
-                                                <option value="{{ value }}">{{ label }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="label">Location Details</label>
-                                    <div class="control">
-                                        <textarea class="textarea" name="location_details"
-                                                  placeholder="e.g., Westlands, Sarit Centre Ground Floor, Shop G12"
-                                                  rows="3"></textarea>
-                                    </div>
-                                    <p class="help">Provide detailed location/address for customers</p>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <div class="control">
-                                    <button type="submit" class="button is-primary is-fullwidth is-medium">
-                                        <strong>Complete Profile</strong>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <!-- Email -->
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-2">Email</label>
+                    <input type="email" name="email" placeholder="your@email.com"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition">
                 </div>
             </div>
-        </div>
-    </section>
+
+            <!-- Shop Fields (Hidden by default) -->
+            <div id="shop-fields" style="display: none;"
+                class="bg-white/5 rounded-xl p-6 border border-white/10 space-y-4 animate-fade-in">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-melvins-gold text-xl">🏪</span>
+                    <h3 class="text-white font-bold">Shop Information</h3>
+                </div>
+
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-2">County</label>
+                    <select name="county"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-melvins-gold transition">
+                        <option value="" class="text-black">Select county...</option>
+                        {% for value, label in county_choices %}
+                        <option value="{{ value }}" class="text-black">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-2">Location Details</label>
+                    <textarea name="location_details" rows="3"
+                        placeholder="e.g., Westlands, Sarit Centre Ground Floor, Shop G12"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition"></textarea>
+                    <p class="text-white/40 text-xs mt-1">Help customers find your location</p>
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full py-4 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] font-bold rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                Complete Profile
+            </button>
+        </form>
+    </div>
 
     <script>
-        // Show/hide shop fields based on partner type
-        document.getElementById('partner_type').addEventListener('change', function() {
-            const shopFields = document.getElementById('shop-fields');
+        // Toggle shop fields
+        const typeSelect = document.getElementById('partner_type');
+        const shopFields = document.getElementById('shop-fields');
+
+        typeSelect.addEventListener('change', function () {
             if (this.value === 'shop') {
                 shopFields.style.display = 'block';
             } else {
@@ -121,15 +138,11 @@
             }
         });
 
-        document.querySelectorAll('.notification .delete').forEach(btn => {
-            btn.addEventListener('click', () => btn.parentElement.remove());
-        });
+        // Trigger on load in case of re-render
+        if (typeSelect.value === 'shop') {
+            shopFields.style.display = 'block';
+        }
     </script>
 </body>
+
 </html>
-
-
-
-
-
-

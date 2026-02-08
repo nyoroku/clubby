@@ -1,109 +1,113 @@
+{% extends 'club/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Product Catalog</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-</head>
-<body>
-    <nav class="navbar is-primary">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="{% url 'club:dashboard' %}">
-                <strong>← Back to Dashboard</strong>
+
+{% block title %}Product Catalog - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">🛍️ Product Catalog</h1>
+            <p class="text-white/60">Redeem your points for amazing products!</p>
+        </div>
+
+        <div class="glass-card rounded-xl px-4 py-2 flex items-center gap-2">
+            <span class="text-melvins-gold font-bold">Your Balance:</span>
+            <span class="text-white font-bold text-xl">{{ user.profile.points }}</span>
+            <span class="text-white/50 text-sm">pts</span>
+        </div>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="mb-8 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+        <div class="flex gap-3 min-w-max">
+            <a href="{% url 'club:product_catalog' %}"
+                class="px-5 py-2.5 rounded-full font-bold text-sm transition whitespace-nowrap
+                      {% if not selected_category %}bg-melvins-gold text-[#1a0a0c]{% else %}glass-card text-white hover:bg-white/20{% endif %}">
+                All Products
             </a>
+            {% for category in categories %}
+            <a href="?category={{ category }}"
+                class="px-5 py-2.5 rounded-full font-bold text-sm transition whitespace-nowrap
+                      {% if selected_category == category %}bg-melvins-gold text-[#1a0a0c]{% else %}glass-card text-white hover:bg-white/20{% endif %}">
+                {{ category }}
+            </a>
+            {% endfor %}
         </div>
-    </nav>
+    </div>
 
-    <section class="section">
-        <div class="container">
-            <h1 class="title">🛍️ Product Catalog</h1>
-            <p class="subtitle">Redeem your points for amazing products!</p>
-
-            <!-- Category Filter -->
-            <div class="box">
-                <div class="buttons">
-                    <a href="{% url 'club:product_catalog' %}"
-                       class="button {% if not selected_category %}is-primary{% else %}is-light{% endif %}">
-                        All Products
-                    </a>
-                    {% for category in categories %}
-                    <a href="?category={{ category }}"
-                       class="button {% if selected_category == category %}is-primary{% else %}is-light{% endif %}">
-                        {{ category }}
-                    </a>
-                    {% endfor %}
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for product in products %}
+        <div
+            class="glass-card rounded-2xl overflow-hidden group hover:bg-white/15 transition duration-300 flex flex-col h-full">
+            <!-- Image -->
+            <div class="relative aspect-[4/3] bg-black/20 overflow-hidden">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                    class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-white/20">
+                    <span class="text-4xl">🛍️</span>
                 </div>
+                {% endif %}
+
+                {% if product.featured %}
+                <div
+                    class="absolute top-3 left-3 px-3 py-1 bg-melvins-gold text-[#1a0a0c] text-xs font-bold rounded-full shadow-lg">
+                    Featured
+                </div>
+                {% endif %}
+
+                {% if product.stock_quantity == 0 %}
+                <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <span class="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">Out of Stock</span>
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Products Grid -->
-            {% if products %}
-            <div class="columns is-multiline">
-                {% for product in products %}
-                <div class="column is-6-tablet is-4-desktop is-3-widescreen">
-                    <div class="card">
-                        {% if product.image %}
-                        <div class="card-image">
-                            <figure class="image is-4by3">
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                            </figure>
-                        </div>
-                        {% endif %}
-
-                        <div class="card-content">
-                            {% if product.featured %}
-                            <span class="tag is-warning">Featured</span>
-                            {% endif %}
-
-                            <p class="title is-5">{{ product.name }}</p>
-                            <p class="subtitle is-6">{{ product.points_required }} points</p>
-
-                            <p class="content is-small">
-                                {{ product.description|truncatewords:15 }}
-                            </p>
-
-                            <p class="is-size-7 has-text-grey">
-                                By {{ product.listing_partner.company_name }}
-                            </p>
-
-                            {% if product.stock_quantity > 0 %}
-                            <p class="is-size-7">
-                                <span class="tag is-success is-light">
-                                    {{ product.stock_quantity }} in stock
-                                </span>
-                            </p>
-                            {% else %}
-                            <p class="is-size-7">
-                                <span class="tag is-danger">Out of Stock</span>
-                            </p>
-                            {% endif %}
-                        </div>
-
-                        <footer class="card-footer">
-                            <a href="{% url 'club:redeem_product' product.id %}"
-                               class="card-footer-item button is-primary is-fullwidth">
-                                View Details
-                            </a>
-                        </footer>
-                    </div>
+            <!-- Content -->
+            <div class="p-5 flex flex-col flex-grow">
+                <div class="flex-grow">
+                    <h3 class="font-bold text-white text-lg mb-1 leading-tight">{{ product.name }}</h3>
+                    <p class="text-melvins-gold font-bold mb-3">{{ product.points_required }} pts</p>
+                    <p class="text-white/60 text-sm line-clamp-2 mb-4">{{ product.description }}</p>
                 </div>
-                {% endfor %}
+
+                <div class="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                    <p class="text-white/40 text-xs truncate max-w-[50%]">{{ product.listing_partner.company_name }}</p>
+
+                    <a href="{% url 'club:redeem_product' product.id %}"
+                        class="px-4 py-2 bg-white/10 hover:bg-melvins-gold hover:text-[#1a0a0c] text-white text-sm font-bold rounded-lg transition">
+                        View Details
+                    </a>
+                </div>
             </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 ग्लास-card rounded-3xl border border-white/10">
+        <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-3xl">🔍</span>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">No products found</h3>
+        <p class="text-white/50">
+            {% if selected_category %}
+            No products available in "{{ selected_category }}" at the moment.
             {% else %}
-            <div class="notification is-info">
-                <p class="has-text-centered">
-                    No products available {% if selected_category %}in {{ selected_category }}{% endif %} at the moment.
-                </p>
-            </div>
+            Check back later for new rewards!
             {% endif %}
-        </div>
-    </section>
-</body>
-</html>
+        </p>
+        <a href="{% url 'club:product_catalog' %}"
+            class="inline-block mt-6 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition">
+            Clear Filters
+        </a>
+    </div>
+    {% endif %}
 
-
-
-
-
-
+</div>
+{% endblock %}

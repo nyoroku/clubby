@@ -1,94 +1,105 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verify OTP</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>Verify OTP - Melvins Club</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <section class="hero is-info is-fullheight">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns is-centered">
-                    <div class="column is-5-tablet is-4-desktop">
-                        {% if partnership %}
-                        <div class="notification is-success">
-                            <p class="has-text-centered">
-                                <strong>Joining via {{ partnership.name }}!</strong>
-                            </p>
-                        </div>
-                        {% endif %}
 
-                        <div class="box">
-                            <h1 class="title has-text-centered">Verify OTP</h1>
-                            <p class="subtitle has-text-centered">Code sent to {{ phone }}</p>
+<body
+    class="min-h-screen bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-[#2d2424] flex items-center justify-center p-4">
 
-                            {% if messages %}
-                                {% for message in messages %}
-                                <div class="notification is-{{ message.tags }}">
-                                    <button class="delete"></button>
-                                    {{ message }}
-                                </div>
-                                {% endfor %}
-                            {% endif %}
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">Verify Phone 📱</h1>
+            <p class="text-white/60">Enter the code sent to your phone</p>
+        </div>
 
-                            <form method="post">
-                                {% csrf_token %}
-                                <div class="field">
-                                    <label class="label">Enter 6-Digit OTP</label>
-                                    <div class="control">
-                                        <input class="input is-large" type="text" name="otp"
-                                               placeholder="123456" maxlength="6"
-                                               pattern="[0-9]{6}" required autofocus
-                                               style="font-size: 2em; text-align: center; letter-spacing: 10px;">
-                                    </div>
-                                </div>
-
-                                <div class="field">
-                                    <div class="control">
-                                        <button type="submit" class="button is-success is-fullwidth is-medium">
-                                            <strong>Verify & Continue</strong>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <hr>
-                            <div class="has-text-centered">
-                                <p class="is-size-7">
-                                    Didn't receive code?
-                                    <a href="{% url 'club:request_otp' %}{% if partnership %}?partner={{ partnership.code }}{% endif %}">
-                                        Request new OTP
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+            {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                <div
+                    class="p-3 rounded-xl {% if message.tags == 'error' %}bg-red-500/20 border border-red-500/30{% else %}bg-emerald-500/20 border border-emerald-500/30{% endif %} text-center">
+                    <p class="text-white text-sm font-bold">{{ message }}</p>
                 </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-4 text-center">One-Time Password
+                        (OTP)</label>
+                    <input type="text" name="otp" placeholder="123456" maxlength="6" autofocus required
+                        class="w-full bg-black/20 border border-white/20 rounded-xl px-4 py-4 text-center text-4xl font-mono font-bold text-melvins-gold placeholder-white/10 focus:outline-none focus:border-melvins-gold transition tracking-widest">
+                </div>
+
+                <button type="submit"
+                    class="w-full py-4 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                    Verify & Login
+                </button>
+            </form>
+
+            <div class="mt-6 text-center border-t border-white/10 pt-6">
+                <p class="text-white/60 text-sm mb-2">Didn't receive code?</p>
+                <a href="{% url 'club:request_otp' %}" class="text-melvins-gold hover:underline font-bold text-sm">Wrong
+                    Number?</a>
+                <span class="text-white/20 mx-2">|</span>
+                <form action="{% url 'club:request_otp' %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="phone" value="{{ request.session.phone_number }}">
+                    <button type="submit"
+                        class="text-melvins-gold hover:underline font-bold text-sm bg-transparent border-0 cursor-pointer">
+                        Resend Code
+                    </button>
+                </form>
             </div>
         </div>
-    </section>
+    </div>
 
     <script>
-        document.querySelectorAll('.notification .delete').forEach(btn => {
-            btn.addEventListener('click', () => btn.parentElement.remove());
+        // Auto-focus and numeric only
+        const input = document.querySelector('input[name="otp"]');
+        input.addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
         });
 
-        // Auto-submit when 6 digits entered
-        document.querySelector('input[name="otp"]').addEventListener('input', function(e) {
-            if (this.value.length === 6) {
-                this.form.submit();
-            }
-        });
+        // Auto-hide messages
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.bg-red-500\\/20, .bg-emerald-500\\/20');
+            alerts.forEach(el => el.style.display = 'none');
+        }, 5000);
     </script>
 </body>
+
 </html>
-
-
-
-
-
-
-

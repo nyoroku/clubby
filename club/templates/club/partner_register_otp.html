@@ -1,83 +1,110 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Partner Registration - Request OTP</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <section class="hero is-primary is-fullheight">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns is-centered">
-                    <div class="column is-5-tablet is-4-desktop">
-                        <div class="box">
-                            <h1 class="title has-text-centered">🤝 Partner Registration</h1>
-                            <p class="subtitle has-text-centered">Join as an Influencer or Shop</p>
 
-                            {% if messages %}
-                                {% for message in messages %}
-                                <div class="notification is-{{ message.tags }}">
-                                    <button class="delete"></button>
-                                    {{ message }}
-                                </div>
-                                {% endfor %}
-                            {% endif %}
+<body
+    class="min-h-screen bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-[#2d2424] flex items-center justify-center p-4">
 
-                            <form method="post">
-                                {% csrf_token %}
-                                <div class="field">
-                                    <label class="label">Phone Number</label>
-                                    <div class="control">
-                                        <input class="input is-large" type="tel" name="phone"
-                                               placeholder="0712345678 or +254712345678" required autofocus>
-                                    </div>
-                                    <p class="help">Enter your Kenyan phone number</p>
-                                </div>
+    <div class="w-full max-w-md">
+        <!-- Logo/Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">🤝 Partner Registration</h1>
+            <p class="text-white/60">Join as an Influencer or Shop</p>
+        </div>
 
-                                <div class="field">
-                                    <div class="control">
-                                        <button type="submit" class="button is-primary is-fullwidth is-medium">
-                                            <strong>Send OTP</strong>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <hr>
-                            <div class="has-text-centered">
-                                <p class="is-size-7">Already a customer? <a href="{% url 'club:request_otp' %}">Login as Customer</a></p>
-                            </div>
-                        </div>
-
-                        <div class="box has-background-light">
-                            <h4 class="title is-6">Partner Benefits:</h4>
-                            <div class="content is-small">
-                                <ul>
-                                    <li><strong>Influencers:</strong> Earn points from every scan by referred users</li>
-                                    <li><strong>Shops:</strong> Accept point redemptions + earn from referrals</li>
-                                    <li>Real-time dashboard with earnings tracking</li>
-                                    <li>Unique referral code and shareable links</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+            {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                <div
+                    class="p-3 rounded-xl {% if message.tags == 'error' %}bg-red-500/20 border border-red-500/30{% else %}bg-emerald-500/20 border border-emerald-500/30{% endif %} text-center">
+                    <p class="text-white text-sm font-bold">{{ message }}</p>
                 </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-2">Phone Number</label>
+                    <input type="tel" name="phone" placeholder="0712345678" required autofocus
+                        class="w-full bg-black/20 border border-white/20 rounded-xl px-4 py-4 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition text-lg">
+                    <p class="text-white/40 text-xs mt-2">Enter your Kenyan phone number</p>
+                </div>
+
+                <button type="submit"
+                    class="w-full py-4 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                    Send OTP
+                </button>
+            </form>
+
+            <div class="mt-6 text-center border-t border-white/10 pt-6">
+                <p class="text-white/60 text-sm">Already a customer? <a href="{% url 'club:request_otp' %}"
+                        class="text-melvins-gold hover:underline font-bold">Login here</a></p>
             </div>
         </div>
-    </section>
+
+        <!-- Benefits -->
+        <div class="mt-8 bg-black/20 rounded-xl p-6 border border-white/5">
+            <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+                <span>✨</span> Partner Benefits
+            </h4>
+            <ul class="space-y-2 text-white/70 text-sm">
+                <li class="flex items-start gap-2">
+                    <span class="text-melvins-gold">•</span>
+                    <span><strong>Influencers:</strong> Earn points from every scan by referred users</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-melvins-gold">•</span>
+                    <span><strong>Shops:</strong> Accept point redemptions + earn from referrals</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-melvins-gold">•</span>
+                    <span>Real-time dashboard with earnings tracking</span>
+                </li>
+            </ul>
+        </div>
+    </div>
 
     <script>
-        document.querySelectorAll('.notification .delete').forEach(btn => {
-            btn.addEventListener('click', () => btn.parentElement.remove());
-        });
+        // Auto-hide messages
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.bg-red-500\\/20, .bg-emerald-500\\/20');
+            alerts.forEach(el => el.style.display = 'none');
+        }, 5000);
     </script>
 </body>
+
 </html>
-
-
-
-
-

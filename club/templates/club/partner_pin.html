@@ -1,224 +1,94 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% if is_new_partner %}Set Your PIN{% else %}Enter PIN{% endif %} - Partner</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>Partner Login - Melvins Club</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            min-height: 100vh;
-        }
-        .pin-box {
-            margin-top: 3rem;
-        }
-        .pin-display {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        .pin-digit {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #dbdbdb;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            background: white;
-            transition: all 0.3s;
-        }
-        .pin-digit.filled {
-            border-color: #f5576c;
-            background: #f5576c;
-            color: white;
-        }
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-        .keypad-btn {
-            width: 100%;
-            height: 60px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .keypad-btn:hover {
-            background: #f5576c;
-            color: white;
-            transform: scale(1.05);
-        }
-        .keypad-btn:active {
-            transform: scale(0.95);
-        }
-        .keypad-btn.delete {
-            background: #f14668;
-            color: white;
-        }
-        .keypad-btn.delete:hover {
-            background: #cc1f44;
+            font-family: 'Inter', system-ui, sans-serif;
         }
     </style>
 </head>
-<body>
-    <section class="section">
-        <div class="container">
-            <div class="columns is-centered">
-                <div class="column is-10-mobile is-8-tablet is-5-desktop">
-                    <div class="box pin-box">
-                        <h1 class="title is-4 has-text-centered">
-                            🤝 Partner Access
-                        </h1>
-                        <h2 class="subtitle is-5 has-text-centered">
-                            {% if is_new_partner %}
-                                Set Your 6-Digit PIN
-                            {% elif not has_pin %}
-                                Set Your 6-Digit PIN
-                            {% else %}
-                                Enter Your PIN
-                            {% endif %}
-                        </h2>
 
-                        <p class="has-text-centered mb-4 has-text-grey">
-                            Phone: <strong>{{ phone }}</strong>
-                        </p>
+<body
+    class="min-h-screen bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-[#2d2424] flex items-center justify-center p-4">
 
-                        {% if messages %}
-                            {% for message in messages %}
-                            <div class="notification is-{{ message.tags }}">
-                                <button class="delete"></button>
-                                {{ message }}
-                            </div>
-                            {% endfor %}
-                        {% endif %}
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">Partner Login 🤝</h1>
+            <p class="text-white/60">Enter your PIN to access partner dashboard</p>
+        </div>
 
-                        {% if is_new_partner or not has_pin %}
-                        <div class="notification is-warning is-light">
-                            <p class="is-size-7">
-                                <strong>Creating Partner Account</strong><br>
-                                Choose a secure 6-digit PIN. You'll use this to access your partner dashboard.
-                            </p>
-                        </div>
-                        {% endif %}
-
-                        <form method="post" id="pinForm">
-                            {% csrf_token %}
-
-                            <input type="hidden" name="pin" id="pinInput">
-
-                            <div class="pin-display">
-                                <div class="pin-digit" id="digit1"></div>
-                                <div class="pin-digit" id="digit2"></div>
-                                <div class="pin-digit" id="digit3"></div>
-                                <div class="pin-digit" id="digit4"></div>
-                                <div class="pin-digit" id="digit5"></div>
-                                <div class="pin-digit" id="digit6"></div>
-                            </div>
-
-                            <div class="keypad">
-                                <button type="button" class="keypad-btn" data-num="1">1</button>
-                                <button type="button" class="keypad-btn" data-num="2">2</button>
-                                <button type="button" class="keypad-btn" data-num="3">3</button>
-                                <button type="button" class="keypad-btn" data-num="4">4</button>
-                                <button type="button" class="keypad-btn" data-num="5">5</button>
-                                <button type="button" class="keypad-btn" data-num="6">6</button>
-                                <button type="button" class="keypad-btn" data-num="7">7</button>
-                                <button type="button" class="keypad-btn" data-num="8">8</button>
-                                <button type="button" class="keypad-btn" data-num="9">9</button>
-                                <button type="button" class="keypad-btn" id="clearBtn">Clear</button>
-                                <button type="button" class="keypad-btn" data-num="0">0</button>
-                                <button type="button" class="keypad-btn delete" id="deleteBtn">⌫</button>
-                            </div>
-                        </form>
-
-                        <div class="has-text-centered mt-4">
-                            <a href="{% url 'club:partner_login' %}" class="is-size-7 has-text-grey">
-                                ← Back to phone entry
-                            </a>
-                        </div>
-                    </div>
+        <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+            {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                <div
+                    class="p-3 rounded-xl {% if message.tags == 'error' %}bg-red-500/20 border border-red-500/30{% else %}bg-emerald-500/20 border border-emerald-500/30{% endif %} text-center">
+                    <p class="text-white text-sm font-bold">{{ message }}</p>
                 </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-4 text-center">4-Digit PIN</label>
+                    <input type="password" name="pin" placeholder="••••" maxlength="4" autofocus required
+                        class="w-full bg-black/20 border border-white/20 rounded-xl px-4 py-4 text-center text-4xl font-mono font-bold text-melvins-gold placeholder-white/10 focus:outline-none focus:border-melvins-gold transition tracking-[1em]">
+                </div>
+
+                <button type="submit"
+                    class="w-full py-4 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                    Unlock Dashboard
+                </button>
+            </form>
+
+            <div class="mt-6 text-center border-t border-white/10 pt-6">
+                <a href="{% url 'club:partner_register_otp' %}"
+                    class="text-white/40 hover:text-white transition text-sm">Not a partner? Register here</a>
             </div>
         </div>
-    </section>
+    </div>
 
     <script>
-        let pin = '';
-        const pinInput = document.getElementById('pinInput');
-        const pinForm = document.getElementById('pinForm');
-
-        function updateDisplay() {
-            for (let i = 1; i <= 6; i++) {
-                const digit = document.getElementById(`digit${i}`);
-                if (i <= pin.length) {
-                    digit.textContent = '●';
-                    digit.classList.add('filled');
-                } else {
-                    digit.textContent = '';
-                    digit.classList.remove('filled');
-                }
-            }
-
-            if (pin.length === 6) {
-                pinInput.value = pin;
-                setTimeout(() => {
-                    pinForm.submit();
-                }, 300);
-            }
-        }
-
-        document.querySelectorAll('.keypad-btn[data-num]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (pin.length < 6) {
-                    pin += btn.dataset.num;
-                    updateDisplay();
-                }
-            });
+        // Auto-focus and numeric only
+        const input = document.querySelector('input[name="pin"]');
+        input.addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
         });
 
-        document.getElementById('deleteBtn').addEventListener('click', () => {
-            pin = pin.slice(0, -1);
-            updateDisplay();
-        });
-
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            pin = '';
-            updateDisplay();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key >= '0' && e.key <= '9' && pin.length < 6) {
-                pin += e.key;
-                updateDisplay();
-            } else if (e.key === 'Backspace') {
-                pin = pin.slice(0, -1);
-                updateDisplay();
-            } else if (e.key === 'Escape') {
-                pin = '';
-                updateDisplay();
-            }
-        });
-
-        document.querySelectorAll('.notification .delete').forEach(btn => {
-            btn.addEventListener('click', () => btn.parentElement.remove());
-        });
+        // Auto-hide messages
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.bg-red-500\\/20, .bg-emerald-500\\/20');
+            alerts.forEach(el => el.style.display = 'none');
+        }, 5000);
     </script>
 </body>
+
 </html>
-
-
-
-
-

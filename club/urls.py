@@ -53,7 +53,7 @@ urlpatterns = [
     # ============ LISTING PARTNER PRODUCT MANAGEMENT ============
     path('vendor/products/add/', views.add_product, name='add_product'),
     path('vendor/products/edit/<int:product_id>/', views.edit_product, name='edit_product'),
-    path('vendor/redemptions/', views.view_redemptions, name='view_redemptions'),
+
 
     # ============ CHALLENGES ============
     path('challenges/', views.challenges_list, name='challenges_list'),

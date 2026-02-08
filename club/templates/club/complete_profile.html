@@ -1,167 +1,168 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Complete Profile</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <title>Complete Profile - Melvins Club</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <section class="section">
-        <div class="container">
-            <div class="columns is-centered">
-                <div class="column is-8-tablet is-6-desktop">
-                    <div class="box">
-                        <h1 class="title">Complete Your Profile</h1>
-                        <p class="subtitle">We need a few details</p>
 
-                        {% if messages %}
-                            {% for message in messages %}
-                            <div class="notification is-{{ message.tags }}">
-                                <button class="delete"></button>
-                                {{ message }}
-                            </div>
-                            {% endfor %}
-                        {% endif %}
+<body
+    class="min-h-screen bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-[#2d2424] flex items-center justify-center p-4 py-8">
 
-                        <form method="post">
-                            {% csrf_token %}
+    <div class="w-full max-w-2xl bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-white mb-2">Complete Your Profile 👤</h1>
+            <p class="text-white/60 text-sm">We need a few details to get you started</p>
+        </div>
 
-                            <div class="columns">
-                                <div class="column">
-                                    <div class="field">
-                                        <label class="label">First Name *</label>
-                                        <div class="control">
-                                            <input class="input" type="text" name="first_name"
-                                                   placeholder="John" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="column">
-                                    <div class="field">
-                                        <label class="label">Second Name *</label>
-                                        <div class="control">
-                                            <input class="input" type="text" name="second_name"
-                                                   placeholder="Doe" required>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div
+                class="p-3 rounded-xl {% if message.tags == 'error' %}bg-red-500/20 border border-red-500/30{% else %}bg-emerald-500/20 border border-emerald-500/30{% endif %} text-center">
+                <p class="text-white text-sm font-bold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
-                            <div class="field">
-                                <label class="label">County *</label>
-                                <div class="control">
-                                    <div class="select is-fullwidth">
-                                        <select name="county" required>
-                                            <option value="">Select your county...</option>
-                                            <option value="mombasa">Mombasa</option>
-                                            <option value="kwale">Kwale</option>
-                                            <option value="kilifi">Kilifi</option>
-                                            <option value="tana_river">Tana River</option>
-                                            <option value="lamu">Lamu</option>
-                                            <option value="taita_taveta">Taita Taveta</option>
-                                            <option value="garissa">Garissa</option>
-                                            <option value="wajir">Wajir</option>
-                                            <option value="mandera">Mandera</option>
-                                            <option value="marsabit">Marsabit</option>
-                                            <option value="isiolo">Isiolo</option>
-                                            <option value="meru">Meru</option>
-                                            <option value="tharaka_nithi">Tharaka Nithi</option>
-                                            <option value="embu">Embu</option>
-                                            <option value="kitui">Kitui</option>
-                                            <option value="machakos">Machakos</option>
-                                            <option value="makueni">Makueni</option>
-                                            <option value="nyandarua">Nyandarua</option>
-                                            <option value="nyeri">Nyeri</option>
-                                            <option value="kirinyaga">Kirinyaga</option>
-                                            <option value="muranga">Murang'a</option>
-                                            <option value="kiambu">Kiambu</option>
-                                            <option value="turkana">Turkana</option>
-                                            <option value="west_pokot">West Pokot</option>
-                                            <option value="samburu">Samburu</option>
-                                            <option value="trans_nzoia">Trans Nzoia</option>
-                                            <option value="uasin_gishu">Uasin Gishu</option>
-                                            <option value="elgeyo_marakwet">Elgeyo Marakwet</option>
-                                            <option value="nandi">Nandi</option>
-                                            <option value="baringo">Baringo</option>
-                                            <option value="laikipia">Laikipia</option>
-                                            <option value="nakuru">Nakuru</option>
-                                            <option value="narok">Narok</option>
-                                            <option value="kajiado">Kajiado</option>
-                                            <option value="kericho">Kericho</option>
-                                            <option value="bomet">Bomet</option>
-                                            <option value="kakamega">Kakamega</option>
-                                            <option value="vihiga">Vihiga</option>
-                                            <option value="bungoma">Bungoma</option>
-                                            <option value="busia">Busia</option>
-                                            <option value="siaya">Siaya</option>
-                                            <option value="kisumu">Kisumu</option>
-                                            <option value="homa_bay">Homa Bay</option>
-                                            <option value="migori">Migori</option>
-                                            <option value="kisii">Kisii</option>
-                                            <option value="nyamira">Nyamira</option>
-                                            <option value="nairobi">Nairobi</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
 
-                            <div class="field">
-                                <label class="label">Buyer Type *</label>
-                                <div class="control">
-                                    <div class="select is-fullwidth">
-                                        <select name="buyer_type" required>
-                                            <option value="">Select...</option>
-                                            <option value="home">Home Use</option>
-                                            <option value="business">Business Use</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <label class="label">Referral Code (Optional)</label>
-                                <div class="control">
-                                    <input class="input" type="text" name="referral_code"
-                                           placeholder="Enter friend's referral code"
-                                           value="{{ prefilled_referral_code }}"
-                                           maxlength="6" style="text-transform: uppercase;">
-                                </div>
-                                <p class="help">Have a referral code from a friend? Enter it to earn bonus points!</p>
-                            </div>
-
-                            <div class="field">
-                                <div class="control">
-                                    <button type="submit" class="button is-primary is-fullwidth is-medium">
-                                        <strong>Complete Registration</strong>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-2">First Name *</label>
+                    <input type="text" name="first_name" placeholder="John" required
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition">
+                </div>
+                <div>
+                    <label class="block text-white/80 text-sm font-bold mb-2">Second Name *</label>
+                    <input type="text" name="second_name" placeholder="Doe" required
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition">
                 </div>
             </div>
-        </div>
-    </section>
+
+            <div>
+                <label class="block text-white/80 text-sm font-bold mb-2">County *</label>
+                <select name="county" required
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-melvins-gold transition">
+                    <option value="" class="text-black">Select your county...</option>
+                    <option value="mombasa" class="text-black">Mombasa</option>
+                    <option value="kwale" class="text-black">Kwale</option>
+                    <option value="kilifi" class="text-black">Kilifi</option>
+                    <option value="tana_river" class="text-black">Tana River</option>
+                    <option value="lamu" class="text-black">Lamu</option>
+                    <option value="taita_taveta" class="text-black">Taita Taveta</option>
+                    <option value="garissa" class="text-black">Garissa</option>
+                    <option value="wajir" class="text-black">Wajir</option>
+                    <option value="mandera" class="text-black">Mandera</option>
+                    <option value="marsabit" class="text-black">Marsabit</option>
+                    <option value="isiolo" class="text-black">Isiolo</option>
+                    <option value="meru" class="text-black">Meru</option>
+                    <option value="tharaka_nithi" class="text-black">Tharaka Nithi</option>
+                    <option value="embu" class="text-black">Embu</option>
+                    <option value="kitui" class="text-black">Kitui</option>
+                    <option value="machakos" class="text-black">Machakos</option>
+                    <option value="makueni" class="text-black">Makueni</option>
+                    <option value="nyandarua" class="text-black">Nyandarua</option>
+                    <option value="nyeri" class="text-black">Nyeri</option>
+                    <option value="kirinyaga" class="text-black">Kirinyaga</option>
+                    <option value="muranga" class="text-black">Murang'a</option>
+                    <option value="kiambu" class="text-black">Kiambu</option>
+                    <option value="turkana" class="text-black">Turkana</option>
+                    <option value="west_pokot" class="text-black">West Pokot</option>
+                    <option value="samburu" class="text-black">Samburu</option>
+                    <option value="trans_nzoia" class="text-black">Trans Nzoia</option>
+                    <option value="uasin_gishu" class="text-black">Uasin Gishu</option>
+                    <option value="elgeyo_marakwet" class="text-black">Elgeyo Marakwet</option>
+                    <option value="nandi" class="text-black">Nandi</option>
+                    <option value="baringo" class="text-black">Baringo</option>
+                    <option value="laikipia" class="text-black">Laikipia</option>
+                    <option value="nakuru" class="text-black">Nakuru</option>
+                    <option value="narok" class="text-black">Narok</option>
+                    <option value="kajiado" class="text-black">Kajiado</option>
+                    <option value="kericho" class="text-black">Kericho</option>
+                    <option value="bomet" class="text-black">Bomet</option>
+                    <option value="kakamega" class="text-black">Kakamega</option>
+                    <option value="vihiga" class="text-black">Vihiga</option>
+                    <option value="bungoma" class="text-black">Bungoma</option>
+                    <option value="busia" class="text-black">Busia</option>
+                    <option value="siaya" class="text-black">Siaya</option>
+                    <option value="kisumu" class="text-black">Kisumu</option>
+                    <option value="homa_bay" class="text-black">Homa Bay</option>
+                    <option value="migori" class="text-black">Migori</option>
+                    <option value="kisii" class="text-black">Kisii</option>
+                    <option value="nyamira" class="text-black">Nyamira</option>
+                    <option value="nairobi" class="text-black">Nairobi</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-white/80 text-sm font-bold mb-2">Buyer Type *</label>
+                <select name="buyer_type" required
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-melvins-gold transition">
+                    <option value="" class="text-black">Select...</option>
+                    <option value="home" class="text-black">Home Use</option>
+                    <option value="business" class="text-black">Business Use</option>
+                </select>
+            </div>
+
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                <label class="block text-white/80 text-sm font-bold mb-2">Referral Code (Optional)</label>
+                <input type="text" name="referral_code" placeholder="Enter friend's referral code"
+                    value="{{ prefilled_referral_code }}" maxlength="6"
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition uppercase tracking-widest">
+                <p class="text-white/40 text-xs mt-2">Have a referral code? Enter it to earn bonus points!</p>
+            </div>
+
+            <button type="submit"
+                class="w-full py-4 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                Complete Registration
+            </button>
+        </form>
+    </div>
 
     <script>
-        document.querySelectorAll('.notification .delete').forEach(btn => {
-            btn.addEventListener('click', () => btn.parentElement.remove());
-        });
-
         // Auto-uppercase referral code
         const referralInput = document.querySelector('input[name="referral_code"]');
         if (referralInput) {
-            referralInput.addEventListener('input', function(e) {
+            referralInput.addEventListener('input', function (e) {
                 this.value = this.value.toUpperCase();
             });
         }
+
+        // Auto-hide messages
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.bg-red-500\\/20, .bg-emerald-500\\/20');
+            alerts.forEach(el => el.style.display = 'none');
+        }, 5000);
     </script>
 </body>
+
 </html>
-
-
-
-
-

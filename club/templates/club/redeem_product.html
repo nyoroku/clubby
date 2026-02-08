@@ -1,145 +1,161 @@
+{% extends 'club/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ product.name }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-</head>
+{% block title %}{{ product.name }} - Redeem{% endblock %}
 
-<body>
-    <nav class="navbar is-primary">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="{% url 'club:product_catalog' %}">
-                <strong>← Back to Catalog</strong>
-            </a>
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- Back Link -->
+    <a href="{% url 'club:product_catalog' %}"
+        class="inline-flex items-center gap-2 text-white/60 hover:text-white transition mb-8">
+        <span>←</span> Back to Catalog
+    </a>
+
+    {% if messages %}
+    <div class="mb-8 space-y-2">
+        {% for message in messages %}
+        <div
+            class="p-4 rounded-xl {% if message.tags == 'error' %}bg-red-500/20 border border-red-500/30{% else %}bg-emerald-500/20 border border-emerald-500/30{% endif %}">
+            <p class="font-medium text-sm text-white">{{ message }}</p>
         </div>
-    </nav>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-    <section class="section">
-        <div class="container">
-            {% if messages %}
-            {% for message in messages %}
-            <div class="notification is-{{ message.tags }}">
-                <button class="delete"></button>
-                {{ message }}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+        <!-- Product Image -->
+        <div class="space-y-6">
+            <div class="aspect-square bg-white/5 rounded-3xl overflow-hidden border border-white/10 relative">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex flex-col items-center justify-center text-white/20">
+                    <span class="text-6xl mb-4">🖼️</span>
+                    <span class="text-sm">No image available</span>
+                </div>
+                {% endif %}
+
+                {% if product.featured %}
+                <div
+                    class="absolute top-4 left-4 px-3 py-1 bg-melvins-gold text-[#1a0a0c] text-sm font-bold rounded-full shadow-lg">
+                    ⭐ Featured
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
-            {% endif %}
+        </div>
 
-            <div class="columns">
-                <div class="column is-6">
-                    {% if product.image %}
-                    <figure class="image">
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                    </figure>
+        <!-- Product Details -->
+        <div>
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">{{ product.name }}</h1>
+            <p class="text-2xl font-bold text-melvins-gold mb-6">{{ product.points_required }} points</p>
+
+            <div class="prose prose-invert max-w-none mb-8">
+                <h3 class="text-lg font-bold text-white mb-2">Description</h3>
+                <p class="text-white/70 leading-relaxed">{{ product.description }}</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-8 text-sm">
+                <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <p class="text-white/50 mb-1">Category</p>
+                    <p class="font-bold text-white">{{ product.category|default:"General" }}</p>
+                </div>
+                <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <p class="text-white/50 mb-1">Seller</p>
+                    <p class="font-bold text-white">{{ product.listing_partner.company_name }}</p>
+                </div>
+                <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <p class="text-white/50 mb-1">Stock</p>
+                    <p
+                        class="font-bold {% if product.stock_quantity > 0 %}text-emerald-400{% else %}text-red-400{% endif %}">
+                        {% if product.stock_quantity > 0 %}{{ product.stock_quantity }} available{% else %}Out of
+                        Stock{% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Redemption Section -->
+            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-xl">
+                <div class="flex items-center justify-between mb-6 pb-6 border-b border-white/10">
+                    <div>
+                        <p class="text-white/60 text-sm mb-1">Your Balance</p>
+                        <p class="text-2xl font-bold text-white">{{ profile.points }} <span
+                                class="text-sm font-normal text-white/50">pts</span></p>
+                    </div>
+                    {% if profile.points >= product.points_required %}
+                    <div class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">
+                        ✓ Sufficient Points
+                    </div>
                     {% else %}
-                    <div class="box has-background-light"
-                        style="height: 400px; display: flex; align-items: center; justify-content: center;">
-                        <p class="has-text-grey">No image available</p>
+                    <div class="px-3 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full">
+                        Deficit: {{ product.points_required|add:"-"|add:profile.points }} pts
                     </div>
                     {% endif %}
                 </div>
 
-                <div class="column is-6">
-                    <h1 class="title">{{ product.name }}</h1>
-                    <p class="subtitle">{{ product.points_required }} points</p>
+                {% if profile.points >= product.points_required and product.stock_quantity > 0 %}
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
 
-                    {% if product.featured %}
-                    <span class="tag is-warning is-medium mb-3">⭐ Featured Product</span>
-                    {% endif %}
-
-                    <div class="box has-background-info-light">
-                        <p><strong>Your Balance:</strong> {{ profile.points }} points</p>
-                        <p><strong>Need:</strong> {{ product.points_required }} points</p>
-                        {% if profile.points >= product.points_required %}
-                        <p class="has-text-success"><strong>✓ You have enough points!</strong></p>
-                        {% else %}
-                        <p class="has-text-danger">
-                            <strong>Need {{ product.points_required|add:profile.points|add:"-"|add:profile.points }}
-                                more points</strong>
-                        </p>
-                        {% endif %}
-                    </div>
-
-                    <div class="content">
-                        <h3>Description</h3>
-                        <p>{{ product.description }}</p>
-
-                        <p><strong>Category:</strong> {{ product.category|default:"General" }}</p>
-                        <p><strong>Seller:</strong> {{ product.listing_partner.company_name }}</p>
-                        <p><strong>Stock:</strong> {{ product.stock_quantity }} available</p>
-                    </div>
-
-                    {% if profile.points >= product.points_required and product.stock_quantity > 0 %}
-                    <form method="post">
-                        {% csrf_token %}
-
-                        {% if available_shops %}
-                        <div class="field">
-                            <label class="label">Select Pickup Location</label>
-                            <div class="control">
-                                <div class="select is-fullwidth">
-                                    <select name="shop_id" required>
-                                        <option value="">Choose a shop...</option>
-                                        {% for shop in available_shops %}
-                                        <option value="{{ shop.id }}">
-                                            {{ shop.name }} - {{ shop.location_details }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <p class="help">You'll get a code to collect at the shop</p>
-                        </div>
-                        {% endif %}
-
-                        <div class="box has-background-warning-light">
-                            <p><strong>Financial Breakdown:</strong></p>
-                            <p>Points: {{ product.points_required }}</p>
-                            <p>Value: KES {{ earnings.total|floatformat:2 }}</p>
-                            <p class="is-size-7 has-text-grey">
-                                (Melvins fee: KES {{ earnings.Melvins Club_commission|floatformat:2 }},
-                                Seller gets: KES {{ earnings.partner_earning|floatformat:2 }})
-                            </p>
-                        </div>
-
-                        <button type="submit" class="button is-primary is-fullwidth is-large">
-                            <strong>Redeem for {{ product.points_required }} Points</strong>
-                        </button>
-                    </form>
-                    {% elif product.stock_quantity == 0 %}
-                    <div class="notification is-danger">
-                        <p><strong>Out of Stock</strong></p>
-                        <p>This product is currently unavailable</p>
-                    </div>
-                    {% else %}
-                    <div class="notification is-warning">
-                        <p><strong>Insufficient Points</strong></p>
-                        <p>You need {{ product.points_required|add:"-"|add:profile.points }} more points to redeem this
-                            product</p>
-                        <a href="{% url 'club:dashboard' %}" class="button is-primary is-light mt-3">
-                            Earn More Points
-                        </a>
+                    {% if available_shops %}
+                    <div>
+                        <label class="block text-white font-bold mb-2">Select Pickup Location</label>
+                        <select name="shop_id" required
+                            class="w-full bg-black/20 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-melvins-gold transition">
+                            <option value="" class="text-black">Choose a shop...</option>
+                            {% for shop in available_shops %}
+                            <option value="{{ shop.id }}" class="text-black">{{ shop.name }} - {{ shop.location_details
+                                }}</option>
+                            {% endfor %}
+                        </select>
+                        <p class="text-white/40 text-xs mt-2">You'll receive a code to collect at this location</p>
                     </div>
                     {% endif %}
+
+                    <!-- Financial Breakdown (Subtle) -->
+                    <div class="bg-black/20 rounded-xl p-4 text-xs text-white/40 border border-white/5">
+                        <div class="flex justify-between mb-1">
+                            <span>Points Cost:</span>
+                            <span class="text-white">{{ product.points_required }}</span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                            <span>Value:</span>
+                            <span class="text-white">KES {{ earnings.total|floatformat:2 }}</span>
+                        </div>
+                        <div class="border-t border-white/5 my-2"></div>
+                        <div class="flex justify-between">
+                            <span>Platform Fee:</span>
+                            <span>KES {{ earnings.Melvins_commission_earned|floatformat:2 }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Seller Earns:</span>
+                            <span>KES {{ earnings.partner_earning|floatformat:2 }}</span>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-4 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                        Redeem Now
+                    </button>
+                    <p class="text-center text-white/40 text-xs">Points will be deducted immediately</p>
+                </form>
+                {% elif product.stock_quantity == 0 %}
+                <div class="text-center py-4 bg-red-500/10 rounded-xl border border-red-500/20">
+                    <p class="text-red-300 font-bold mb-1">Out of Stock</p>
+                    <p class="text-red-200/60 text-sm">Please check back later</p>
                 </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-white/60 text-sm mb-4">You need more points to redeem this item.</p>
+                    <a href="{% url 'club:dashboard' %}"
+                        class="inline-block px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition">
+                        Earn More Points
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
-    </section>
-
-    <script>
-        document.querySelectorAll('.notification .delete').forEach(btn => {
-            btn.addEventListener('click', () => btn.parentElement.remove());
-        });
-    </script>
-</body>
-
-</html>
-
-
-
-
-
+    </div>
+</div>
+{% endblock %}
