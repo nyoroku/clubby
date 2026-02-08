@@ -55,6 +55,9 @@ LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'landing_page'
 
 import os
+
+# Google OAuth2 Credentials
+# For production (PythonAnywhere), these are set in the WSGI file
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_OAUTH2_KEY', '')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_OAUTH2_SECRET', '')
 
