@@ -101,7 +101,6 @@ def partner_dashboard(request):
     try:
         partnership = request.user.partnership
     except Partnership.DoesNotExist:
-    except Partnership.DoesNotExist:
         messages.error(request, 'Partner account not found. Please create one.')
         return redirect('club:partner_create')
 
@@ -1678,10 +1677,8 @@ def listing_partner_dashboard(request):
     try:
         listing_partner = request.user.listingpartner
     except ListingPartner.DoesNotExist:
-    except ListingPartner.DoesNotExist:
         messages.error(request, 'Listing partner account not found. Please create one.')
         return redirect('club:listing_partner_create')
-        return redirect('club:listing_partner_register_otp')
 
     if not listing_partner.profile_completed:
         return redirect('club:listing_partner_complete_profile')
