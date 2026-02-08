@@ -15,6 +15,7 @@ urlpatterns = [
 
     # ============ PARTNER AUTHENTICATION (PIN-BASED) ============
     path('partner/login/', views.partner_login, name='partner_login'),
+    path('partner/create/', views.partner_create, name='partner_create'),
     path('partner/pin/', views.partner_pin, name='partner_pin'),
     path('partner/complete-profile/', views.partner_complete_profile, name='partner_complete_profile'),
     path('partner/dashboard/', views.partner_dashboard, name='partner_dashboard'),
@@ -22,6 +23,7 @@ urlpatterns = [
 
     # ============ LISTING PARTNER AUTHENTICATION (PIN-BASED) ============
     path('vendor/login/', views.listing_partner_login, name='listing_partner_login'),
+    path('vendor/create/', views.listing_partner_create, name='listing_partner_create'),
     path('vendor/pin/', views.listing_partner_pin, name='listing_partner_pin'),
     path('vendor/complete-profile/', views.listing_partner_complete_profile, name='listing_partner_complete_profile'),
     path('vendor/dashboard/', views.listing_partner_dashboard, name='listing_partner_dashboard'),

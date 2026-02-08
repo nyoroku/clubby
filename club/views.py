@@ -101,8 +101,9 @@ def partner_dashboard(request):
     try:
         partnership = request.user.partnership
     except Partnership.DoesNotExist:
-        messages.error(request, 'Partner account not found')
-        return redirect('club:partner_login')
+    except Partnership.DoesNotExist:
+        messages.error(request, 'Partner account not found. Please create one.')
+        return redirect('club:partner_create')
 
     if not partnership.profile_completed:
         return redirect('club:partner_complete_profile')
@@ -1677,7 +1678,9 @@ def listing_partner_dashboard(request):
     try:
         listing_partner = request.user.listingpartner
     except ListingPartner.DoesNotExist:
-        messages.error(request, 'Listing partner account not found')
+    except ListingPartner.DoesNotExist:
+        messages.error(request, 'Listing partner account not found. Please create one.')
+        return redirect('club:listing_partner_create')
         return redirect('club:listing_partner_register_otp')
 
     if not listing_partner.profile_completed:
@@ -2475,6 +2478,46 @@ def user_pin(request):
 
 # ============ PARTNER AUTHENTICATION VIEWS (PIN-BASED) ============
 
+@login_required
+def partner_create(request):
+    """Create partner account for authenticated user"""
+    if hasattr(request.user, 'partnership'):
+        return redirect('club:partner_dashboard')
+
+    if request.method == 'POST':
+        # Create new partnership
+        phone = request.user.profile.phone if hasattr(request.user, 'profile') and request.user.profile.phone else ''
+        
+        partnership = Partnership.objects.create(
+            user=request.user,
+            phone=phone, # Might be empty, prompt user later if needed
+            profile_completed=False
+        )
+        messages.success(request, 'Partner account created! Please complete your profile.')
+        return redirect('club:partner_complete_profile')
+
+    return render(request, 'club/partner_create.html')
+
+@login_required
+def listing_partner_create(request):
+    """Create listing partner (vendor) account for authenticated user"""
+    if hasattr(request.user, 'listingpartner'):
+        return redirect('club:listing_partner_dashboard')
+
+    if request.method == 'POST':
+        # Create new listing partner
+        phone = request.user.profile.phone if hasattr(request.user, 'profile') and request.user.profile.phone else ''
+        
+        listing_partner = ListingPartner.objects.create(
+            user=request.user,
+            phone=phone,
+            profile_completed=False
+        )
+        messages.success(request, 'Vendor account created! Please complete your profile.')
+        return redirect('club:listing_partner_complete_profile')
+
+    return render(request, 'club/listing_partner_create.html')
+
 def partner_login(request):
     """Partner login - phone entry"""
     if request.method == 'POST':
@@ -2487,7 +2530,7 @@ def partner_login(request):
             request.session['partner_phone'] = phone
             return redirect('club:partner_pin')
 
-    return render(request, 'club/partner_login..html')
+    return render(request, 'club/partner_login.html')
 
 
 def partner_pin(request):
