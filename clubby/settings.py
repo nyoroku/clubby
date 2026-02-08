@@ -54,8 +54,9 @@ LOGIN_REDIRECT_URL = 'club:dashboard'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'landing_page'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'your-google-client-id'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'your-google-client-secret'
+import os
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('GOOGLE_OAUTH2_KEY', '')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_OAUTH2_SECRET', '')
 
 
 MIDDLEWARE = [
