@@ -5,3 +5,6 @@ class ClubConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'club'
 
+    def ready(self):
+        import club.signals
+
