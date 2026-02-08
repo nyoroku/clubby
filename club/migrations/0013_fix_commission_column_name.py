@@ -3,7 +3,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('club', '0011_add_card_reward_points'),
+        ('club', '0012_alter_profile_phone'),
     ]
 
     operations = [
