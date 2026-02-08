@@ -8,7 +8,7 @@
 
     <!-- Breadcrumb -->
     <a href="{% url 'club:shop_finder' %}"
-        class="inline-flex items-center text-sm text-melvins-dark/50 hover:text-melvins-red mb-6 transition">
+        class="inline-flex items-center text-sm text-melvins-dark/50 hover:text-melvins-maroon mb-6 transition">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -70,7 +70,7 @@
                         <span class="text-2xl">📞</span>
                         <div>
                             <span class="block font-bold text-melvins-dark text-sm">Phone</span>
-                            <a href="tel:{{ shop.phone }}" class="text-melvins-red font-mono text-sm hover:underline">{{
+                            <a href="tel:{{ shop.phone }}" class="text-melvins-maroon font-mono text-sm hover:underline">{{
                                 shop.phone }}</a>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                         <div>
                             <span class="block font-bold text-melvins-dark text-sm">Email</span>
                             <a href="mailto:{{ shop.email }}"
-                                class="text-melvins-red font-mono text-sm hover:underline">{{ shop.email }}</a>
+                                class="text-melvins-maroon font-mono text-sm hover:underline">{{ shop.email }}</a>
                         </div>
                     </div>
                     {% endif %}
@@ -97,7 +97,7 @@
                                 class="flex-shrink-0 w-6 h-6 rounded-full bg-melvins-gold text-white flex items-center justify-center text-xs font-bold">1</span>
                             <span class="text-sm text-melvins-dark/80">Select a reward from your <a
                                     href="{% url 'club:dashboard' %}"
-                                    class="text-melvins-red font-bold hover:underline">Dashboard</a>.</span>
+                                    class="text-melvins-maroon font-bold hover:underline">Dashboard</a>.</span>
                         </li>
                         <li class="flex gap-3">
                             <span
@@ -125,7 +125,7 @@
 
     <!-- Available Rewards at this Shop -->
     <div class="mb-8">
-        <h2 class="text-2xl font-display font-bold text-melvins-dark mb-6 pl-4 border-l-4 border-melvins-red">Available
+        <h2 class="text-2xl font-display font-bold text-melvins-dark mb-6 pl-4 border-l-4 border-melvins-maroon">Available
             Rewards Here</h2>
 
         {% if available_rewards %}
@@ -151,7 +151,7 @@
 
                     {% if user.is_authenticated %}
                     <a href="{% url 'club:rewards' %}"
-                        class="block w-full py-2 bg-melvins-red text-white font-bold rounded-lg text-center hover:bg-melvins-red-dark transition shadow-md">
+                        class="block w-full py-2 bg-melvins-maroon text-white font-bold rounded-lg text-center hover:bg-melvins-maroon-dark transition shadow-md">
                         Redeem Now
                     </a>
                     {% else %}

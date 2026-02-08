@@ -8,7 +8,7 @@
 
     <!-- Hero Section -->
     <div
-        class="bg-gradient-to-br from-melvins-red to-red-900 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl text-white mb-8">
+        class="bg-gradient-to-br from-melvins-maroon to-red-900 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl text-white mb-8">
         <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
         </div>
         <div
@@ -47,7 +47,7 @@
             </div>
             <div class="flex items-end">
                 <button type="submit"
-                    class="w-full sm:w-auto px-8 py-3 bg-melvins-dark text-white font-bold rounded-xl hover:bg-melvins-red transition shadow-lg">
+                    class="w-full sm:w-auto px-8 py-3 bg-melvins-dark text-white font-bold rounded-xl hover:bg-melvins-maroon transition shadow-lg">
                     🔍 Find
                 </button>
             </div>
@@ -60,13 +60,13 @@
         {% for shop in shops %}
         <div
             class="bg-white rounded-2xl overflow-hidden border border-melvins-beige shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group flex flex-col h-full">
-            <div class="h-2 bg-gradient-to-r from-melvins-red to-melvins-gold"></div>
+            <div class="h-2 bg-gradient-to-r from-melvins-maroon to-melvins-gold"></div>
 
             <div class="p-6 flex flex-col flex-grow">
                 <div class="flex items-start justify-between mb-4">
                     <div>
                         <h3
-                            class="font-display font-bold text-xl text-melvins-dark group-hover:text-melvins-red transition-colors">
+                            class="font-display font-bold text-xl text-melvins-dark group-hover:text-melvins-maroon transition-colors">
                             {{ shop.name }}</h3>
                         <span
                             class="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold uppercase rounded-md">{{
@@ -81,21 +81,21 @@
                 <div class="space-y-3 mb-6 text-sm flex-grow">
                     {% if shop.location_details %}
                     <div class="flex items-start gap-3">
-                        <span class="text-melvins-red mt-0.5">📍</span>
+                        <span class="text-melvins-maroon mt-0.5">📍</span>
                         <span class="text-melvins-dark/70 line-clamp-2">{{ shop.location_details }}</span>
                     </div>
                     {% endif %}
 
                     {% if shop.phone %}
                     <div class="flex items-center gap-3">
-                        <span class="text-melvins-red">📞</span>
+                        <span class="text-melvins-maroon">📞</span>
                         <span class="text-melvins-dark/70 font-mono text-xs">{{ shop.phone }}</span>
                     </div>
                     {% endif %}
 
                     {% if shop.email %}
                     <div class="flex items-center gap-3">
-                        <span class="text-melvins-red">📧</span>
+                        <span class="text-melvins-maroon">📧</span>
                         <span class="text-melvins-dark/70 font-mono text-xs truncate">{{ shop.email }}</span>
                     </div>
                     {% endif %}
@@ -120,7 +120,7 @@
             No shops available at the moment.
             {% endif %}
         </p>
-        <a href="{% url 'club:shop_finder' %}" class="text-melvins-red font-bold hover:underline">View All Locations</a>
+        <a href="{% url 'club:shop_finder' %}" class="text-melvins-maroon font-bold hover:underline">View All Locations</a>
     </div>
     {% endif %}
 

@@ -11,9 +11,9 @@
 
     <!-- Breadcrumb -->
     <nav class="mb-6 text-sm flex items-center gap-2 text-melvins-dark/50">
-        <a href="{% url 'club:challenges_list' %}" class="hover:text-melvins-red transition">Challenges</a>
+        <a href="{% url 'club:challenges_list' %}" class="hover:text-melvins-maroon transition">Challenges</a>
         <span>/</span>
-        <a href="{% url 'club:challenge_detail' challenge.id %}" class="hover:text-melvins-red transition">{{
+        <a href="{% url 'club:challenge_detail' challenge.id %}" class="hover:text-melvins-maroon transition">{{
             challenge.title|truncatechars:20 }}</a>
         <span>/</span>
         <span class="font-bold text-melvins-dark">Winners</span>
