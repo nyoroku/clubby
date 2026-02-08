@@ -102,7 +102,7 @@ def partner_dashboard(request):
         partnership = request.user.partnership
     except Partnership.DoesNotExist:
         messages.error(request, 'Partner account not found')
-        return redirect('club:partner_register_otp')
+        return redirect('club:partner_login')
 
     if not partnership.profile_completed:
         return redirect('club:partner_complete_profile')
