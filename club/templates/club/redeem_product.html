@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ product.name }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+
+<body>
+    <nav class="navbar is-primary">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'club:product_catalog' %}">
+                <strong>← Back to Catalog</strong>
+            </a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="notification is-{{ message.tags }}">
+                <button class="delete"></button>
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <div class="columns">
+                <div class="column is-6">
+                    {% if product.image %}
+                    <figure class="image">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    </figure>
+                    {% else %}
+                    <div class="box has-background-light"
+                        style="height: 400px; display: flex; align-items: center; justify-content: center;">
+                        <p class="has-text-grey">No image available</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="column is-6">
+                    <h1 class="title">{{ product.name }}</h1>
+                    <p class="subtitle">{{ product.points_required }} points</p>
+
+                    {% if product.featured %}
+                    <span class="tag is-warning is-medium mb-3">⭐ Featured Product</span>
+                    {% endif %}
+
+                    <div class="box has-background-info-light">
+                        <p><strong>Your Balance:</strong> {{ profile.points }} points</p>
+                        <p><strong>Need:</strong> {{ product.points_required }} points</p>
+                        {% if profile.points >= product.points_required %}
+                        <p class="has-text-success"><strong>✓ You have enough points!</strong></p>
+                        {% else %}
+                        <p class="has-text-danger">
+                            <strong>Need {{ product.points_required|add:profile.points|add:"-"|add:profile.points }}
+                                more points</strong>
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="content">
+                        <h3>Description</h3>
+                        <p>{{ product.description }}</p>
+
+                        <p><strong>Category:</strong> {{ product.category|default:"General" }}</p>
+                        <p><strong>Seller:</strong> {{ product.listing_partner.company_name }}</p>
+                        <p><strong>Stock:</strong> {{ product.stock_quantity }} available</p>
+                    </div>
+
+                    {% if profile.points >= product.points_required and product.stock_quantity > 0 %}
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if available_shops %}
+                        <div class="field">
+                            <label class="label">Select Pickup Location</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="shop_id" required>
+                                        <option value="">Choose a shop...</option>
+                                        {% for shop in available_shops %}
+                                        <option value="{{ shop.id }}">
+                                            {{ shop.name }} - {{ shop.location_details }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help">You'll get a code to collect at the shop</p>
+                        </div>
+                        {% endif %}
+
+                        <div class="box has-background-warning-light">
+                            <p><strong>Financial Breakdown:</strong></p>
+                            <p>Points: {{ product.points_required }}</p>
+                            <p>Value: KES {{ earnings.total|floatformat:2 }}</p>
+                            <p class="is-size-7 has-text-grey">
+                                (Melvins fee: KES {{ earnings.Melvins Club_commission|floatformat:2 }},
+                                Seller gets: KES {{ earnings.partner_earning|floatformat:2 }})
+                            </p>
+                        </div>
+
+                        <button type="submit" class="button is-primary is-fullwidth is-large">
+                            <strong>Redeem for {{ product.points_required }} Points</strong>
+                        </button>
+                    </form>
+                    {% elif product.stock_quantity == 0 %}
+                    <div class="notification is-danger">
+                        <p><strong>Out of Stock</strong></p>
+                        <p>This product is currently unavailable</p>
+                    </div>
+                    {% else %}
+                    <div class="notification is-warning">
+                        <p><strong>Insufficient Points</strong></p>
+                        <p>You need {{ product.points_required|add:"-"|add:profile.points }} more points to redeem this
+                            product</p>
+                        <a href="{% url 'club:dashboard' %}" class="button is-primary is-light mt-3">
+                            Earn More Points
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+

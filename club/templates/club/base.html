@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" x-data="{ mobileMenuOpen: false }" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>{% block title %}Melvins Club{% endblock %}</title>
+    <meta name="description"
+        content="{% block meta_description %}Melvins Club - Kenya's premier tea loyalty program. Collect Tea Estates, earn points, and win rewards.{% endblock %}">
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'maroon-light': '#a52d3c',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                            'green': '#2d6a4f',
+                            'dark': '#2d2424',
+                            'cream': '#faf8f5',
+                            'beige': '#f0ebe4',
+                        }
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'system-ui', 'sans-serif'],
+                        'display': ['Georgia', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        /* Custom Scrollbar - Dark Theme */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* HTMX transitions */
+        .htmx-swapping {
+            opacity: 0;
+            transition: opacity .2s ease-out;
+        }
+
+        .htmx-indicator {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 200ms ease-in;
+        }
+
+        .htmx-request .htmx-indicator,
+        .htmx-request.htmx-indicator {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Alpine cloak */
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Glass card style */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobile nav */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(90, 21, 21, 0.98), rgba(90, 21, 21, 0.95));
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 0 1rem;
+            z-index: 50;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 0.5rem 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.2s;
+        }
+
+        .mobile-nav-item.active,
+        .mobile-nav-item:hover {
+            color: #ee9822;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-[#3d2830] min-h-screen text-white">
+    <!-- Decorative blur circles -->
+    <div
+        class="fixed top-0 right-0 w-96 h-96 bg-melvins-gold/15 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none">
+    </div>
+    <div
+        class="fixed bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none">
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="global-loader"
+        class="htmx-indicator fixed inset-0 bg-melvins-maroon-dark/95 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 border-4 border-white/30 border-t-melvins-gold rounded-full animate-spin"></div>
+            <span class="text-white text-sm font-medium">Brewing...</span>
+        </div>
+    </div>
+
+    <!-- Top Navigation (Glassmorphism) -->
+    <nav class="fixed top-0 left-0 right-0 z-40 bg-melvins-maroon-dark/90 backdrop-blur-xl border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- SVG Logo -->
+                <a href="{% url 'club:landing_page' %}" class="flex items-center">
+                    <svg viewBox="0 0 180 50" class="h-10 w-auto">
+                        <!-- Tea Leaf Icon -->
+                        <g fill="#ee9822">
+                            <path d="M12 25c0-7 5-12 12-14 1.5-0.5 3 0.5 3 2v24c0 1.5-1.5 2.5-3 2-7-2-12-7-12-14z" />
+                            <path d="M30 13c0-1.5 1.5-2.5 3-2 7 2 12 7 12 14s-5 12-12 14c-1.5 0.5-3-0.5-3-2V13z"
+                                opacity="0.7" />
+                        </g>
+                        <!-- Melvins Text -->
+                        <text x="52" y="32" font-family="Georgia, serif" font-size="22" font-weight="bold"
+                            fill="white">Melvins</text>
+                        <!-- Club Text -->
+                        <text x="52" y="44" font-family="Arial, sans-serif" font-size="10" font-weight="600"
+                            fill="#ee9822" letter-spacing="3">CLUB</text>
+                    </svg>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center gap-6">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'club:dashboard' %}"
+                        class="text-white/80 hover:text-white transition font-medium text-sm">Dashboard</a>
+                    <a href="{% url 'club:my_collection' %}"
+                        class="text-white/80 hover:text-white transition font-medium text-sm">Collection</a>
+                    <a href="{% url 'club:rewards' %}"
+                        class="text-white/80 hover:text-white transition font-medium text-sm">Rewards</a>
+
+                    <!-- Points Badge -->
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full glass-card">
+                        <span class="text-melvins-gold font-bold">🍃</span>
+                        <span class="text-white font-bold">{{ user.profile.points }}</span>
+                        <span class="text-white/50 text-xs">pts</span>
+                    </div>
+
+                    <a href="{% url 'club:logout' %}" class="text-white/50 hover:text-white transition text-sm">Sign
+                        Out</a>
+                    {% else %}
+                    <a href="{% url 'club:request_otp' %}"
+                        class="px-5 py-2 bg-melvins-gold hover:bg-melvins-gold-light text-white font-bold rounded-full transition shadow-md text-sm">
+                        Join the Club
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen"
+                    class="md:hidden p-2 rounded-lg glass-card hover:bg-white/20 transition">
+                    <svg x-show="!mobileMenuOpen" class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <svg x-show="mobileMenuOpen" x-cloak class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div x-show="mobileMenuOpen" x-cloak x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-4"
+            class="md:hidden border-t border-white/10 bg-melvins-red/95 backdrop-blur-xl">
+            <div class="px-4 py-4 space-y-2">
+                {% if user.is_authenticated %}
+                <a href="{% url 'club:dashboard' %}"
+                    class="block py-3 px-4 rounded-xl glass-card hover:bg-white/20 text-white transition">Dashboard</a>
+                <a href="{% url 'club:my_collection' %}"
+                    class="block py-3 px-4 rounded-xl glass-card hover:bg-white/20 text-white transition">My
+                    Collection</a>
+                <a href="{% url 'club:rewards' %}"
+                    class="block py-3 px-4 rounded-xl glass-card hover:bg-white/20 text-white transition">Rewards</a>
+                <a href="{% url 'club:logout' %}"
+                    class="block py-3 px-4 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition">Sign
+                    Out</a>
+                {% else %}
+                <a href="{% url 'club:request_otp' %}"
+                    class="block py-3 px-4 rounded-xl bg-melvins-gold text-white text-center font-bold shadow-md">Join
+                    the Club</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% if messages %}
+    <div class="fixed top-20 right-4 z-50 space-y-2 max-w-sm" x-data="{ show: true }" x-show="show"
+        x-init="setTimeout(() => show = false, 5000)">
+        {% for message in messages %}
+        <div class="glass-card p-4 rounded-xl shadow-lg border-l-4 
+            {% if message.tags == 'error' %}border-red-400{% elif message.tags == 'success' %}border-emerald-400{% else %}border-melvins-gold{% endif %}"
+            x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-x-0"
+            x-transition:leave-end="opacity-0 translate-x-full">
+            <p class="text-white text-sm">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="pt-16 pb-24 md:pb-8 min-h-screen relative z-10">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    {% if user.is_authenticated %}
+    <nav class="mobile-nav md:hidden">
+        <div class="flex justify-around items-center">
+            <a href="{% url 'club:dashboard' %}"
+                class="mobile-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="text-xs">Home</span>
+            </a>
+            <a href="{% url 'club:scan_pack' %}"
+                class="mobile-nav-item {% if request.resolver_match.url_name == 'scan_pack' %}active{% endif %}">
+                <div
+                    class="relative -mt-6 p-3 rounded-full bg-gradient-to-br from-melvins-gold to-[#d4a020] shadow-lg shadow-melvins-gold/40">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4v1m6 11h1M5 16h1M4.22 10.22l.71.71M19.78 10.22l-.71.71M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                    </svg>
+                </div>
+                <span class="text-xs mt-1">Scan</span>
+            </a>
+            <a href="{% url 'club:my_collection' %}"
+                class="mobile-nav-item {% if request.resolver_match.url_name == 'my_collection' %}active{% endif %}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span class="text-xs">Cards</span>
+            </a>
+            <a href="{% url 'club:rewards' %}"
+                class="mobile-nav-item {% if request.resolver_match.url_name == 'rewards' %}active{% endif %}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                </svg>
+                <span class="text-xs">Rewards</span>
+            </a>
+        </div>
+    </nav>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

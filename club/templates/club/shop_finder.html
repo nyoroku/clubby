@@ -1,0 +1,128 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Find Shops - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24">
+
+    <!-- Hero Section -->
+    <div
+        class="bg-gradient-to-br from-melvins-red to-red-900 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl text-white mb-8">
+        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        </div>
+        <div
+            class="absolute bottom-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2">
+        </div>
+
+        <div class="relative z-10">
+            <h1 class="text-4xl sm:text-5xl font-display font-bold text-white mb-2 text-shadow-sm">Partner Shops</h1>
+            <p class="text-white/80 text-lg">Find where to redeem your points for tea</p>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="mb-10 bg-white p-6 rounded-2xl border border-melvins-beige shadow-sm">
+        <form method="get" class="flex flex-col sm:flex-row gap-4">
+            <div class="flex-grow">
+                <label class="block text-xs font-bold text-melvins-dark/50 uppercase tracking-wider mb-2">Filter by
+                    County</label>
+                <div class="relative">
+                    <select name="county" onchange="this.form.submit()"
+                        class="w-full px-5 py-3 bg-gray-50 border border-melvins-beige rounded-xl text-melvins-dark appearance-none focus:outline-none focus:border-melvins-gold focus:ring-1 focus:ring-melvins-gold cursor-pointer transition">
+                        <option value="">All Counties</option>
+                        {% for value, label in county_choices %}
+                        <option value="{{ value }}" {% if selected_county==value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                        <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                            <path
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-end">
+                <button type="submit"
+                    class="w-full sm:w-auto px-8 py-3 bg-melvins-dark text-white font-bold rounded-xl hover:bg-melvins-red transition shadow-lg">
+                    🔍 Find
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Shop List -->
+    {% if shops %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for shop in shops %}
+        <div
+            class="bg-white rounded-2xl overflow-hidden border border-melvins-beige shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group flex flex-col h-full">
+            <div class="h-2 bg-gradient-to-r from-melvins-red to-melvins-gold"></div>
+
+            <div class="p-6 flex flex-col flex-grow">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <h3
+                            class="font-display font-bold text-xl text-melvins-dark group-hover:text-melvins-red transition-colors">
+                            {{ shop.name }}</h3>
+                        <span
+                            class="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold uppercase rounded-md">{{
+                            shop.get_county_display }}</span>
+                    </div>
+                    <div
+                        class="w-10 h-10 bg-melvins-cream rounded-full flex items-center justify-center text-lg shadow-inner">
+                        🏪
+                    </div>
+                </div>
+
+                <div class="space-y-3 mb-6 text-sm flex-grow">
+                    {% if shop.location_details %}
+                    <div class="flex items-start gap-3">
+                        <span class="text-melvins-red mt-0.5">📍</span>
+                        <span class="text-melvins-dark/70 line-clamp-2">{{ shop.location_details }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if shop.phone %}
+                    <div class="flex items-center gap-3">
+                        <span class="text-melvins-red">📞</span>
+                        <span class="text-melvins-dark/70 font-mono text-xs">{{ shop.phone }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if shop.email %}
+                    <div class="flex items-center gap-3">
+                        <span class="text-melvins-red">📧</span>
+                        <span class="text-melvins-dark/70 font-mono text-xs truncate">{{ shop.email }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <a href="{% url 'club:shop_detail' shop.id %}"
+                    class="block w-full py-3 bg-white border-2 border-melvins-dark text-melvins-dark font-bold rounded-xl text-center hover:bg-melvins-dark hover:text-white transition mt-auto">
+                    View Rewards
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 bg-white rounded-3xl border border-melvins-beige shadow-sm">
+        <div class="text-6xl mb-4 opacity-30">🗺️</div>
+        <h3 class="text-xl font-bold text-melvins-dark mb-2">No Shops Found</h3>
+        <p class="text-melvins-dark/60 mb-6">
+            {% if selected_county %}
+            We don't have partners in {{ selected_county }} yet.
+            {% else %}
+            No shops available at the moment.
+            {% endif %}
+        </p>
+        <a href="{% url 'club:shop_finder' %}" class="text-melvins-red font-bold hover:underline">View All Locations</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

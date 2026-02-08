@@ -1,0 +1,185 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}{{ card.get_display_title }} - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="min-h-screen px-4 py-8" x-data="{ showMap: false }">
+    <div class="max-w-lg mx-auto">
+
+        <!-- Back Button -->
+        <a href="{% url 'club:my_collection' %}"
+            class="inline-flex items-center gap-2 text-melvins-cream/60 hover:text-white transition mb-6">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Collection
+        </a>
+
+        <!-- Card Display -->
+        <div class="aspect-[3/4] rounded-3xl overflow-hidden mb-6
+                    {% if card.rarity == 'rare' %}rarity-rare shimmer-effect
+                    {% elif card.rarity == 'uncommon' %}rarity-uncommon
+                    {% else %}rarity-common{% endif %}
+                    p-6 flex flex-col justify-between relative
+                    {% if not has_card %}opacity-40{% endif %}">
+
+            <!-- Card Header -->
+            <div class="flex items-center justify-between">
+                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
+                             {% if card.rarity == 'rare' %}bg-amber-500/30 text-amber-200
+                             {% elif card.rarity == 'uncommon' %}bg-emerald-500/30 text-emerald-200
+                             {% else %}bg-gray-500/30 text-gray-600{% endif %}">
+                    {{ card.get_rarity_display }}
+                </span>
+                <span class="font-mono text-sm
+                             {% if card.rarity == 'rare' %}text-amber-300
+                             {% elif card.rarity == 'uncommon' %}text-emerald-300
+                             {% else %}text-gray-500{% endif %}">
+                    #{{ card.card_number }}/{{ card.collection.total_cards }}
+                </span>
+            </div>
+
+            <!-- Card Center -->
+            <div class="flex-grow flex items-center justify-center">
+                {% if has_card %}
+                <div class="text-9xl animate-float">🍃</div>
+                {% else %}
+                <div class="text-9xl text-white/20">?</div>
+                {% endif %}
+            </div>
+
+            <!-- Card Footer -->
+            <div>
+                <h2 class="text-2xl font-bold mb-1
+                           {% if card.rarity == 'rare' %}text-amber-100
+                           {% elif card.rarity == 'uncommon' %}text-white
+                           {% else %}text-melvins-brown{% endif %}">
+                    {{ estate.name }}
+                </h2>
+                <p class="text-sm
+                          {% if card.rarity == 'rare' %}text-amber-200/80
+                          {% elif card.rarity == 'uncommon' %}text-white/70
+                          {% else %}text-melvins-brown/70{% endif %}">
+                    {{ estate.region }} • {{ estate.elevation }}
+                </p>
+            </div>
+        </div>
+
+        {% if not has_card %}
+        <!-- Locked Message -->
+        <div class="glass-card p-6 text-center mb-6">
+            <span class="text-4xl mb-3 block">🔒</span>
+            <h3 class="font-bold text-white mb-2">Card Not Collected</h3>
+            <p class="text-melvins-cream/60 text-sm mb-4">Scan more packs to reveal this card!</p>
+            <a href="{% url 'club:scan_pack' %}" class="btn-melvins btn-melvins-primary inline-block">
+                Scan a Pack
+            </a>
+        </div>
+        {% else %}
+
+        <!-- Card Stats -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="glass-card p-4 text-center">
+                <span class="text-2xl mb-1 block">📅</span>
+                <span class="text-xs text-melvins-cream/50">Obtained</span>
+                <p class="text-sm font-semibold text-white">{{ user_card.obtained_at|date:"M d" }}</p>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <span class="text-2xl mb-1 block">🔄</span>
+                <span class="text-xs text-melvins-cream/50">Duplicates</span>
+                <p class="text-sm font-semibold text-white">{{ duplicate_count }}</p>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <span class="text-2xl mb-1 block">⭐</span>
+                <span class="text-xs text-melvins-cream/50">Rarity</span>
+                <p class="text-sm font-semibold text-white">{{ card.get_rarity_display }}</p>
+            </div>
+        </div>
+
+        <!-- Estate Details -->
+        <div class="glass-card p-6 mb-6">
+            <h3 class="font-bold text-white text-lg mb-3">About This Estate</h3>
+            <p class="text-melvins-cream/70 text-sm mb-4">{{ estate.description }}</p>
+
+            {% if estate.tasting_notes %}
+            <div class="bg-melvins-copper/10 rounded-xl p-4 mb-4 border border-melvins-copper/20">
+                <h4 class="text-melvins-copper font-semibold text-sm mb-1">🍵 Tasting Notes</h4>
+                <p class="text-melvins-cream/80 text-sm">{{ estate.tasting_notes }}</p>
+            </div>
+            {% endif %}
+
+            {% if estate.brewing_tips %}
+            <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                <h4 class="text-white font-semibold text-sm mb-1">☕ Brewing Tips</h4>
+                <p class="text-melvins-cream/70 text-sm">{{ estate.brewing_tips }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Flavor Text -->
+        {% if card.flavor_text %}
+        <div class="glass-card p-6 mb-6">
+            <p class="text-melvins-cream/60 text-sm italic text-center">
+                "{{ card.flavor_text }}"
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Location Info -->
+        {% if estate.latitude and estate.longitude %}
+        <button @click="showMap = !showMap"
+            class="w-full glass-card p-4 flex items-center justify-between hover:bg-white/10 transition mb-6">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">📍</span>
+                <div>
+                    <h4 class="font-semibold text-white text-sm">View Location</h4>
+                    <p class="text-melvins-cream/50 text-xs">{{ estate.region }}, Kenya</p>
+                </div>
+            </div>
+            <svg class="w-5 h-5 text-melvins-cream/50 transition-transform" :class="showMap && 'rotate-180'" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+
+        <div x-show="showMap" x-collapse class="mb-6">
+            <div class="rounded-xl overflow-hidden border border-white/10">
+                <iframe width="100%" height="200" frameborder="0" style="border:0"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q={{ estate.latitude }},{{ estate.longitude }}&zoom=10"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Harvest Season -->
+        {% if estate.harvest_season %}
+        <div class="glass-card p-4 flex items-center gap-4 mb-6">
+            <span class="text-3xl">🌿</span>
+            <div>
+                <h4 class="text-melvins-cream/50 text-xs uppercase tracking-wide">Harvest Season</h4>
+                <p class="text-white font-medium">{{ estate.harvest_season }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% endif %}
+
+        <!-- Collection Progress -->
+        <div class="glass-card p-4">
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-melvins-cream/60">{{ card.collection.name }}</span>
+                <a href="{% url 'club:my_collection' %}" class="text-melvins-copper hover:underline">
+                    View All Cards →
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,95 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Refer & Earn - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-8" x-data="{ copied: false }">
+
+  <!-- Hero -->
+  <section class="text-center mb-8">
+    <div class="inline-block animate-pulse">
+      <span class="text-6xl">🎁</span>
+    </div>
+    <h1 class="text-2xl font-display font-bold text-white mt-4">Share the Love</h1>
+    <p class="text-white/50 mt-2 text-sm">Earn 50 points for every friend who joins!</p>
+  </section>
+
+  <!-- Referral Stats -->
+  <section class="glass-card rounded-2xl p-6 mb-8">
+    <div class="grid grid-cols-2 gap-6 text-center">
+      <div>
+        <p class="text-3xl font-bold text-melvins-gold">{{ referral_count|default:0 }}</p>
+        <p class="text-xs text-white/50">Friends Joined</p>
+      </div>
+      <div>
+        <p class="text-3xl font-bold text-emerald-400">+{{ referral_points|default:0 }}</p>
+        <p class="text-xs text-white/50">Points Earned</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Referral Code -->
+  <section class="mb-8">
+    <label class="block text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3">Your Referral Code</label>
+    <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
+      <span class="text-xl font-bold text-melvins-gold tracking-wider">{{ profile.referral_code|default:"MELVINS123"}}</span>
+      <button @click="navigator.clipboard.writeText('{{ profile.referral_code|default:" MELVINS123" }}'); copied=true;
+        setTimeout(()=> copied = false, 2000)"
+        class="px-4 py-2 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] rounded-xl font-bold text-sm
+        transition flex items-center gap-2">
+        <span x-show="!copied">📋 Copy</span>
+        <span x-show="copied" x-cloak class="text-emerald-800">✓ Copied!</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Share Link -->
+  <section class="mb-8">
+    <label class="block text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3">Share Link</label>
+    <div class="glass-card rounded-2xl p-4">
+      <p class="text-xs text-white/50 break-all mb-4">
+        {{ request.scheme }}://{{ request.get_host }}{% url 'club:user_login' %}?ref={{profile.referral_code|default:"MELVINS123" }}
+      </p>
+      <div class="flex gap-3">
+        <a href="https://wa.me/?text=Join%20Melvins%20Club%20and%20earn%20rewards!%20Use%20my%20code%20{{ profile.referral_code|default:'MELVINS123' }}%20{{ request.scheme }}://{{ request.get_host }}{% url 'club:user_login' %}?ref={{ profile.referral_code|default:'MELVINS123' }}"
+          target="_blank"
+          class="flex-1 py-3 bg-[#25D366] hover:bg-[#1fba59] rounded-xl font-bold text-center text-sm transition">
+          WhatsApp
+        </a>
+        <button
+          @click="navigator.share ? navigator.share({title: 'Join Melvins Club', text: 'Use my code {{ profile.referral_code }}', url: '{{ request.scheme }}://{{ request.get_host }}{% url 'club:user_login' %}?ref={{ profile.referral_code }}'}) : null"
+          class="flex-1 py-3 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] rounded-xl font-bold text-center text-sm transition">
+          Share
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section>
+    <h2 class="text-sm font-bold text-white/70 mb-4">How It Works</h2>
+    <div class="space-y-3">
+      <div class="glass-card rounded-xl p-4 flex items-center gap-4">
+        <div
+          class="w-10 h-10 bg-melvins-gold/20 rounded-full flex items-center justify-center text-melvins-gold font-bold">
+          1</div>
+        <p class="text-white/70 text-sm">Share your unique code or link with friends</p>
+      </div>
+      <div class="glass-card rounded-xl p-4 flex items-center gap-4">
+        <div
+          class="w-10 h-10 bg-melvins-gold/20 rounded-full flex items-center justify-center text-melvins-gold font-bold">
+          2</div>
+        <p class="text-white/70 text-sm">They join Melvins Club using your code</p>
+      </div>
+      <div class="glass-card rounded-xl p-4 flex items-center gap-4">
+        <div
+          class="w-10 h-10 bg-melvins-gold/20 rounded-full flex items-center justify-center text-melvins-gold font-bold">
+          3</div>
+        <p class="text-white/70 text-sm">You both earn 50 bonus points!</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

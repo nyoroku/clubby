@@ -1,0 +1,31 @@
+{% if error %}
+<div class="notification is-danger is-light" style="border-radius: 14px; border-left: 4px solid #f14668;">
+  <button class="delete" onclick="this.parentElement.remove()"></button>
+  <strong><i class="fas fa-exclamation-circle"></i> Error</strong><br>
+  {{ error }}
+</div>
+{% endif %}
+
+{% if success %}
+<div class="notification is-success is-light" style="border-radius: 14px; border-left: 4px solid #48c78e;">
+  <button class="delete" onclick="this.parentElement.remove()"></button>
+  <strong><i class="fas fa-check-circle"></i> Success!</strong><br>
+  {{ success }} - New balance: <strong>{{ profile.points }} points</strong>
+</div>
+<script>
+  // Update points display with animation
+  const pointsEl = document.getElementById('points-count');
+  if (pointsEl) {
+    pointsEl.style.transform = 'scale(1.2)';
+    pointsEl.style.color = '#48c78e';
+    pointsEl.textContent = '{{ profile.points }}';
+    setTimeout(() => {
+      pointsEl.style.transform = 'scale(1)';
+      pointsEl.style.color = 'var(--dark-green)';
+    }, 500);
+  }
+</script>
+{% endif %}
+
+
+

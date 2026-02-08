@@ -1,0 +1,213 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}{{ team.name }} - Team Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-8" x-data="{ copied: false, showInvite: false }">
+
+    <!-- Team Header -->
+    <section class="mb-6">
+        <div class="glass-card rounded-3xl p-6 relative overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2">
+            </div>
+
+            <div class="relative z-10">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h1 class="text-2xl font-display font-bold text-white mb-1">{{ team.name }}</h1>
+                        <p class="text-white/50 text-sm">{{ team.collection.name }}</p>
+                    </div>
+                    {% if team.completed_at %}
+                    <span class="px-3 py-1 bg-melvins-gold rounded-full text-white text-xs font-bold">✓ Complete!</span>
+                    {% endif %}
+                </div>
+
+                <!-- Progress -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-white/60 text-sm">Team Progress</span>
+                        <span class="font-bold text-white">{{ collected_count }}/{{ total_count }} cards</span>
+                    </div>
+                    <div class="w-full bg-white/10 rounded-full h-3">
+                        <div class="bg-emerald-500 h-3 rounded-full transition-all shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                            style="width: {{ progress_percent }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Invite Button -->
+                <button @click="showInvite = !showInvite"
+                    class="w-full py-3 bg-melvins-gold text-[#1a0a0c] font-bold rounded-xl text-center text-sm hover:bg-melvins-gold-light transition flex items-center justify-center gap-2">
+                    <span>👥</span> Invite Friends to Team
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Invite Modal -->
+    <div x-show="showInvite" x-cloak x-transition
+        class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+        @click.self="showInvite = false">
+        <div class="w-full max-w-sm glass-card rounded-3xl p-6 relative">
+            <button @click="showInvite = false" class="absolute top-4 right-4 text-white/50 hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h3 class="text-xl font-bold text-white mb-4 text-center">Invite to {{ team.name }}</h3>
+
+            <!-- Team Code -->
+            <div class="mb-4">
+                <p class="text-[10px] text-white/50 uppercase tracking-wide mb-2">Team Invite Code</p>
+                <div class="flex items-center gap-2">
+                    <p
+                        class="flex-1 py-3 px-4 bg-white/10 rounded-xl font-mono text-xl tracking-widest font-bold text-melvins-gold text-center">
+                        {{ team.invite_code }}</p>
+                    <button
+                        @click="navigator.clipboard.writeText('{{ team.invite_code }}'); copied=true; setTimeout(()=> copied = false, 2000)"
+                        class="p-3 rounded-xl transition"
+                        :class="copied ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-white hover:bg-white/20'">
+                        <span x-show="!copied">📋</span>
+                        <span x-show="copied" x-cloak>✓</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Share Link -->
+            <div class="mb-4">
+                <p class="text-[10px] text-white/50 uppercase tracking-wide mb-2">Share Link</p>
+                <p class="py-2 px-3 bg-white/5 rounded-lg text-white/60 text-xs break-all">
+                    {{ request.scheme }}://{{ request.get_host }}{% url 'club:join_team' %}?code={{ team.invite_code }}
+                </p>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="flex gap-3">
+                <a href="https://wa.me/?text=Join%20my%20team%20'{{ team.name|urlencode }}'%20on%20Melvins%20Club!%20Use%20code%20{{ team.invite_code }}%20or%20click:%20{{ request.scheme }}://{{ request.get_host }}{% url 'club:join_team' %}?code={{ team.invite_code }}"
+                    target="_blank"
+                    class="flex-1 py-3 bg-[#25D366] hover:bg-[#1fba59] rounded-xl font-bold text-center text-sm transition flex items-center justify-center gap-2">
+                    <span>📱</span> WhatsApp
+                </a>
+                <button
+                    @click="navigator.share({title: 'Join {{ team.name }}', text: 'Use code {{ team.invite_code }}', url: '{{ request.scheme }}://{{ request.get_host }}{% url 'club:join_team' %}?code={{ team.invite_code }}'})"
+                    class="flex-1 py-3 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] rounded-xl font-bold text-center text-sm transition flex items-center justify-center gap-2">
+                    <span>📤</span> Share
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Members -->
+    <section class="mb-6">
+        <h2 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+            👥 Team Members
+            <span class="text-sm font-normal text-white/50">({{ team.member_count }}/{{ team.max_members }})</span>
+        </h2>
+
+        <div class="space-y-2">
+            {% for member in members %}
+            <div class="glass-card rounded-xl p-4 flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-lg">
+                    {% if member.is_captain %}👑{% else %}🧑{% endif %}
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium text-white text-sm">
+                        {{ member.profile.first_name|default:member.profile.phone }}
+                        {% if member.is_captain %}
+                        <span class="text-[10px] text-melvins-gold font-bold ml-1">Captain</span>
+                        {% endif %}
+                    </p>
+                    <p class="text-[10px] text-white/40">Joined {{ member.joined_at|date:"M d" }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-emerald-400">{{ member.cards_contributed }}</p>
+                    <p class="text-[10px] text-white/40">cards</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Card Grid - Show Actual Cards -->
+    <section class="mb-6">
+        <h2 class="text-base font-bold text-white mb-4">🃏 Team Collection</h2>
+
+        <div class="grid grid-cols-4 gap-2">
+            {% for item in cards_with_status %}
+            <div
+                class="aspect-[3/4] rounded-lg overflow-hidden relative {% if item.collected %}ring-2 ring-emerald-400{% endif %}">
+                {% if item.collected %}
+                <!-- Collected Card - Show Image -->
+                <div class="w-full h-full bg-cover bg-center"
+                    style="background-image: url('{% if item.card.card_image %}{{ item.card.card_image.url }}{% else %}https://images.unsplash.com/photo-1597305877447-0849319e6d8a?auto=format&fit=crop&w=200&q=60{% endif %}');">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div class="absolute top-1 right-1">
+                        <span class="text-[8px] bg-emerald-500 text-white px-1 rounded">✓</span>
+                    </div>
+                    <div class="absolute bottom-1 left-1 right-1">
+                        <p class="text-white text-[7px] font-bold truncate">{{ item.card.get_display_title }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Locked Card -->
+                <div class="w-full h-full bg-white/5 flex flex-col items-center justify-center">
+                    <span class="text-white/20 text-sm">🔒</span>
+                    <span class="text-white/20 text-[8px] mt-1">#{{ item.card.card_number }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Recent Contributions -->
+    {% if recent_contributions %}
+    <section class="mb-6">
+        <h2 class="text-base font-bold text-white mb-4">📜 Recent Contributions</h2>
+
+        <div class="space-y-2">
+            {% for contrib in recent_contributions %}
+            <div class="glass-card rounded-xl p-3 flex items-center gap-3">
+                <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-sm">
+                    🃏
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium text-white text-sm">{{ contrib.card.get_display_title }}</p>
+                    <p class="text-[10px] text-white/40">by {{
+                        contrib.contributed_by.first_name|default:contrib.contributed_by.phone }}</p>
+                </div>
+                <p class="text-[10px] text-white/30">{{ contrib.contributed_at|timesince }} ago</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- How to Contribute -->
+    <section class="mb-6">
+        <div class="glass-card rounded-2xl p-5 border border-melvins-gold/20">
+            <h3 class="font-bold text-white text-sm mb-3 flex items-center gap-2">💡 How to Contribute</h3>
+            <ol class="text-xs text-white/60 space-y-2">
+                <li>1️⃣ Scan pack codes to collect cards</li>
+                <li>2️⃣ Cards you own can be contributed to the team</li>
+                <li>3️⃣ When the team collects all {{ total_count }} cards, everyone wins!</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <div class="flex gap-3">
+        <a href="{% url 'club:team_collection_home' %}"
+            class="flex-1 py-3 glass-card text-white font-medium rounded-xl text-center text-sm hover:bg-white/20 transition">
+            ← All Teams
+        </a>
+        <a href="{% url 'club:my_collection' %}"
+            class="flex-1 py-3 bg-melvins-gold text-[#1a0a0c] font-medium rounded-xl text-center text-sm hover:bg-melvins-gold-light transition">
+            📦 Scan to Contribute
+        </a>
+    </div>
+
+</div>
+{% endblock %}

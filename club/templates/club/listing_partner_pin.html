@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if is_new_partner %}Set Your PIN{% else %}Enter PIN{% endif %} - Vendor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+        }
+        .pin-box {
+            margin-top: 3rem;
+        }
+        .pin-display {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .pin-digit {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #dbdbdb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: white;
+            transition: all 0.3s;
+        }
+        .pin-digit.filled {
+            border-color: #00f2fe;
+            background: #00f2fe;
+            color: white;
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        .keypad-btn {
+            width: 100%;
+            height: 60px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .keypad-btn:hover {
+            background: #00f2fe;
+            color: white;
+            transform: scale(1.05);
+        }
+        .keypad-btn:active {
+            transform: scale(0.95);
+        }
+        .keypad-btn.delete {
+            background: #f14668;
+            color: white;
+        }
+        .keypad-btn.delete:hover {
+            background: #cc1f44;
+        }
+    </style>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-10-mobile is-8-tablet is-5-desktop">
+                    <div class="box pin-box">
+                        <h1 class="title is-4 has-text-centered">
+                            🏪 Vendor Access
+                        </h1>
+                        <h2 class="subtitle is-5 has-text-centered">
+                            {% if is_new_partner %}
+                                Set Your 6-Digit PIN
+                            {% elif not has_pin %}
+                                Set Your 6-Digit PIN
+                            {% else %}
+                                Enter Your PIN
+                            {% endif %}
+                        </h2>
+
+                        <p class="has-text-centered mb-4 has-text-grey">
+                            Phone: <strong>{{ phone }}</strong>
+                        </p>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                            <div class="notification is-{{ message.tags }}">
+                                <button class="delete"></button>
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if is_new_partner or not has_pin %}
+                        <div class="notification is-warning is-light">
+                            <p class="is-size-7">
+                                <strong>Creating Vendor Account</strong><br>
+                                Choose a secure 6-digit PIN. You'll use this to access your vendor dashboard
+                                and manage product listings.
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        <form method="post" id="pinForm">
+                            {% csrf_token %}
+
+                            <input type="hidden" name="pin" id="pinInput">
+
+                            <div class="pin-display">
+                                <div class="pin-digit" id="digit1"></div>
+                                <div class="pin-digit" id="digit2"></div>
+                                <div class="pin-digit" id="digit3"></div>
+                                <div class="pin-digit" id="digit4"></div>
+                                <div class="pin-digit" id="digit5"></div>
+                                <div class="pin-digit" id="digit6"></div>
+                            </div>
+
+                            <div class="keypad">
+                                <button type="button" class="keypad-btn" data-num="1">1</button>
+                                <button type="button" class="keypad-btn" data-num="2">2</button>
+                                <button type="button" class="keypad-btn" data-num="3">3</button>
+                                <button type="button" class="keypad-btn" data-num="4">4</button>
+                                <button type="button" class="keypad-btn" data-num="5">5</button>
+                                <button type="button" class="keypad-btn" data-num="6">6</button>
+                                <button type="button" class="keypad-btn" data-num="7">7</button>
+                                <button type="button" class="keypad-btn" data-num="8">8</button>
+                                <button type="button" class="keypad-btn" data-num="9">9</button>
+                                <button type="button" class="keypad-btn" id="clearBtn">Clear</button>
+                                <button type="button" class="keypad-btn" data-num="0">0</button>
+                                <button type="button" class="keypad-btn delete" id="deleteBtn">⌫</button>
+                            </div>
+                        </form>
+
+                        <div class="has-text-centered mt-4">
+                            <a href="{% url 'club:listing_partner_login' %}" class="is-size-7 has-text-grey">
+                                ← Back to phone entry
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let pin = '';
+        const pinInput = document.getElementById('pinInput');
+        const pinForm = document.getElementById('pinForm');
+
+        function updateDisplay() {
+            for (let i = 1; i <= 6; i++) {
+                const digit = document.getElementById(`digit${i}`);
+                if (i <= pin.length) {
+                    digit.textContent = '●';
+                    digit.classList.add('filled');
+                } else {
+                    digit.textContent = '';
+                    digit.classList.remove('filled');
+                }
+            }
+
+            if (pin.length === 6) {
+                pinInput.value = pin;
+                setTimeout(() => {
+                    pinForm.submit();
+                }, 300);
+            }
+        }
+
+        document.querySelectorAll('.keypad-btn[data-num]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (pin.length < 6) {
+                    pin += btn.dataset.num;
+                    updateDisplay();
+                }
+            });
+        });
+
+        document.getElementById('deleteBtn').addEventListener('click', () => {
+            pin = pin.slice(0, -1);
+            updateDisplay();
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            pin = '';
+            updateDisplay();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9' && pin.length < 6) {
+                pin += e.key;
+                updateDisplay();
+            } else if (e.key === 'Backspace') {
+                pin = pin.slice(0, -1);
+                updateDisplay();
+            } else if (e.key === 'Escape') {
+                pin = '';
+                updateDisplay();
+            }
+        });
+
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+    </script>
+</body>
+</html>
+
+
+
+

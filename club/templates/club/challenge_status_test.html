@@ -1,0 +1,334 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Challenge Status Test - {{ challenge.title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        .status-box {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: monospace;
+        }
+        .status-ok { background: #d1fae5; border: 2px solid #10b981; }
+        .status-pending { background: #fef3c7; border: 2px solid #f59e0b; }
+        .status-error { background: #fee2e2; border: 2px solid #ef4444; }
+        .refresh-btn { margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar is-dark">
+        <div class="navbar-brand">
+            <span class="navbar-item">
+                <strong>🔍 Challenge Status Diagnostic Tool</strong>
+            </span>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column">
+                    <div class="box">
+                        <h1 class="title is-3">{{ challenge.title }}</h1>
+                        <p class="subtitle">Challenge ID: {{ challenge.id }}</p>
+
+                        <button class="button is-primary refresh-btn" onclick="refreshStatus()">
+                            🔄 Refresh Status
+                        </button>
+                        <button class="button is-info refresh-btn" onclick="location.href='{% url 'club:challenge_detail' challenge.id %}'">
+                            📋 View Challenge
+                        </button>
+                        {% if user.is_staff %}
+                        <button class="button is-success refresh-btn" onclick="location.href='{% url 'club:challenge_live_draw' challenge.id %}'">
+                            🎬 Go to Live Draw
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns">
+                <div class="column is-half">
+                    <div class="box">
+                        <h2 class="title is-4">📊 Database Status</h2>
+                        <div class="status-box" id="db-status">
+                            <strong>Challenge Status:</strong> {{ challenge.status }}<br>
+                            <strong>Draw In Progress:</strong> {{ challenge.draw_in_progress }}<br>
+                            <strong>Number of Winners:</strong> {{ challenge.number_of_winners }}<br>
+                            <strong>Winners Selected At:</strong> {{ challenge.winners_selected_at|default:"Not yet" }}<br>
+                            <strong>Total Entries:</strong> {{ challenge.total_entries|default:"0" }}<br>
+                            <strong>End Date:</strong> {{ challenge.end_date|date:"M d, Y H:i" }}<br>
+                            <strong>Is Public Results:</strong> {{ challenge.is_public_results }}<br>
+                        </div>
+
+                        <h3 class="title is-5 mt-4">🏆 Winners in Database</h3>
+                        <div class="status-box {% if winners_count > 0 %}status-ok{% else %}status-pending{% endif %}">
+                            <strong>Winners Count:</strong> {{ winners_count }}<br>
+                            {% if winners %}
+                            <hr>
+                            {% for winner in winners %}
+                            <div style="margin: 0.5rem 0;">
+                                <strong>{{ winner.position }}.</strong>
+                                {{ winner.profile.phone }} -
+                                {{ winner.profile.first_name }} {{ winner.profile.second_name }}<br>
+                                <small>Weight: {{ winner.entry_weight|floatformat:2 }} |
+                                County: {{ winner.profile.get_county_display|default:"N/A" }}</small>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <em>No winners in database yet</em>
+                            {% endif %}
+                        </div>
+
+                        <h3 class="title is-5 mt-4">👥 Eligible Participants</h3>
+                        <div class="status-box status-ok">
+                            <strong>Eligible Count:</strong> {{ eligible_count }}<br>
+                            <strong>Enough for Draw:</strong>
+                            {% if eligible_count >= challenge.number_of_winners %}
+                                ✅ Yes ({{ eligible_count }} ≥ {{ challenge.number_of_winners }})
+                            {% else %}
+                                ❌ No ({{ eligible_count }} < {{ challenge.number_of_winners }})
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-half">
+                    <div class="box">
+                        <h2 class="title is-4">🔌 API Status</h2>
+
+                        <h3 class="title is-6">Winners Status Endpoint:</h3>
+                        <code style="display: block; background: #f3f4f6; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem;">
+                            GET /club/challenge/{{ challenge.id }}/winners-status/
+                        </code>
+                        <div class="status-box" id="api-status">
+                            <em>Loading...</em>
+                        </div>
+
+                        <h3 class="title is-6 mt-4">Raw API Response:</h3>
+                        <pre id="api-response" style="background: #1f2937; color: #10b981; padding: 1rem; border-radius: 8px; overflow-x: auto;"></pre>
+
+                        <h3 class="title is-6 mt-4">🔗 Quick Links:</h3>
+                        <div class="buttons">
+                            <a href="{% url 'club:challenge_detail' challenge.id %}"
+                               class="button is-info is-small" target="_blank">
+                                Challenge Detail
+                            </a>
+                            <a href="{% url 'club:public_challenge_live_stream' challenge.id %}"
+                               class="button is-warning is-small" target="_blank">
+                                Public Watch Page
+                            </a>
+                            {% if challenge.status == 'winners_selected' %}
+                            <a href="{% url 'club:challenge_winners' challenge.id %}"
+                               class="button is-success is-small" target="_blank">
+                                Winners Page
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="box mt-4">
+                        <h2 class="title is-4">⚡ Quick Actions</h2>
+
+                        {% if user.is_staff %}
+                            {% if challenge.status != 'winners_selected' %}
+                            <div class="notification is-info">
+                                <p><strong>Admin Actions Available:</strong></p>
+                                <div class="buttons mt-3">
+                                    {% if not challenge.draw_in_progress and winners_count == 0 %}
+                                    <a href="{% url 'club:challenge_live_draw' challenge.id %}"
+                                       class="button is-primary">
+                                        🎬 Start Live Draw
+                                    </a>
+                                    {% elif challenge.draw_in_progress %}
+                                    <button class="button is-warning" onclick="resetDrawStatus()">
+                                        🔄 Reset Draw Status
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="notification is-success">
+                                <p>✅ <strong>Winners have been selected!</strong></p>
+                                <a href="{% url 'club:challenge_winners' challenge.id %}"
+                                   class="button is-success mt-2">
+                                    View Winners
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            {% if winners_count > 0 %}
+                            <div class="notification is-warning mt-3">
+                                <p><strong>⚠️ Warning:</strong> Winners exist in database</p>
+                                <p class="is-size-7">To redo the draw, you must reset the challenge first</p>
+                                <button class="button is-danger is-small mt-2" onclick="confirmReset()">
+                                    🗑️ Reset Challenge (Delete Winners)
+                                </button>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="notification is-light">
+                                <p>Login as staff to see admin actions</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status Summary -->
+            <div class="box has-background-dark has-text-white">
+                <h2 class="title is-4 has-text-white">🎯 System Status Summary</h2>
+                <div id="system-summary">
+                    <p>Loading system status...</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        const challengeId = {{ challenge.id }};
+
+        function refreshStatus() {
+            location.reload();
+        }
+
+        function checkApiStatus() {
+            fetch(`/club/challenge/${challengeId}/winners-status/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Display formatted response
+                    document.getElementById('api-response').textContent =
+                        JSON.stringify(data, null, 2);
+
+                    // Display status
+                    const statusBox = document.getElementById('api-status');
+                    let statusClass = 'status-pending';
+
+                    if (data.winners_selected) {
+                        statusClass = 'status-ok';
+                    } else if (data.draw_in_progress) {
+                        statusClass = 'status-pending';
+                    }
+
+                    statusBox.className = 'status-box ' + statusClass;
+                    statusBox.innerHTML = `
+                        <strong>Challenge ID:</strong> ${data.challenge_id}<br>
+                        <strong>Winners Selected:</strong> ${data.winners_selected ? '✅ Yes' : '❌ No'}<br>
+                        <strong>Draw In Progress:</strong> ${data.draw_in_progress ? '🔴 Yes' : '⚪ No'}<br>
+                        <strong>Total Entries:</strong> ${data.total_entries}<br>
+                        <strong>Winners Count:</strong> ${data.winners_count || 0}<br>
+                        <strong>Has Winners:</strong> ${data.has_winners ? '✅ Yes' : '❌ No'}
+                    `;
+
+                    // Update system summary
+                    updateSystemSummary(data);
+                })
+                .catch(error => {
+                    document.getElementById('api-status').innerHTML =
+                        '<span style="color: red;">❌ Error: ' + error + '</span>';
+                    document.getElementById('api-response').textContent =
+                        'Error: ' + error;
+                });
+        }
+
+        function updateSystemSummary(apiData) {
+            const summary = document.getElementById('system-summary');
+            const dbWinners = {{ winners_count }};
+            const eligible = {{ eligible_count }};
+            const needed = {{ challenge.number_of_winners }};
+
+            let status = [];
+
+            // Check 1: Challenge ended?
+            const endDate = new Date("{{ challenge.end_date|date:'c' }}");
+            const now = new Date();
+            if (now > endDate) {
+                status.push('✅ Challenge has ended');
+            } else {
+                status.push('❌ Challenge still active (ends: ' + endDate.toLocaleString() + ')');
+            }
+
+            // Check 2: Enough participants?
+            if (eligible >= needed) {
+                status.push(`✅ Enough participants (${eligible} ≥ ${needed})`);
+            } else {
+                status.push(`❌ Not enough participants (${eligible} < ${needed})`);
+            }
+
+            // Check 3: Winners selected?
+            if (apiData.winners_selected || dbWinners > 0) {
+                status.push(`✅ Winners selected (${dbWinners} winners in DB)`);
+            } else {
+                status.push('⏳ Winners not yet selected');
+            }
+
+            // Check 4: Draw status
+            if (apiData.draw_in_progress) {
+                status.push('🔴 Draw currently in progress');
+            } else {
+                status.push('⚪ Draw not in progress');
+            }
+
+            // Check 5: API vs DB consistency
+            if (apiData.winners_count === dbWinners) {
+                status.push('✅ API and DB are consistent');
+            } else {
+                status.push(`⚠️ API shows ${apiData.winners_count} winners, DB has ${dbWinners}`);
+            }
+
+            summary.innerHTML = status.join('<br>');
+
+            // Overall readiness
+            if (dbWinners > 0) {
+                summary.innerHTML += '<br><br><strong style="color: #10b981;">🎊 DRAW COMPLETE - Winners selected!</strong>';
+            } else if (now > endDate && eligible >= needed && !apiData.draw_in_progress) {
+                summary.innerHTML += '<br><br><strong style="color: #3b82f6;">✅ READY FOR DRAW</strong>';
+            } else if (apiData.draw_in_progress) {
+                summary.innerHTML += '<br><br><strong style="color: #f59e0b;">🔴 DRAW IN PROGRESS - Check admin page</strong>';
+            } else {
+                summary.innerHTML += '<br><br><strong style="color: #f59e0b;">⏳ NOT READY - See issues above</strong>';
+            }
+        }
+
+        function resetDrawStatus() {
+            if (confirm('Reset draw_in_progress flag? This will NOT delete winners.')) {
+                // This would need a proper endpoint
+                alert('Use Django Admin action: "Reset Draw Status"');
+            }
+        }
+
+        function confirmReset() {
+            if (confirm('⚠️ WARNING: This will DELETE all winners!\n\nAre you absolutely sure?')) {
+                alert('Use command: python manage.py reset_challenge ' + challengeId + ' --confirm');
+            }
+        }
+
+        // Auto-refresh every 10 seconds if draw in progress
+        function autoRefresh() {
+            fetch(`/club/challenge/${challengeId}/winners-status/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.draw_in_progress) {
+                        setTimeout(() => location.reload(), 10000);
+                    }
+                });
+        }
+
+        // Load on page load
+        checkApiStatus();
+        autoRefresh();
+
+        // Refresh every 5 seconds
+        setInterval(checkApiStatus, 5000);
+    </script>
+</body>
+</html>
+
+
+
+

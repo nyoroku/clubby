@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verify Redemptions - {{ partnership.name }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+    <nav class="navbar is-warning" role="navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'club:partner_dashboard' %}">
+                <strong>← Back to Dashboard</strong>
+            </a>
+        </div>
+        <div class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <strong>{{ partnership.name }}</strong>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">🏪 Verify Customer Redemptions</h1>
+            <p class="subtitle">Scan or enter the redemption code shown by the customer</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="notification is-{{ message.tags }}">
+                    <button class="delete"></button>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Verification Form -->
+            <div class="box">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label class="label">Redemption Code</label>
+                        <div class="control is-large">
+                            <input class="input is-large" type="text" name="redemption_code"
+                                   placeholder="Enter 8-character code" maxlength="8"
+                                   style="font-size: 2em; text-align: center; text-transform: uppercase;"
+                                   autofocus required>
+                        </div>
+                        <p class="help">Ask the customer to show their redemption code</p>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button type="submit" class="button is-success is-large is-fullwidth">
+                                <strong>✓ Verify & Fulfill Redemption</strong>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Pending Redemptions -->
+            <div class="box">
+                <h3 class="title is-4">Pending Redemptions ({{ pending_redemptions.count }})</h3>
+
+                {% if pending_redemptions %}
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <thead>
+                            <tr>
+                                <th>Redemption Code</th>
+                                <th>Customer</th>
+                                <th>Phone</th>
+                                <th>Reward</th>
+                                <th>Points</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for redemption in pending_redemptions %}
+                            <tr>
+                                <td>
+                                    <code style="font-size: 1.2em; font-weight: bold; background: #ffe08a; padding: 5px;">
+                                        {{ redemption.redemption_code }}
+                                    </code>
+                                </td>
+                                <td>
+                                    <strong>{{ redemption.profile.first_name }} {{ redemption.profile.second_name }}</strong>
+                                </td>
+                                <td>{{ redemption.profile.phone }}</td>
+                                <td>{{ redemption.reward.name }}</td>
+                                <td>{{ redemption.reward.cost_points }} pts</td>
+                                <td>{{ redemption.created_at|date:"M d, H:i" }}</td>
+                                <td>
+                                    <span class="tag {% if redemption.status == 'pending' %}is-warning{% else %}is-info{% endif %}">
+                                        {{ redemption.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="notification is-info is-light">
+                    <p class="has-text-centered">
+                        <span class="icon is-large">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </span>
+                        <br>
+                        No pending redemptions at the moment
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Instructions -->
+            <div class="box has-background-light">
+                <h4 class="title is-5">📋 How It Works</h4>
+                <div class="content">
+                    <ol>
+                        <li><strong>Customer shows you their redemption code</strong> (8 characters, e.g., "ABC12345")</li>
+                        <li><strong>Enter the code</strong> in the form above and click verify</li>
+                        <li><strong>Fulfill the reward</strong> - give the customer their item/service</li>
+                        <li>The redemption is marked as complete</li>
+                    </ol>
+                    <div class="notification is-warning is-light">
+                        <strong>Important:</strong> Only fulfill redemptions after verifying the code is valid.
+                        Each code can only be used once.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        // Auto-hide notifications
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.remove();
+            });
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+        }, 5000);
+
+        // Auto-uppercase input
+        document.querySelector('input[name="redemption_code"]').addEventListener('input', function(e) {
+            this.value = this.value.toUpperCase();
+        });
+    </script>
+</body>
+</html>
+
+
+
+

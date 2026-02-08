@@ -1,0 +1,230 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}My Collection - Melvins Club{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card-collected {
+        animation: cardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes cardPop {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .foil-shine {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.1) 100%);
+        opacity: 0.3;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-8" x-data="{ selectedCard: null, gifting: false, giftLink: '' }">
+
+    <!-- Page Header -->
+    <div class="text-center mb-6">
+        <h1 class="text-2xl font-display font-bold text-white mb-2">🍃 Tea Estates</h1>
+        <p class="text-white/50 text-sm">Discover Kenya's finest tea regions. Scan packs to collect cards from legendary
+            estates!</p>
+    </div>
+
+    {% if collection %}
+    <!-- Campaign Hero (Glassmorphism) -->
+    <section class="mb-8">
+        <div class="glass-card rounded-3xl p-6 relative overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-melvins-gold/20 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2">
+            </div>
+
+            <div class="relative z-10">
+                <!-- Campaign Badge -->
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 bg-melvins-gold/20 rounded-full text-xs font-bold uppercase tracking-wider mb-3 text-melvins-gold">
+                    <span class="w-2 h-2 bg-melvins-gold rounded-full animate-pulse"></span>
+                    Active Campaign
+                </div>
+
+                <!-- Campaign Name & Theme -->
+                <h1 class="text-2xl font-display font-bold text-white mb-1">{{ collection.name }}</h1>
+                <p class="text-white/70 text-sm italic mb-4">🍃 {{ collection.theme }}</p>
+
+                <!-- Stats Row -->
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="glass-card px-4 py-2 rounded-full">
+                        <span class="text-2xl font-bold text-white">{{ collected_count|default:0 }}</span>
+                        <span class="text-white/50 text-sm"> / {{ total_count|default:12 }}</span>
+                    </div>
+                    <div class="text-white/50 text-xs">
+                        Ends {{ collection.end_date|date:"M d, Y" }}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <a href="{% url 'club:scan_pack' %}"
+                        class="flex-1 py-3 bg-melvins-gold text-[#1a0a0c] font-bold rounded-xl text-center text-sm hover:bg-melvins-gold-light transition">
+                        📸 Scan to Collect
+                    </a>
+                    <a href="{% url 'club:team_collection_home' %}"
+                        class="flex-1 py-3 glass-card text-white font-bold rounded-xl text-center text-sm hover:bg-white/20 transition">
+                        👥 Play with Friends
+                    </a>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mt-6 relative z-10">
+                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div class="h-full bg-melvins-gold rounded-full transition-all duration-1000"
+                        style="width: {{ progress_percent|default:0 }}%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% else %}
+    <!-- No Active Campaign -->
+    <section class="mb-8">
+        <div class="glass-card rounded-3xl p-8 text-center">
+            <div class="text-5xl mb-4">😴</div>
+            <h1 class="text-xl font-display font-bold text-white mb-2">No Active Campaign</h1>
+            <p class="text-white/50 text-sm">Check back soon for the next Tea Estates collection!</p>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Cards Grid -->
+    <section class="grid grid-cols-3 gap-3">
+        {% for item in cards_with_status %}
+        <div class="group relative aspect-[2/3] cursor-pointer transition-transform duration-300 hover:-translate-y-1"
+            @click="selectedCard = { 
+                id: {{ item.card.id }}, 
+                name: '{{ item.card.get_display_title|escapejs }}', 
+                region: '{{ item.card.estate.region|escapejs }}', 
+                rarity: '{{ item.card.rarity }}',
+                collected: {{ item.collected|yesno:'true,false' }},
+                description: '{{ item.card.description|escapejs|default:'A rare find from the highlands.' }}',
+                imageUrl: '{% if item.card.card_image %}{{ item.card.card_image.url }}{% else %}https://images.unsplash.com/photo-1597305877447-0849319e6d8a?auto=format&fit=crop&q=80{% endif %}'
+            }">
+
+            {% if item.collected %}
+            <!-- Collected Card -->
+            <div
+                class="absolute inset-0 rounded-xl overflow-hidden shadow-lg border-2 {% if item.card.rarity == 'rare' %}border-amber-400 ring-1 ring-amber-300/50{% elif item.card.rarity == 'uncommon' %}border-blue-400{% else %}border-white/20{% endif %}">
+                <div class="absolute inset-0 bg-cover bg-center"
+                    style="background-image: url('{% if item.card.card_image %}{{ item.card.card_image.url }}{% else %}https://images.unsplash.com/photo-1597305877447-0849319e6d8a?auto=format&fit=crop&q=80{% endif %}');">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 p-2 text-white z-10">
+                    <h3 class="font-bold text-[10px] leading-tight truncate">{{ item.card.get_display_title }}</h3>
+                    <p class="text-[8px] opacity-70 uppercase">{{ item.card.estate.region }}</p>
+                </div>
+                <div class="foil-shine absolute inset-0 mix-blend-overlay"></div>
+            </div>
+            {% else %}
+            <!-- Locked Card -->
+            <div
+                class="absolute inset-0 rounded-xl glass-card border border-dashed border-white/20 flex flex-col items-center justify-center opacity-60 hover:opacity-100 transition">
+                <span class="text-2xl text-white/30">🔒</span>
+                <span class="text-[9px] text-white/40 font-bold mt-1">#{{ item.card.card_number }}</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- Card Detail Modal -->
+    <template x-teleport="body">
+        <div x-show="selectedCard" x-cloak
+            class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4"
+            @click.self="selectedCard = null; gifting = false; giftLink = ''">
+
+            <div class="w-full max-w-sm glass-card rounded-3xl overflow-hidden relative"
+                x-transition:enter="ease-out duration-300 transform scale-95 opacity-0"
+                x-transition:enter-end="scale-100 opacity-100">
+
+                <!-- Close Button -->
+                <button @click="selectedCard = null"
+                    class="absolute top-4 right-4 z-50 p-2 bg-white/10 text-white rounded-full hover:bg-white/20 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- Card Image -->
+                <div class="h-64 bg-cover bg-center relative"
+                    :style="`background-image: url('${selectedCard?.imageUrl}')`">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#1a0a0c] via-transparent to-transparent"></div>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 -mt-16 relative z-10">
+                    <span
+                        class="inline-block px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2"
+                        :class="selectedCard?.rarity == 'rare' ? 'bg-amber-500/20 text-amber-400' : 'bg-white/10 text-white/70'"
+                        x-text="selectedCard?.rarity"></span>
+                    <h2 class="text-2xl font-display font-bold text-white mb-1" x-text="selectedCard?.name"></h2>
+                    <p class="text-melvins-gold text-xs font-bold uppercase tracking-wider mb-4"
+                        x-text="selectedCard?.region"></p>
+                    <p class="text-white/60 text-sm mb-6" x-text="selectedCard?.description"></p>
+
+                    <!-- Actions -->
+                    <div x-show="selectedCard?.collected" class="grid grid-cols-2 gap-3">
+                        <button @click="gifting = true; fetch('/gifts/create/' + selectedCard.id + '/')
+                                .then(r => r.json())
+                                .then(d => { if(d.success) giftLink = d.share_url; else alert('Error'); })"
+                            class="py-3 bg-melvins-gold text-[#1a0a0c] font-bold rounded-xl text-sm hover:bg-melvins-gold-light transition flex items-center justify-center gap-2">
+                            🎁 Gift
+                        </button>
+                        <a :href="'https://wa.me/?text=Check out my ' + selectedCard?.name + ' card!'" target="_blank"
+                            class="py-3 glass-card text-white font-bold rounded-xl text-sm hover:bg-white/20 transition flex items-center justify-center gap-2">
+                            📤 Share
+                        </a>
+                    </div>
+
+                    <div x-show="!selectedCard?.collected" class="text-center">
+                        <a href="{% url 'club:scan_pack' %}"
+                            class="block w-full py-3 bg-melvins-gold text-[#1a0a0c] font-bold rounded-xl text-sm hover:bg-melvins-gold-light transition">
+                            📦 Scan Pack to Unlock
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Gift Overlay -->
+                <div x-show="gifting" x-transition
+                    class="absolute inset-0 bg-[#1a0a0c]/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-8 text-center"
+                    @click.stop>
+                    <h3 class="text-xl font-bold text-white mb-2">Gift This Card</h3>
+                    <p class="text-white/50 text-sm mb-6">Send link to transfer card</p>
+
+                    <div x-show="!giftLink"
+                        class="animate-spin w-8 h-8 border-4 border-melvins-gold border-t-transparent rounded-full">
+                    </div>
+
+                    <div x-show="giftLink" class="w-full space-y-3">
+                        <input type="text" readonly :value="giftLink"
+                            class="w-full bg-white/10 p-3 rounded-lg text-xs font-mono text-white border border-white/20 text-center"
+                            onclick="this.select()">
+                        <a :href="'https://wa.me/?text=Here is a card for you: ' + giftLink" target="_blank"
+                            class="block py-3 bg-[#25D366] text-white font-bold rounded-xl text-sm">WhatsApp</a>
+                        <button @click="gifting = false" class="text-white/40 text-sm hover:text-white">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</div>
+{% endblock %}

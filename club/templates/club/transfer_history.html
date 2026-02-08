@@ -1,0 +1,233 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Transfer History - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24" x-data="{ activeTab: 'sent' }">
+
+    <!-- Hero Stats -->
+    <div
+        class="bg-gradient-to-r from-gray-900 to-black rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl text-white mb-8">
+        <div
+            class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] transparent-bg">
+        </div>
+        <div
+            class="absolute top-0 right-0 w-64 h-64 bg-melvins-red/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
+        </div>
+
+        <div class="relative z-10">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-8">
+                <div>
+                    <nav class="mb-4 text-sm flex items-center gap-2 text-white/50">
+                        <a href="{% url 'club:dashboard' %}" class="hover:text-white transition">Dashboard</a>
+                        <span>/</span>
+                        <a href="{% url 'club:transfer_points' %}" class="hover:text-white transition">Transfer</a>
+                        <span>/</span>
+                        <span class="font-bold text-white">History</span>
+                    </nav>
+                    <h1 class="text-4xl font-display font-bold">📊 Transfer History</h1>
+                    <p class="text-white/60">Overview of your transaction activity</p>
+                </div>
+                <a href="{% url 'club:transfer_points' %}"
+                    class="bg-white text-melvins-dark font-bold py-3 px-6 rounded-xl hover:bg-gray-100 transition shadow-lg flex items-center gap-2">
+                    <span>💸</span> New Transfer
+                </a>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white/10 backdrop-blur-sm border border-white/10 p-6 rounded-2xl">
+                    <p class="text-xs font-bold uppercase tracking-wider text-red-300 mb-1">Total Sent</p>
+                    <p class="text-3xl font-bold">{{ total_sent }} <span
+                            class="text-sm opacity-60 font-normal">pts</span></p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm border border-white/10 p-6 rounded-2xl">
+                    <p class="text-xs font-bold uppercase tracking-wider text-green-300 mb-1">Total Received</p>
+                    <p class="text-3xl font-bold">{{ total_received }} <span
+                            class="text-sm opacity-60 font-normal">pts</span></p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm border border-white/10 p-6 rounded-2xl">
+                    <p class="text-xs font-bold uppercase tracking-wider text-yellow-300 mb-1">Pending Invites</p>
+                    <p class="text-3xl font-bold">{{ pending_invites.count }} <span
+                            class="text-sm opacity-60 font-normal">active</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="mb-6 space-y-2">
+        {% for message in messages %}
+        <div class="p-4 rounded-xl flex items-start gap-3
+            {% if message.tags == 'success' %}bg-green-100 text-green-800 border border-green-200
+            {% elif message.tags == 'error' %}bg-red-100 text-red-800 border border-red-200
+            {% else %}bg-blue-100 text-blue-800 border border-blue-200{% endif %}">
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Tabs Navigation -->
+    <div class="flex justify-center mb-6 overflow-x-auto">
+        <div class="bg-gray-100 p-1 rounded-xl inline-flex shadow-inner border border-melvins-beige whitespace-nowrap">
+            <button @click="activeTab = 'sent'"
+                :class="{ 'bg-white text-melvins-dark shadow-sm': activeTab === 'sent', 'text-gray-500 hover:text-gray-700': activeTab !== 'sent' }"
+                class="px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300">
+                Sent ({{ sent_transfers.count }})
+            </button>
+            <button @click="activeTab = 'received'"
+                :class="{ 'bg-white text-melvins-dark shadow-sm': activeTab === 'received', 'text-gray-500 hover:text-gray-700': activeTab !== 'received' }"
+                class="px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300">
+                Received ({{ received_transfers.count }})
+            </button>
+            <button @click="activeTab = 'invites'"
+                :class="{ 'bg-white text-melvins-dark shadow-sm': activeTab === 'invites', 'text-gray-500 hover:text-gray-700': activeTab !== 'invites' }"
+                class="px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300">
+                Pending Invites ({{ pending_invites.count }})
+            </button>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="bg-white rounded-3xl border border-melvins-beige shadow-sm min-h-[300px] overflow-hidden">
+
+        <!-- Sent Transfers Table -->
+        <div x-show="activeTab === 'sent'" class="overflow-x-auto">
+            {% if sent_transfers %}
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr
+                        class="bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        <th class="p-6">Recipient</th>
+                        <th class="p-6">Amount</th>
+                        <th class="p-6">Fee</th>
+                        <th class="p-6">Message</th>
+                        <th class="p-6">Date</th>
+                        <th class="p-6">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-sm text-melvins-dark">
+                    {% for transfer in sent_transfers %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-6">
+                            {% if transfer.recipient %}
+                            <div class="font-bold">{{ transfer.recipient.first_name }} {{ transfer.recipient.second_name
+                                }}</div>
+                            <div class="text-xs text-melvins-dark/50 font-mono">{{ transfer.recipient.phone }}</div>
+                            {% else %}
+                            <div class="font-bold text-melvins-dark/70">Unregistered User</div>
+                            <div class="text-xs text-melvins-dark/50 font-mono">{{ transfer.invite_phone }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-6 font-bold text-red-600">-{{ transfer.amount }}</td>
+                        <td class="p-6 text-gray-500">{{ transfer.fee }}</td>
+                        <td class="p-6 text-gray-600 italic">"{{ transfer.message|default:"-" }}"</td>
+                        <td class="p-6 text-gray-500">{{ transfer.created_at|date:"M d, H:i" }}</td>
+                        <td class="p-6">
+                            <span class="px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider
+                                {% if transfer.status == 'completed' %}bg-green-100 text-green-700
+                                {% elif transfer.status == 'pending' %}bg-yellow-100 text-yellow-700
+                                {% else %}bg-red-100 text-red-700{% endif %}">
+                                {{ transfer.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+                <span class="text-4xl mb-2 opacity-30">📤</span>
+                <p class="text-melvins-dark/50">No sent transfers yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Received Transfers Table -->
+        <div x-show="activeTab === 'received'" style="display: none;" class="overflow-x-auto">
+            {% if received_transfers %}
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr
+                        class="bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        <th class="p-6">From</th>
+                        <th class="p-6">Amount</th>
+                        <th class="p-6">Message</th>
+                        <th class="p-6">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-sm text-melvins-dark">
+                    {% for transfer in received_transfers %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-6">
+                            <div class="font-bold">{{ transfer.sender.first_name }} {{ transfer.sender.second_name }}
+                            </div>
+                            <div class="text-xs text-melvins-dark/50 font-mono">{{ transfer.sender.phone }}</div>
+                        </td>
+                        <td class="p-6 font-bold text-green-600">+{{ transfer.net_amount }}</td>
+                        <td class="p-6 text-gray-600 italic">"{{ transfer.message|default:"-" }}"</td>
+                        <td class="p-6 text-gray-500">{{ transfer.created_at|date:"M d, H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+                <span class="text-4xl mb-2 opacity-30">📥</span>
+                <p class="text-melvins-dark/50">No received transfers yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Pending Invites Table -->
+        <div x-show="activeTab === 'invites'" style="display: none;" class="overflow-x-auto">
+            {% if pending_invites %}
+            <div class="p-4 bg-yellow-50 border-b border-yellow-100 text-yellow-800 text-sm flex items-center gap-2">
+                <span>ℹ️</span> Cancelling an invite will refund your points (including fee).
+            </div>
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr
+                        class="bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        <th class="p-6">Phone</th>
+                        <th class="p-6">Points Promised</th>
+                        <th class="p-6">Message</th>
+                        <th class="p-6">Date</th>
+                        <th class="p-6">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-sm text-melvins-dark">
+                    {% for invite in pending_invites %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-6 font-mono text-gray-600">{{ invite.phone }}</td>
+                        <td class="p-6 font-bold">{{ invite.points_promised }}</td>
+                        <td class="p-6 text-gray-600 italic">"{{ invite.message|default:"-" }}"</td>
+                        <td class="p-6 text-gray-500">{{ invite.created_at|date:"M d, H:i" }}</td>
+                        <td class="p-6">
+                            <form method="post" action="{% url 'club:cancel_invite' invite.id %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-xs font-bold transition shadow-sm"
+                                    onclick="return confirm('Cancel invite and refund points?')">
+                                    Cancel & Refund
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+                <span class="text-4xl mb-2 opacity-30">✉️</span>
+                <p class="text-melvins-dark/50">No pending invites.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

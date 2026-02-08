@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+    <nav class="navbar is-success">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'club:listing_partner_dashboard' %}">
+                <strong>← Back to Dashboard</strong>
+            </a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title">Edit Product</h1>
+                        <p class="subtitle">{{ product.name }}</p>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                            <div class="notification is-{{ message.tags }}">
+                                <button class="delete"></button>
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if product.status == 'rejected' %}
+                        <div class="notification is-danger">
+                            <p><strong>Rejection Reason:</strong></p>
+                            <p>{{ product.rejection_reason }}</p>
+                            <p class="mt-2"><small>Update your product and resubmit for approval</small></p>
+                        </div>
+                        {% endif %}
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="field">
+                                <label class="label">Product Name</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="name"
+                                           value="{{ product.name }}" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Description</label>
+                                <div class="control">
+                                    <textarea class="textarea" name="description"
+                                              rows="5" required>{{ product.description }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="columns">
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Category</label>
+                                        <div class="control">
+                                            <input class="input" type="text" name="category"
+                                                   value="{{ product.category }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Your Price (KES)</label>
+                                        <div class="control">
+                                            <input class="input" type="number" name="partner_price"
+                                                   step="0.01" min="1"
+                                                   value="{{ product.partner_price }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Stock Quantity</label>
+                                <div class="control">
+                                    <input class="input" type="number" name="stock_quantity"
+                                           min="0" value="{{ product.stock_quantity }}" required>
+                                </div>
+                            </div>
+
+                            {% if product.image %}
+                            <div class="field">
+                                <label class="label">Current Image</label>
+                                <figure class="image is-128x128">
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                </figure>
+                            </div>
+                            {% endif %}
+
+                            <div class="field">
+                                <label class="label">Update Image</label>
+                                <div class="control">
+                                    <input class="file-input" type="file" name="image" accept="image/*">
+                                </div>
+                                <p class="help">Leave empty to keep current image</p>
+                            </div>
+
+                            <div class="field mt-5">
+                                <div class="control">
+                                    <button type="submit" class="button is-success is-fullwidth is-medium">
+                                        <strong>Update Product</strong>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,276 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Challenges - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-24">
+
+    <!-- Hero Section -->
+    <div
+        class="bg-gradient-to-br from-melvins-maroon to-red-900 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl text-white mb-12">
+        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        </div>
+        <div
+            class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
+        </div>
+
+        <div class="relative z-10 text-center">
+            <h1 class="text-4xl sm:text-5xl font-display font-bold text-white mb-4 text-shadow-sm">Challenges Arena</h1>
+            <p class="text-white/80 text-lg max-w-2xl mx-auto leading-relaxed">
+                Enter for a chance to win exclusive prizes. Scan more packs to increase your winning chances!
+            </p>
+        </div>
+    </div>
+
+    <!-- Active Challenges -->
+    {% if active_challenges %}
+    <section class="mb-16">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="p-2 bg-red-100 rounded-lg">
+                <span class="text-2xl">🔥</span>
+            </div>
+            <h2 class="text-2xl font-bold text-melvins-dark font-display">Active Now</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for challenge in active_challenges %}
+            <div
+                class="group bg-white rounded-[2rem] overflow-hidden border border-melvins-beige shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full transform hover:-translate-y-2">
+                <!-- Image Container -->
+                <div class="aspect-[4/3] relative overflow-hidden bg-melvins-cream">
+                    {% if challenge.image %}
+                    <img src="{{ challenge.image.url }}" alt="{{ challenge.title }}"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    {% else %}
+                    <div
+                        class="w-full h-full flex items-center justify-center bg-gradient-to-br from-melvins-maroon to-red-900">
+                        <span class="text-6xl">🏆</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Overlay -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80">
+                    </div>
+
+                    <!-- Status Badge -->
+                    <div class="absolute top-4 right-4">
+                        {% if challenge.draw_in_progress %}
+                        <span
+                            class="px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse shadow-lg flex items-center gap-2">
+                            <span class="w-2 h-2 bg-white rounded-full"></span> LIVE DRAW
+                        </span>
+                        {% elif challenge.featured %}
+                        <span class="px-3 py-1 bg-melvins-gold text-white text-xs font-bold rounded-full shadow-lg">⭐
+                            Featured</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="p-8 flex flex-col flex-grow relative">
+                    <!-- Title -->
+                    <h3
+                        class="text-2xl font-display font-bold text-melvins-dark mb-1 group-hover:text-melvins-maroon transition-colors">
+                        {{ challenge.title }}</h3>
+                    <p class="text-sm font-bold text-melvins-gold uppercase tracking-widest mb-4">{{
+                        challenge.get_frequency_display }}</p>
+
+                    <p class="text-melvins-dark/60 text-sm mb-6 flex-grow line-clamp-3">{{ challenge.description }}</p>
+
+                    <!-- Details Grid -->
+                    <div class="grid grid-cols-2 gap-4 mb-8 text-sm">
+                        <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <span class="block text-xs text-gray-400 font-bold uppercase">Prize</span>
+                            <span class="font-bold text-melvins-dark truncate">{{ challenge.reward_value }}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                            <span class="block text-xs text-gray-400 font-bold uppercase">Winners</span>
+                            <span class="font-bold text-melvins-dark">{{ challenge.number_of_winners }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    {% if challenge.draw_in_progress %}
+                    <a href="{% url 'club:public_challenge_live_stream' challenge.id %}"
+                        class="block w-full py-4 bg-red-600 text-white font-bold rounded-xl text-center shadow-lg hover:bg-red-700 transition transform active:scale-95 animate-pulse">
+                        🔴 Watch Live Draw
+                    </a>
+                    {% else %}
+                    <a href="{% url 'club:challenge_detail' challenge.id %}"
+                        class="block w-full py-4 bg-melvins-dark text-white font-bold rounded-xl text-center shadow-lg hover:bg-melvins-maroon transition transform active:scale-95">
+                        Enter Challenge
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Upcoming Challenges -->
+    {% if upcoming_challenges %}
+    <section class="mb-16">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="p-2 bg-blue-100 rounded-lg">
+                <span class="text-2xl">📅</span>
+            </div>
+            <h2 class="text-2xl font-bold text-melvins-dark font-display">Coming Soon</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for challenge in upcoming_challenges %}
+            <div
+                class="bg-white rounded-[2rem] overflow-hidden border border-melvins-beige shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full opacity-80 hover:opacity-100">
+                <!-- Image Container -->
+                <div
+                    class="aspect-[4/3] relative overflow-hidden bg-melvins-cream grayscale hover:grayscale-0 transition-all duration-500">
+                    {% if challenge.image %}
+                    <img src="{{ challenge.image.url }}" alt="{{ challenge.title }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                        <span class="text-6xl opacity-50">⏳</span>
+                    </div>
+                    {% endif %}
+                    <div
+                        class="absolute top-4 left-4 px-3 py-1 bg-blue-500 text-white text-xs font-bold rounded-full shadow-md">
+                        Soon</div>
+                </div>
+
+                <div class="p-8 flex flex-col flex-grow">
+                    <h3 class="text-xl font-display font-bold text-melvins-dark mb-1">{{ challenge.title }}</h3>
+                    <p class="text-xs font-bold text-blue-500 uppercase tracking-widest mb-4">Starts {{
+                        challenge.start_date|date:"M d" }}</p>
+                    <p class="text-melvins-dark/60 text-sm mb-6 flex-grow line-clamp-2">{{ challenge.description }}</p>
+
+                    <a href="{% url 'club:challenge_detail' challenge.id %}"
+                        class="block w-full py-3 border-2 border-melvins-dark/10 text-melvins-dark font-bold rounded-xl text-center hover:bg-melvins-dark hover:text-white transition">
+                        View Details
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recent Winners Section -->
+    {% if ended_challenges %}
+    <section class="mb-16">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="p-2 bg-green-100 rounded-lg">
+                <span class="text-2xl">🏆</span>
+            </div>
+            <h2 class="text-2xl font-bold text-melvins-dark font-display">Recent Winners</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for challenge in ended_challenges %}
+            <div
+                class="bg-white rounded-[2rem] overflow-hidden border border-melvins-beige shadow-sm hover:shadow-lg transition-all flex flex-col h-full">
+                <div class="p-8 flex flex-col flex-grow">
+                    <div class="flex items-center justify-between mb-4">
+                        <span
+                            class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider rounded-full">Completed</span>
+                        <span class="text-xs text-gray-400 font-bold">{{ challenge.winners_selected_at|date:"M d"
+                            }}</span>
+                    </div>
+
+                    <h3 class="text-xl font-display font-bold text-melvins-dark mb-2">{{ challenge.title }}</h3>
+                    <div class="space-y-2 mt-4 mb-6">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Winners</span>
+                            <span class="font-bold text-melvins-dark">{{ challenge.number_of_winners }} Selected</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Prize</span>
+                            <span class="font-bold text-melvins-gold-dark">{{ challenge.reward_value }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto grid grid-cols-2 gap-3">
+                        <a href="{% url 'club:challenge_winners' challenge.id %}"
+                            class="py-3 bg-green-50 text-green-700 font-bold rounded-xl text-center text-sm hover:bg-green-100 transition">
+                            See Winners
+                        </a>
+                        <a href="{% url 'club:challenge_detail' challenge.id %}"
+                            class="py-3 bg-gray-50 text-gray-600 font-bold rounded-xl text-center text-sm hover:bg-gray-100 transition">
+                            Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if not active_challenges and not upcoming_challenges and not ended_challenges %}
+    <div class="text-center py-20 bg-white rounded-3xl border border-melvins-beige shadow-sm">
+        <div class="text-6xl mb-4 opacity-30">📭</div>
+        <h3 class="text-xl font-bold text-melvins-dark mb-2">No Challenges Active</h3>
+        <p class="text-melvins-dark/60">Check back soon for new opportunities to win!</p>
+    </div>
+    {% endif %}
+
+    <!-- How It Works Card -->
+    <div class="bg-melvins-dark text-white rounded-[2.5rem] p-8 sm:p-12 relative overflow-hidden mt-12 shadow-2xl">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2">
+        </div>
+
+        <div class="relative z-10">
+            <h2 class="text-2xl font-display font-bold mb-8 flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm">?</span>
+                How It Works
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="flex flex-col gap-3">
+                    <div
+                        class="w-12 h-12 bg-melvins-maroon rounded-2xl flex items-center justify-center text-2xl shadow-lg mb-2">
+                        📥</div>
+                    <h3 class="font-bold text-lg">1. Enter</h3>
+                    <p class="text-white/60 text-sm leading-relaxed">Select any active challenge and click to enter.
+                        Your profile must be complete to participate.</p>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <div
+                        class="w-12 h-12 bg-melvins-gold rounded-2xl flex items-center justify-center text-2xl shadow-lg mb-2">
+                        🚀</div>
+                    <h3 class="font-bold text-lg">2. Boost Chances</h3>
+                    <p class="text-white/60 text-sm leading-relaxed">Scan more packs and refer friends to increase your
+                        "Entry Weight". The higher your weight, the better your odds!</p>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <div
+                        class="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center text-2xl shadow-lg mb-2">
+                        🎉</div>
+                    <h3 class="font-bold text-lg">3. Win Big</h3>
+                    <p class="text-white/60 text-sm leading-relaxed">Watch the live draw to see if you've won. Winners
+                        are notified immediately via SMS.</p>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-white/10 flex items-center gap-4 text-sm text-melvins-gold-light">
+                <span class="text-xl">💡</span>
+                <p class="font-bold">Pro Tip: Referring friends gives you a massive boost in every draw!</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    {% if active_challenges %}
+    {% for challenge in active_challenges %}
+    {% if challenge.draw_in_progress %}
+    setTimeout(() => {
+        location.reload();
+    }, 30000);
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+</script>
+{% endblock %}

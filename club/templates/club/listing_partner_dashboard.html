@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vendor Dashboard - Melvins Club</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'maroon': '#8b2332',
+                            'maroon-dark': '#6a1b27',
+                            'maroon-light': '#a52d3c',
+                            'gold': '#d4a536',
+                            'gold-light': '#e6bc52',
+                            'dark': '#2d2424',
+                            'cream': '#faf8f5',
+                            'beige': '#f0ebe4',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-melvins-dark text-white">
+
+    <!-- Navigation -->
+    <nav class="bg-melvins-maroon-dark/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <a href="{% url 'club:listing_partner_dashboard' %}" class="flex items-center gap-2">
+                        <span class="text-2xl">🏪</span>
+                        <span class="font-bold text-white">{{ listing_partner.company_name }}</span>
+                    </a>
+                    <div class="hidden md:flex items-center gap-4">
+                        <a href="{% url 'club:listing_partner_dashboard' %}"
+                            class="text-white/80 hover:text-white text-sm font-medium transition">Dashboard</a>
+                        <a href="{% url 'club:add_product' %}"
+                            class="text-white/80 hover:text-white text-sm font-medium transition">Add Product</a>
+                        <a href="{% url 'club:listing_partner_redemptions' %}"
+                            class="text-white/80 hover:text-white text-sm font-medium transition">Redemptions</a>
+                    </div>
+                </div>
+                <a href="{% url 'club:logout' %}"
+                    class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div
+            class="mb-4 p-4 rounded-xl {% if message.tags == 'error' %}bg-red-500/20 border border-red-500/30{% else %}bg-emerald-500/20 border border-emerald-500/30{% endif %}">
+            <p class="text-white text-sm">{{ message }}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if not listing_partner.approved %}
+        <div class="mb-6 p-4 rounded-xl bg-amber-500/20 border border-amber-500/30">
+            <p class="text-white font-semibold">⏳ Account Pending Approval</p>
+            <p class="text-white/70 text-sm mt-1">Your account is being reviewed by Melvins admin. You will be notified
+                once approved.</p>
+        </div>
+        {% endif %}
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="glass rounded-xl p-4">
+                <p class="text-white/50 text-xs uppercase tracking-wide mb-1">Total Products</p>
+                <p class="text-2xl font-bold text-white">{{ total_products }}</p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-white/50 text-xs uppercase tracking-wide mb-1">Pending</p>
+                <p class="text-2xl font-bold text-amber-400">{{ pending_products }}</p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-white/50 text-xs uppercase tracking-wide mb-1">Approved</p>
+                <p class="text-2xl font-bold text-emerald-400">{{ approved_products }}</p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-white/50 text-xs uppercase tracking-wide mb-1">Rejected</p>
+                <p class="text-2xl font-bold text-red-400">{{ rejected_products }}</p>
+            </div>
+        </div>
+
+        <!-- Financial Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="glass rounded-xl p-4 border-l-4 border-melvins-gold">
+                <p class="text-white/50 text-xs uppercase tracking-wide mb-1">Pending Payout</p>
+                <p class="text-xl font-bold text-melvins-gold">KES {{ listing_partner.pending_payout|floatformat:2 }}
+                </p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-white/50 text-xs uppercase tracking-wide mb-1">Total Earnings</p>
+                <p class="text-xl font-bold text-white">KES {{ listing_partner.partner_earnings|floatformat:2 }}</p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-white/50 text-xs uppercase tracking-wide mb-1">Paid Out</p>
+                <p class="text-xl font-bold text-emerald-400">KES {{ listing_partner.total_paid_out|floatformat:2 }}</p>
+            </div>
+            <div class="glass rounded-xl p-4">
+                <p class="text-white/50 text-xs uppercase tracking-wide mb-1">This Month</p>
+                <p class="text-xl font-bold text-white">{{ monthly_redemptions }}</p>
+                <p class="text-white/50 text-xs">KES {{ monthly_revenue|floatformat:2 }}</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        {% if listing_partner.approved %}
+        <div class="flex flex-wrap gap-3 mb-8">
+            <a href="{% url 'club:add_product' %}"
+                class="px-6 py-3 bg-melvins-gold hover:bg-melvins-gold-light text-melvins-dark font-bold rounded-xl transition">
+                + Add New Product
+            </a>
+            <a href="{% url 'club:listing_partner_redemptions' %}"
+                class="px-6 py-3 glass hover:bg-white/20 text-white font-medium rounded-xl transition">
+                View All Redemptions
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Recent Products -->
+        <div class="glass rounded-xl p-6 mb-8">
+            <h3 class="text-lg font-bold mb-4">Recent Products</h3>
+            {% if products %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-white/50 text-left border-b border-white/10">
+                            <th class="pb-3">Product</th>
+                            <th class="pb-3">Your Price</th>
+                            <th class="pb-3">Melvins Price</th>
+                            <th class="pb-3">Points</th>
+                            <th class="pb-3">Stock</th>
+                            <th class="pb-3">Status</th>
+                            <th class="pb-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10">
+                        {% for product in products %}
+                        <tr>
+                            <td class="py-3 font-medium">{{ product.name }}</td>
+                            <td class="py-3">KES {{ product.partner_price }}</td>
+                            <td class="py-3">
+                                {% if product.melvins_price %}KES {{ product.melvins_price }}{% else %}<span
+                                    class="text-amber-400">Pending</span>{% endif %}
+                            </td>
+                            <td class="py-3">{% if product.points_required %}{{ product.points_required }} pts{% else
+                                %}—{% endif %}</td>
+                            <td class="py-3">{{ product.stock_quantity }}</td>
+                            <td class="py-3">
+                                <span class="px-2 py-1 text-xs rounded-full 
+                                    {% if product.status == 'approved' %}bg-emerald-500/20 text-emerald-400
+                                    {% elif product.status == 'pending' %}bg-amber-500/20 text-amber-400
+                                    {% else %}bg-red-500/20 text-red-400{% endif %}">
+                                    {{ product.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="py-3">
+                                <a href="{% url 'club:edit_product' product.id %}"
+                                    class="text-melvins-gold hover:underline text-sm">Edit</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-white/50">
+                <p>No products yet.</p>
+                {% if listing_partner.approved %}
+                <a href="{% url 'club:add_product' %}" class="text-melvins-gold hover:underline">Add your first
+                    product</a>
+                {% else %}
+                <p class="text-sm mt-1">Wait for account approval to start listing.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Redemptions -->
+        <div class="glass rounded-xl p-6">
+            <h3 class="text-lg font-bold mb-4">Recent Redemptions</h3>
+            {% if recent_redemptions %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-white/50 text-left border-b border-white/10">
+                            <th class="pb-3">Date</th>
+                            <th class="pb-3">Product</th>
+                            <th class="pb-3">Customer</th>
+                            <th class="pb-3">Earning</th>
+                            <th class="pb-3">Status</th>
+                            <th class="pb-3">Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10">
+                        {% for redemption in recent_redemptions %}
+                        <tr>
+                            <td class="py-3">{{ redemption.created_at|date:"M d, H:i" }}</td>
+                            <td class="py-3">{{ redemption.product.name }}</td>
+                            <td class="py-3 font-mono text-white/70">{{ redemption.profile.phone }}</td>
+                            <td class="py-3 font-bold text-melvins-gold">KES {{ redemption.partner_earning|floatformat:2
+                                }}</td>
+                            <td class="py-3">
+                                <span class="px-2 py-1 text-xs rounded-full 
+                                    {% if redemption.status == 'fulfilled' %}bg-emerald-500/20 text-emerald-400
+                                    {% else %}bg-amber-500/20 text-amber-400{% endif %}">
+                                    {{ redemption.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="py-3">
+                                {% if redemption.paid_to_partner %}
+                                <span class="text-emerald-400">✓ Paid</span>
+                                {% else %}
+                                <span class="text-amber-400">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-white/50">
+                <p>No redemptions yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+
+</html>

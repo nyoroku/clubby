@@ -1,0 +1,570 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ partnership.name }} - Partnership Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * {
+      font-family: 'Lato', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: 'Playfair Display', serif !important;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+      min-height: 100vh;
+    }
+
+    .navbar-custom {
+      background: white;
+      box-shadow: 0 2px 12px rgba(99, 102, 241, 0.08);
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+
+    .brand-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .partnership-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 20px;
+      padding: 2.5rem;
+      color: white;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
+      margin-bottom: 2rem;
+    }
+
+    .partnership-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: white !important;
+    }
+
+    .partnership-code {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      display: inline-block;
+      font-family: 'Courier New', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: white;
+      margin-top: 1rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+      border: 2px solid rgba(99, 102, 241, 0.1);
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1;
+    }
+
+    .card-modern {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .card-header-custom {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(99, 102, 241, 0.1);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      color: white;
+      font-size: 1.25rem;
+    }
+
+    .card-title-custom {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0;
+    }
+
+    .earnings-item {
+      background: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      border-left: 4px solid var(--success);
+      transition: all 0.3s ease;
+    }
+
+    .earnings-item:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+    }
+
+    .user-item {
+      background: white;
+      border: 2px solid rgba(99, 102, 241, 0.1);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .user-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    }
+
+    .points-badge {
+      background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+      color: white;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .date-badge {
+      background: #f1f5f9;
+      color: #64748b;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .share-box {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid var(--warning);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .share-url {
+      background: white;
+      border: 2px solid var(--warning);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+      margin: 1rem 0;
+    }
+
+    .copy-btn {
+      background: var(--warning);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .scroll-area {
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .scroll-area::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .scroll-area::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+
+    .scroll-area::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .partnership-title {
+        font-size: 1.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar-custom">
+    <div class="container">
+      <div class="level" style="margin-bottom: 0;">
+        <div class="level-left">
+          <div class="level-item">
+            <h1 class="brand-logo">Melvins Partner</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section" style="padding-top: 1rem;">
+    <div class="container">
+      <!-- Partnership Header -->
+      <div class="partnership-header">
+        <h2 class="partnership-title">{{ partnership.name }}</h2>
+        <p style="opacity: 0.9; margin-bottom: 0.5rem;">
+          {{ partnership.contact_person }}
+          {% if partnership.email %} • {{ partnership.email }}{% endif %}
+          {% if partnership.phone %} • {{ partnership.phone }}{% endif %}
+        </p>
+        <div>
+          <span style="opacity: 0.85;">Partnership Code:</span>
+          <div class="partnership-code">{{ partnership.code }}</div>
+        </div>
+      </div>
+
+      <!-- Share Your Link -->
+      <div class="share-box">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #92400e; margin-bottom: 1rem;">
+          <i class="fas fa-share-nodes"></i> Share Your Partnership Link
+        </h3>
+        <p style="color: #92400e; margin-bottom: 1rem;">
+          Send this link to potential users. They'll automatically be linked to your partnership when they register!
+        </p>
+        <div class="share-url" id="shareUrl">
+          {{ request.scheme }}://{{ request.get_host }}/register/{{ partnership.code }}/
+        </div>
+        <button class="copy-btn" onclick="copyShareUrl()">
+          <i class="fas fa-copy"></i> Copy Link
+        </button>
+      </div>
+
+      <!-- Statistics Overview -->
+      <div class="columns is-multiline">
+        <div class="column is-3">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-label">Total Points Earned</div>
+            <div class="stat-value">{{ partnership.total_points_earned|default:0 }}</div>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, var(--success) 0%, #059669 100%);">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-label">Referred Users</div>
+            <div class="stat-value">{{ referred_count }}</div>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);">
+              <i class="fas fa-qrcode"></i>
+            </div>
+            <div class="stat-label">Total Scans</div>
+            <div class="stat-value">{{ total_scans }}</div>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+              <i class="fas fa-hand-holding-dollar"></i>
+            </div>
+            <div class="stat-label">Points Per Scan</div>
+            <div class="stat-value" style="font-size: 2rem;">{{ partnership.points_per_scan }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns">
+        <!-- Recent Earnings -->
+        <div class="column is-8">
+          <div class="card-modern">
+            <div class="card-header-custom">
+              <div class="card-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h3 class="card-title-custom">Recent Earnings</h3>
+            </div>
+
+            {% if recent_earnings %}
+            <div class="scroll-area">
+              {% for earning in recent_earnings %}
+              <div class="earnings-item">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">
+                      {{ earning.profile.first_name }} {{ earning.profile.second_name }}
+                      <span style="color: #64748b; font-weight: 400; font-size: 0.9rem;">
+                        ({{ earning.profile.phone }})
+                      </span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #64748b;">
+                      <i class="fas fa-box"></i> {{ earning.scan.pack.sku }}
+                      <span class="date-badge" style="margin-left: 0.5rem;">
+                        <i class="far fa-clock"></i> {{ earning.created_at|date:"M d, Y - g:i A" }}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <span class="points-badge">+{{ earning.points_earned }} pts</span>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem; color: #94a3b8;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">
+                <i class="fas fa-inbox"></i>
+              </div>
+              <p>No earnings yet. Share your partnership link to start earning!</p>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Monthly Statistics Chart -->
+          {% if monthly_stats %}
+          <div class="card-modern">
+            <div class="card-header-custom">
+              <div class="card-icon">
+                <i class="fas fa-chart-bar"></i>
+              </div>
+              <h3 class="card-title-custom">Monthly Performance</h3>
+            </div>
+            <canvas id="monthlyChart" height="80"></canvas>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Referred Users List -->
+        <div class="column is-4">
+          <div class="card-modern">
+            <div class="card-header-custom">
+              <div class="card-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <h3 class="card-title-custom">Your Users</h3>
+            </div>
+
+            {% if referred_users %}
+            <div class="scroll-area">
+              {% for user in referred_users %}
+              <div class="user-item">
+                <div style="font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">
+                  {{ user.first_name }} {{ user.second_name }}
+                </div>
+                <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">
+                  <i class="fas fa-phone"></i> {{ user.phone }}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.8rem; color: #94a3b8;">
+                    <i class="far fa-calendar"></i> {{ user.created_at|date:"M d, Y" }}
+                  </span>
+                  <span
+                    style="background: #f1f5f9; color: var(--primary); padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">
+                    {{ profile.points }} pts
+                  </span>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                <i class="fas fa-user-plus"></i>
+              </div>
+              <p>No referred users yet</p>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Quick Info -->
+          <div class="card-modern"
+            style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-color: #38bdf8;">
+            <h4 style="font-size: 1.1rem; font-weight: 700; color: #0c4a6e; margin-bottom: 1rem;">
+              <i class="fas fa-info-circle"></i> How It Works
+            </h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              <li
+                style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative; color: #0c4a6e; font-size: 0.9rem;">
+                <span style="position: absolute; left: 0; color: #0ea5e9; font-weight: 700;">1.</span>
+                Share your partnership link or code
+              </li>
+              <li
+                style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative; color: #0c4a6e; font-size: 0.9rem;">
+                <span style="position: absolute; left: 0; color: #0ea5e9; font-weight: 700;">2.</span>
+                Users register using your link
+              </li>
+              <li
+                style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative; color: #0c4a6e; font-size: 0.9rem;">
+                <span style="position: absolute; left: 0; color: #0ea5e9; font-weight: 700;">3.</span>
+                You earn <strong>{{ partnership.points_per_scan }} points</strong> per scan
+              </li>
+              <li
+                style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative; color: #0c4a6e; font-size: 0.9rem;">
+                <span style="position: absolute; left: 0; color: #0ea5e9; font-weight: 700;">4.</span>
+                Earn automatically from all their activity
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function copyShareUrl() {
+      const urlText = document.getElementById('shareUrl').textContent.trim();
+      navigator.clipboard.writeText(urlText).then(() => {
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        btn.style.background = 'var(--success)';
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.style.background = 'var(--warning)';
+        }, 2000);
+      });
+    }
+
+    {% if monthly_stats %}
+    // Monthly Chart
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [
+          {% for stat in monthly_stats reversed %}
+            '{{ stat.month|date:"M Y" }}'{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+        ],
+    datasets: [{
+      label: 'Points Earned',
+      data: [
+        {% for stat in monthly_stats reversed %}
+    {{ stat.total_points }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+          ],
+    backgroundColor: 'rgba(99, 102, 241, 0.8)',
+      borderColor: 'rgba(99, 102, 241, 1)',
+        borderWidth: 2,
+          borderRadius: 8
+        }]
+      },
+    options: {
+      responsive: true,
+        maintainAspectRatio: true,
+          plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+            grid: {
+            color: 'rgba(99, 102, 241, 0.1)'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+    });
+    {% endif %}
+  </script>
+</body>
+
+</html>
+
+
+
+

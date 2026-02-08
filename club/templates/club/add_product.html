@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+
+<body>
+    <nav class="navbar is-success">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'club:listing_partner_dashboard' %}">
+                <strong>← Back to Dashboard</strong>
+            </a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="box">
+                        <h1 class="title">Add New Product</h1>
+                        <p class="subtitle">List a product for redemption</p>
+
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="notification is-{{ message.tags }}">
+                            <button class="delete"></button>
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+
+                        <div class="notification is-info is-light">
+                            <p><strong>Note:</strong> Your product will be reviewed by Melvins admin who will set the
+                                final price and points required.</p>
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="field">
+                                <label class="label">Product Name *</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="name"
+                                        placeholder="e.g., Wireless Bluetooth Headphones" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Description *</label>
+                                <div class="control">
+                                    <textarea class="textarea" name="description"
+                                        placeholder="Detailed product description..." rows="5" required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="columns">
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Category</label>
+                                        <div class="control">
+                                            <input class="input" type="text" name="category"
+                                                placeholder="e.g., Electronics, Fashion, Food">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Your Price (KES) *</label>
+                                        <div class="control">
+                                            <input class="input" type="number" name="partner_price" step="0.01" min="1"
+                                                placeholder="2000.00" required>
+                                        </div>
+                                        <p class="help">Amount you want to receive per redemption</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="columns">
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Stock Quantity *</label>
+                                        <div class="control">
+                                            <input class="input" type="number" name="stock_quantity" min="0"
+                                                placeholder="100" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Product Image</label>
+                                        <div class="control">
+                                            <input class="file-input" type="file" name="image" accept="image/*">
+                                        </div>
+                                        <p class="help">Optional but recommended</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field mt-5">
+                                <div class="control">
+                                    <button type="submit" class="button is-success is-fullwidth is-medium">
+                                        <strong>Submit Product for Approval</strong>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+

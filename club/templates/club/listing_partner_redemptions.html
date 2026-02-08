@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Redemptions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+    <nav class="navbar is-success">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'club:listing_partner_dashboard' %}">
+                <strong>← Back to Dashboard</strong>
+            </a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Product Redemptions</h1>
+
+            <!-- Filter -->
+            <div class="box">
+                <form method="get">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <div class="select">
+                                <select name="status" onchange="this.form.submit()">
+                                    <option value="">All Status</option>
+                                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                                    <option value="fulfilled" {% if status_filter == 'fulfilled' %}selected{% endif %}>Fulfilled</option>
+                                    <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control">
+                            <button type="submit" class="button is-info">Filter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Redemptions Table -->
+            <div class="box">
+                {% if redemptions %}
+                <div class="table-container">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Product</th>
+                                <th>Customer</th>
+                                <th>Code</th>
+                                <th>Points</th>
+                                <th>Amount</th>
+                                <th>Your Earning</th>
+                                <th>Commission</th>
+                                <th>Status</th>
+                                <th>Paid</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for redemption in redemptions %}
+                            <tr>
+                                <td>{{ redemption.created_at|date:"M d, Y H:i" }}</td>
+                                <td>{{ redemption.product.name }}</td>
+                                <td>
+                                    {{ redemption.profile.first_name }} {{ redemption.profile.second_name }}
+                                    <br><small>{{ redemption.profile.phone }}</small>
+                                </td>
+                                <td><code>{{ redemption.redemption_code }}</code></td>
+                                <td>{{ redemption.points_deducted }}</td>
+                                <td>KES {{ redemption.amount_charged|floatformat:2 }}</td>
+                                <td><strong class="has-text-success">KES {{ redemption.partner_earning|floatformat:2 }}</strong></td>
+                                <td><small>KES {{ redemption.Melvins Club_commission|floatformat:2 }}</small></td>
+                                <td>
+                                    <span class="tag {% if redemption.status == 'fulfilled' %}is-success{% elif redemption.status == 'pending' %}is-warning{% elif redemption.status == 'cancelled' %}is-danger{% else %}is-info{% endif %}">
+                                        {{ redemption.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if redemption.paid_to_partner %}
+                                    <span class="tag is-success">✓ Paid</span>
+                                    <br><small>{{ redemption.paid_at|date:"M d, Y" }}</small>
+                                    {% else %}
+                                    <span class="tag is-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="notification is-info is-light">
+                    <p class="has-text-centered">No redemptions found</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+
+
+
+
+
+
+

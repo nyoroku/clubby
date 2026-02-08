@@ -1,0 +1,124 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Rewards - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-8" x-data="{ filter: 'all' }">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-2xl font-display font-bold text-white mb-2">Rewards Center</h1>
+        <p class="text-white/50 text-sm">Redeem points for exclusive rewards</p>
+    </div>
+
+    <!-- Points Balance Card -->
+    <section class="mb-8">
+        <div class="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-24 h-24 bg-melvins-gold/20 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2">
+            </div>
+            <div class="relative z-10">
+                <span class="text-white/50 text-xs font-bold uppercase tracking-wider block mb-2">Your Balance</span>
+                <div class="flex items-center justify-center gap-2">
+                    <span class="text-4xl font-bold text-white">{{ profile.points|default:0 }}</span>
+                    <span class="text-melvins-gold font-bold text-sm bg-melvins-gold/20 px-2 py-1 rounded">PTS</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Tabs -->
+    <section class="flex flex-wrap justify-center gap-2 mb-6">
+        <button @click="filter = 'all'"
+            :class="filter === 'all' ? 'bg-melvins-gold text-[#1a0a0c]' : 'glass-card text-white/70 hover:text-white'"
+            class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+            All
+        </button>
+        <button @click="filter = 'products'"
+            :class="filter === 'products' ? 'bg-melvins-gold text-[#1a0a0c]' : 'glass-card text-white/70 hover:text-white'"
+            class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+            🎁 Products
+        </button>
+        <button @click="filter = 'vouchers'"
+            :class="filter === 'vouchers' ? 'bg-melvins-gold text-[#1a0a0c]' : 'glass-card text-white/70 hover:text-white'"
+            class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+            🎟️ Vouchers
+        </button>
+        <button @click="filter = 'experiences'"
+            :class="filter === 'experiences' ? 'bg-melvins-gold text-[#1a0a0c]' : 'glass-card text-white/70 hover:text-white'"
+            class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+            🏆 Experiences
+        </button>
+    </section>
+
+    <!-- Rewards Grid -->
+    <section class="space-y-4">
+        {% if rewards %}
+        {% for reward in rewards %}
+        <div class="glass-card rounded-2xl overflow-hidden group"
+            x-show="filter === 'all' || filter === '{{ reward.category|default:'products' }}'"
+            x-transition.opacity.duration.300ms>
+
+            <div class="flex gap-4 p-4">
+                <!-- Image -->
+                <div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-white/10">
+                    {% if reward.image %}
+                    <img src="{{ reward.image.url }}" alt="{{ reward.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-3xl opacity-50">{{
+                        reward.icon|default:"🎁" }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Details -->
+                <div class="flex-grow flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-white text-base mb-1">{{ reward.name }}</h3>
+                        <p class="text-white/50 text-xs line-clamp-2">{{ reward.description }}</p>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-melvins-gold font-bold text-sm">{{ reward.points_required }} pts</span>
+
+                        {% if profile.points >= reward.points_required %}
+                        <a href="{% url 'club:redeem_product' reward.id %}"
+                            class="px-4 py-2 bg-melvins-gold text-[#1a0a0c] font-bold text-xs rounded-full hover:bg-melvins-gold-light transition">
+                            Redeem
+                        </a>
+                        {% else %}
+                        <span class="px-3 py-1.5 bg-white/10 text-white/40 font-bold text-xs rounded-full">
+                            🔒 {{ reward.points_required|add:"-"|add:profile.points }} more
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <!-- Placeholder Rewards -->
+        <div class="glass-card rounded-2xl p-6 text-center">
+            <p class="text-white/50 text-sm mb-4">No rewards available yet</p>
+            <a href="{% url 'club:scan_pack' %}"
+                class="inline-block px-4 py-2 bg-melvins-gold text-[#1a0a0c] font-bold text-sm rounded-full">
+                Scan to Earn Points
+            </a>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Earn More CTA -->
+    <section class="mt-8">
+        <div class="glass-card rounded-2xl p-6 text-center border border-melvins-gold/20">
+            <h3 class="font-bold text-white text-base mb-2">Need more points?</h3>
+            <p class="text-white/50 text-xs mb-4">Scan tea packs to unlock more rewards</p>
+            <a href="{% url 'club:scan_pack' %}"
+                class="inline-block px-6 py-3 bg-melvins-gold text-[#1a0a0c] rounded-xl font-bold text-sm hover:bg-melvins-gold-light transition">
+                📦 Scan a Pack
+            </a>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

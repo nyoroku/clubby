@@ -1,0 +1,231 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}🏆 {{ challenge.title }} - Winners{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8 pb-24 relative">
+
+    <!-- Confetti Container -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
+
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm flex items-center gap-2 text-melvins-dark/50">
+        <a href="{% url 'club:challenges_list' %}" class="hover:text-melvins-red transition">Challenges</a>
+        <span>/</span>
+        <a href="{% url 'club:challenge_detail' challenge.id %}" class="hover:text-melvins-red transition">{{
+            challenge.title|truncatechars:20 }}</a>
+        <span>/</span>
+        <span class="font-bold text-melvins-dark">Winners</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+        <h1 class="text-4xl sm:text-5xl font-display font-bold text-melvins-dark mb-2">
+            🏆 Winners Announced!
+        </h1>
+        <p class="text-xl text-melvins-dark/60 font-medium">{{ challenge.title }} - {{ challenge.get_frequency_display
+            }} Draw</p>
+
+        <div class="mt-4 inline-flex flex-wrap justify-center gap-4 text-sm text-melvins-dark/70">
+            <span class="bg-white px-4 py-2 rounded-full shadow-sm border border-melvins-beige">
+                <strong>Prize:</strong> {{ challenge.reward_value }}
+            </span>
+            <span class="bg-white px-4 py-2 rounded-full shadow-sm border border-melvins-beige">
+                <strong>Participants:</strong> {{ challenge.total_entries }}
+            </span>
+            <span class="bg-white px-4 py-2 rounded-full shadow-sm border border-melvins-beige">
+                <strong>Date:</strong> {{ challenge.winners_selected_at|date:"M d, Y" }}
+            </span>
+        </div>
+    </div>
+
+    <!-- User Win Notification -->
+    {% if is_winner %}
+    <div
+        class="mb-10 bg-gradient-to-r from-green-500 to-emerald-700 text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
+        <div
+            class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2">
+        </div>
+        <div class="relative z-10 text-center">
+            <div class="text-6xl mb-4 animate-bounce">🎉</div>
+            <h2 class="text-3xl font-bold mb-2">Congratulations! You Won!</h2>
+            <p class="text-xl opacity-90 mb-6">You came in <span class="font-bold text-yellow-300">{{
+                    user_winner.position|ordinal }}</span> place!</p>
+
+            <div class="bg-black/20 backdrop-blur-sm rounded-xl p-4 inline-block mb-6">
+                <p class="text-sm uppercase tracking-wide opacity-70 mb-1">Your Redemption Code</p>
+                <code
+                    class="text-2xl font-mono font-bold tracking-widest text-white">{{ user_winner.redemption_code|default:"Check with admin" }}</code>
+            </div>
+
+            {% if not user_winner.prize_claimed %}
+            <div class="mt-2">
+                <a href="{% url 'club:claim_prize' user_winner.id %}"
+                    class="inline-block px-8 py-4 bg-white text-green-700 font-bold rounded-xl shadow-lg hover:bg-green-50 transition transform hover:-translate-y-1">
+                    Claim Your Prize
+                </a>
+            </div>
+            {% else %}
+            <div class="mt-2 text-green-200 font-bold bg-green-900/30 inline-block px-4 py-2 rounded-lg">
+                ✅ Prize claimed on {{ user_winner.prize_claimed_at|date:"M d, Y" }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Winners List -->
+    <div class="space-y-6">
+        {% for winner in winners %}
+        <div class="relative rounded-3xl p-6 sm:p-8 text-white shadow-xl overflow-hidden
+            {% if winner.position == 1 %}
+                bg-gradient-to-br from-yellow-400 via-orange-500 to-yellow-600 scale-105 z-10 border-4 border-white/20 ring-4 ring-yellow-400/30
+            {% elif winner.position == 2 %}
+                 bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500
+            {% elif winner.position == 3 %}
+                 bg-gradient-to-br from-orange-300 via-orange-400 to-orange-700
+            {% else %}
+                 bg-white border border-melvins-beige !text-melvins-dark
+            {% endif %}
+        ">
+            <!-- Background Pattern for Top 3 -->
+            {% if winner.position <= 3 %} <div
+                class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        </div>
+        <div
+            class="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2">
+        </div>
+        {% endif %}
+
+        <div class="relative z-10 flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+            <!-- Rank Badge -->
+            <div class="flex-shrink-0 w-24 h-24 bg-white rounded-full flex items-center justify-center text-5xl shadow-lg border-4 border-opacity-20 border-white
+                    {% if winner.position > 3 %}border-melvins-beige bg-melvins-cream{% endif %}">
+                {% if winner.position == 1 %}🥇
+                {% elif winner.position == 2 %}🥈
+                {% elif winner.position == 3 %}🥉
+                {% else %}<span class="text-2xl font-bold text-melvins-dark">#{{ winner.position }}</span>
+                {% endif %}
+            </div>
+
+            <div class="flex-grow">
+                <h3 class="text-2xl font-bold mb-1
+                        {% if winner.position > 3 %}text-melvins-dark{% else %}text-white text-shadow-sm{% endif %}">
+                    {{ winner.get_display_name }}
+                </h3>
+                <p class="text-lg opacity-80 mb-3 font-mono">
+                    {{ winner.get_masked_phone }}
+                </p>
+
+                <div class="flex flex-wrap justify-center sm:justify-start gap-4 text-sm opacity-90">
+                    <div class="flex items-center gap-1">
+                        <span>🎁 Prize:</span>
+                        <span class="font-bold">{{ challenge.reward_value }}</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span>📊 Weight:</span>
+                        <span class="font-bold">{{ winner.entry_weight|floatformat:2 }}</span>
+                    </div>
+                </div>
+
+                <p class="mt-3 text-xs opacity-60 italic">
+                    Based on {{ winner.profile.points }} points & {{ winner.profile.successful_referrals_count }}
+                    referrals
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Share Section -->
+<div class="mt-16 text-center bg-white rounded-3xl p-8 border border-melvins-beige shadow-sm">
+    <h3 class="text-2xl font-bold text-melvins-dark mb-6">Spread the Word!</h3>
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <button onclick="shareOnWhatsApp()"
+            class="px-6 py-3 bg-[#25D366] text-white font-bold rounded-xl shadow-lg hover:bg-[#128C7E] transition flex items-center justify-center gap-2">
+            <span>💬</span> Share on WhatsApp
+        </button>
+        <button onclick="shareOnTwitter()"
+            class="px-6 py-3 bg-[#1DA1F2] text-white font-bold rounded-xl shadow-lg hover:bg-[#0c85d0] transition flex items-center justify-center gap-2">
+            <span>🐦</span> Share on Twitter
+        </button>
+        <button onclick="copyLink()"
+            class="px-6 py-3 bg-melvins-dark text-white font-bold rounded-xl shadow-lg hover:bg-black transition flex items-center justify-center gap-2">
+            <span>🔗</span> Copy Link
+        </button>
+    </div>
+</div>
+
+<!-- Privacy Notice -->
+<div class="mt-8 text-center px-4">
+    <div class="inline-block bg-gray-50 rounded-xl p-4 border border-gray-100">
+        <p class="text-xs text-melvins-dark/50 flex items-center justify-center gap-1">
+            <span>🔒</span>
+            Winner privacy is protected. Names and phones are partially masked.
+            {% if not challenge.is_public_results %}
+            Only participants can view this.
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+</div>
+
+<script>
+    function shareOnTwitter() {
+        const text = `🎉 Check out the winners of {{ challenge.title|escapejs }}! Congratulations to all! #LoyaltyClub #Winners`;
+        const url = window.location.href;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+    }
+
+    function shareOnWhatsApp() {
+        const text = `🎉 Check out the winners of {{ challenge.title|escapejs }}! ${window.location.href}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Link copied to clipboard!');
+        });
+    }
+
+    // Add confetti on page load
+    window.addEventListener('load', () => {
+        createConfetti();
+    });
+
+    function createConfetti() {
+        const colors = ['#f6d365', '#fda085', '#C17F59', '#2C1810', '#48c6ef'];
+        const container = document.getElementById('confetti-container');
+
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = '50%';
+
+                // Random animation duration and delay
+                const duration = Math.random() * 3 + 3;
+                confetti.style.transition = `top ${duration}s linear, transform ${duration}s ease-in-out`;
+
+                container.appendChild(confetti);
+
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    confetti.style.top = '110vh';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                });
+
+                setTimeout(() => confetti.remove(), duration * 1000);
+            }, i * 150);
+        }
+    }
+</script>
+{% endblock %}

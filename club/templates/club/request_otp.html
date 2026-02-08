@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login/Register - Loyalty Club</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+    <section class="hero is-info is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-5-tablet is-4-desktop">
+                        {% if partnership %}
+                        <div class="notification is-success">
+                            <p class="has-text-centered">
+                                <strong>🎉 Registering via {{ partnership.name }}!</strong>
+                                <br>
+                                <small>Partner Code: {{ partnership_code }}</small>
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        <div class="box">
+                            <h1 class="title has-text-centered">Welcome!</h1>
+                            <p class="subtitle has-text-centered">Login or Register</p>
+
+                            {% if messages %}
+                                {% for message in messages %}
+                                <div class="notification is-{{ message.tags }}">
+                                    <button class="delete"></button>
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="post">
+                                {% csrf_token %}
+
+                                {% if partnership_code %}
+                                <input type="hidden" name="partnership_code" value="{{ partnership_code }}">
+                                {% endif %}
+
+                                <div class="field">
+                                    <label class="label">Phone Number</label>
+                                    <div class="control">
+                                        <input class="input is-large" type="tel" name="phone"
+                                               placeholder="0712345678" required autofocus>
+                                    </div>
+                                    <p class="help">Enter your Kenyan phone number</p>
+                                </div>
+
+                                <div class="field">
+                                    <div class="control">
+                                        <button type="submit" class="button is-info is-fullwidth is-medium">
+                                            <strong>Send OTP</strong>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <hr>
+                            <div class="has-text-centered">
+                                <p class="is-size-7">
+                                    Want to become a partner?
+                                    <a href="{% url 'club:partner_register_otp' %}">Register as Partner</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+    </script>
+</body>
+</html>
+
+
+
+

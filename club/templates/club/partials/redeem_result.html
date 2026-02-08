@@ -1,0 +1,12 @@
+{% if error %}
+  <div class="notification is-danger">{{ error }}</div>
+{% else %}
+  <div class="notification is-success">{{ success }}</div>
+  <script>
+    document.getElementById('points-count').innerText = "{{ profile.points }}";
+  </script>
+{% endif %}
+
+
+
+

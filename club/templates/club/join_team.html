@@ -1,0 +1,55 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Join Team - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-melvins-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-4xl">🔗</span>
+        </div>
+        <h1 class="text-2xl font-display font-bold text-melvins-dark mb-2">Join a Team</h1>
+        <p class="text-melvins-dark/60">Enter the invite code from your friend</p>
+    </div>
+
+    <!-- Form -->
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <div>
+            <label for="invite_code" class="block text-sm font-medium text-melvins-dark mb-2">Invite Code</label>
+            <input type="text" id="invite_code" name="invite_code" placeholder="e.g., ABC123" maxlength="6" required
+                class="w-full px-4 py-4 rounded-xl border border-melvins-beige focus:border-melvins-gold focus:ring-2 focus:ring-melvins-gold/20 transition outline-none text-center text-2xl font-mono uppercase tracking-widest"
+                style="letter-spacing: 0.5em;">
+            <p class="text-xs text-melvins-dark/50 mt-1 text-center">6-character code (case insensitive)</p>
+        </div>
+
+        <button type="submit"
+            class="w-full py-4 bg-melvins-gold text-white font-bold rounded-xl hover:bg-melvins-gold-light transition shadow-lg shadow-melvins-gold/20">
+            Join Team
+        </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="flex items-center gap-4 my-8">
+        <div class="flex-1 h-px bg-melvins-beige"></div>
+        <span class="text-melvins-dark/40 text-sm">or</span>
+        <div class="flex-1 h-px bg-melvins-beige"></div>
+    </div>
+
+    <!-- Create Team Option -->
+    <a href="{% url 'club:create_team' %}"
+        class="block w-full py-4 bg-white text-melvins-dark font-bold rounded-xl hover:bg-gray-50 transition border border-melvins-beige text-center">
+        ✨ Create Your Own Team
+    </a>
+
+    <!-- Back Link -->
+    <div class="text-center mt-6">
+        <a href="{% url 'club:team_collection_home' %}" class="text-melvins-dark/60 hover:text-melvins-dark transition">
+            ← Back
+        </a>
+    </div>
+</div>
+{% endblock %}

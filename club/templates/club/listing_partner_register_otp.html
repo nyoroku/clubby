@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Listing Partner Registration</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+
+<body>
+    <section class="hero is-success is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-5-tablet is-4-desktop">
+                        <div class="box">
+                            <h1 class="title has-text-centered">🏭 Listing Partner Registration</h1>
+                            <p class="subtitle has-text-centered">List your products on Melvins Club</p>
+
+                            {% if messages %}
+                            {% for message in messages %}
+                            <div class="notification is-{{ message.tags }}">
+                                <button class="delete"></button>
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="field">
+                                    <label class="label">Phone Number</label>
+                                    <div class="control">
+                                        <input class="input is-large" type="tel" name="phone" placeholder="0712345678"
+                                            required autofocus>
+                                    </div>
+                                    <p class="help">Enter your business phone number</p>
+                                </div>
+
+                                <div class="field">
+                                    <div class="control">
+                                        <button type="submit" class="button is-success is-fullwidth is-medium">
+                                            <strong>Send OTP</strong>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <hr>
+                            <div class="has-text-centered">
+                                <p class="is-size-7">Already registered? <a
+                                        href="{% url 'club:listing_partner_register_otp' %}">Login here</a></p>
+                            </div>
+                        </div>
+
+                        <div class="box has-background-light">
+                            <h4 class="title is-6">Why Partner with Melvins?</h4>
+                            <div class="content is-small">
+                                <ul>
+                                    <li>Reach thousands of active users</li>
+                                    <li>Get paid for every redemption</li>
+                                    <li>Control your inventory</li>
+                                    <li>Track sales in real-time</li>
+                                    <li>Simple dashboard to manage products</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+

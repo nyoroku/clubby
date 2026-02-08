@@ -1,0 +1,289 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Scan & Win - Melvins Club{% endblock %}
+
+{% block extra_css %}
+<style>
+    @keyframes goldShimmer {
+        0% {
+            background-position: -200% 0;
+        }
+
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    .animate-gold-shimmer {
+        background: linear-gradient(110deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 30%, rgba(255, 255, 255, 0) 100%);
+        background-size: 200% 100%;
+        animation: goldShimmer 2.5s infinite linear;
+    }
+
+    /* 3D Card flip styles */
+    .perspective-1000 {
+        perspective: 1000px;
+    }
+
+    .transform-style-3d {
+        transform-style: preserve-3d;
+    }
+
+    .backface-hidden {
+        backface-visibility: hidden;
+    }
+
+    .rotate-y-180 {
+        transform: rotateY(180deg);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-8" x-data="{ 
+    code: '', 
+    loading: false, 
+    serverMessage: '', 
+    showReveal: false, 
+    flipping: false,
+    revealedCard: null,
+    
+    async submitScan() {
+        if (this.code.length < 5 || this.loading) return;
+        this.loading = true;
+        this.serverMessage = '';
+        
+        try {
+            const formData = new FormData();
+            formData.append('code', this.code);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            
+            const response = await fetch('{% url 'club:scan_pack' %}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            if (!response.ok) {
+                this.serverMessage = { type: 'error', text: 'Server Error. Try again.' };
+                return;
+            }
+
+            const data = await response.json();
+            
+            if (data.success) {
+                this.code = '';
+                if (data.revealed_card) {
+                    this.revealedCard = data.revealed_card;
+                    if (!this.revealedCard.image) this.revealedCard.image = 'https://images.unsplash.com/photo-1597305877447-0849319e6d8a';
+                    this.showReveal = true;
+                    setTimeout(() => this.flipping = true, 500);
+                } else {
+                    this.serverMessage = { type: 'success', text: data.message };
+                }
+            } else {
+                this.serverMessage = { type: 'error', text: data.message || 'Invalid Request' };
+            }
+        } catch (err) {
+            this.serverMessage = { type: 'error', text: 'Network Error' };
+        } finally {
+            this.loading = false;
+        }
+    }
+}">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <span
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card text-melvins-gold text-[10px] font-bold uppercase tracking-widest mb-4">
+            <span>✨</span> Melvins Rewards
+        </span>
+        <h1 class="text-3xl font-display font-bold text-white mb-2">
+            Scan Your Pack
+        </h1>
+        <p class="text-white/50 text-sm">
+            Enter your pack code to earn points and collect tea cards
+        </p>
+    </div>
+
+    <!-- Main Scan Card (Glassmorphism) -->
+    <section class="mb-8">
+        <div class="glass-card rounded-3xl p-6 relative overflow-hidden">
+            <!-- Glow effect -->
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-melvins-gold/20 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2">
+            </div>
+
+            <div class="relative z-10">
+                <!-- Alert Message -->
+                <div x-show="serverMessage" x-collapse class="mb-6 p-4 rounded-xl text-center text-sm font-bold"
+                    :class="serverMessage.type === 'error' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'">
+                    <span x-text="serverMessage.text"></span>
+                </div>
+
+                <form @submit.prevent="submitScan" class="space-y-6">
+                    <!-- Input Field -->
+                    <div>
+                        <label
+                            class="block text-[10px] font-bold uppercase tracking-widest text-white/50 mb-3 text-center">
+                            Enter Code Found Inside Pack
+                        </label>
+
+                        <div class="relative flex items-center">
+                            <div
+                                class="absolute left-4 w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-xl">
+                                📦
+                            </div>
+                            <input type="text" x-model="code" placeholder="MEL-W-..."
+                                class="w-full h-16 pl-16 pr-4 bg-white/10 border border-white/20 rounded-2xl text-xl font-mono font-bold text-white placeholder-white/30 focus:border-melvins-gold focus:ring-2 focus:ring-melvins-gold/30 transition-all uppercase text-center"
+                                maxlength="20">
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" :disabled="code.length < 5 || loading"
+                        class="relative w-full py-5 bg-gradient-to-r from-melvins-gold to-yellow-500 rounded-2xl shadow-lg shadow-melvins-gold/30 transform transition active:scale-[0.98] disabled:opacity-50 disabled:grayscale overflow-hidden group">
+                        <div class="absolute inset-0 animate-gold-shimmer mix-blend-overlay"></div>
+                        <div
+                            class="relative flex items-center justify-center gap-2 text-[#1a0a0c] font-bold text-lg tracking-wide uppercase">
+                            <span x-text="loading ? 'Validating...' : 'Reveal Rewards'"></span>
+                            <svg x-show="!loading" class="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <svg x-show="loading" class="w-5 h-5 animate-spin" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                        </div>
+                    </button>
+                </form>
+
+                <!-- Steps -->
+                <div class="mt-8 flex justify-center gap-8 opacity-60">
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="w-1.5 h-1.5 rounded-full bg-melvins-gold"></div>
+                        <span class="text-[9px] uppercase tracking-widest font-bold text-white/70">Find</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="w-1.5 h-1.5 rounded-full bg-melvins-gold"></div>
+                        <span class="text-[9px] uppercase tracking-widest font-bold text-white/70">Scan</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="w-2.5 h-2.5 rounded-full bg-melvins-gold shadow-[0_0_10px_#ee9822]"></div>
+                        <span class="text-[9px] uppercase tracking-widest font-bold text-white">Win</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Wins -->
+    {% if recent_scans %}
+    <section>
+        <h3
+            class="text-white/40 text-xs font-bold uppercase tracking-widest text-center mb-4 flex items-center gap-3 justify-center">
+            <span class="h-px w-8 bg-white/10"></span>
+            Recent Wins
+            <span class="h-px w-8 bg-white/10"></span>
+        </h3>
+
+        <div class="space-y-3">
+            {% for sc in recent_scans|slice:":3" %}
+            <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">
+                        ✓
+                    </div>
+                    <div>
+                        <p class="font-mono text-white font-bold text-sm tracking-wide">{{ sc.pack.code }}</p>
+                        <p class="text-[10px] text-white/40">{{ sc.scanned_at|timesince }} ago</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="block text-melvins-gold font-bold text-lg">+{{ sc.points_awarded }}</span>
+                    <span class="text-[10px] text-white/30 uppercase font-bold">Points</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Full Screen Reveal Modal -->
+    <template x-teleport="body">
+        <div x-show="showReveal && revealedCard" x-cloak
+            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl px-4"
+            x-transition:enter="transition duration-300" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100">
+
+            <div class="w-full max-w-sm relative perspective-1000" @click.away="showReveal = false">
+                <!-- Close Button -->
+                <button @click="showReveal = false" class="absolute -top-12 right-0 text-white/50 hover:text-white p-2">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- 3D Flipping Card -->
+                <div class="relative aspect-[2/3] w-full transform-style-3d transition-transform duration-[1200ms]"
+                    :class="flipping ? 'rotate-y-180' : ''" @click="flipping = !flipping">
+
+                    <!-- BACK -->
+                    <div
+                        class="absolute inset-0 backface-hidden rounded-[2rem] bg-gradient-to-br from-melvins-maroon to-[#5a1015] border-4 border-white/10 shadow-2xl flex flex-col items-center justify-center text-white overflow-hidden">
+                        <div
+                            class="w-32 h-32 bg-melvins-gold rounded-full blur-[80px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse">
+                        </div>
+                        <div class="relative z-10 text-center">
+                            <h3 class="font-display text-4xl font-bold mb-2">You Won!</h3>
+                            <p class="text-melvins-gold uppercase tracking-[0.3em] text-xs">Tap to Flip</p>
+                        </div>
+                    </div>
+
+                    <!-- FRONT -->
+                    <div
+                        class="absolute inset-0 backface-hidden rotate-y-180 rounded-[2rem] bg-white overflow-hidden shadow-2xl border-4 border-white/20">
+                        <div class="absolute inset-0 bg-cover bg-center"
+                            :style="`background-image: url('${revealedCard?.image}')`"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
+
+                        <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                            <h2 class="text-3xl font-display font-bold mb-1" x-text="revealedCard?.name"></h2>
+                            <p class="text-melvins-gold font-bold uppercase text-xs tracking-widest mb-2"
+                                x-text="revealedCard?.region"></p>
+
+                            <!-- Reward Points -->
+                            <div class="mb-4" x-show="!revealedCard?.is_duplicate">
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 bg-melvins-gold/90 rounded-full text-[#1a0a0c] text-sm font-bold">
+                                    🎉 +<span x-text="revealedCard?.reward_points || 10"></span> pts
+                                </span>
+                            </div>
+                            <div class="mb-4" x-show="revealedCard?.is_duplicate">
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 bg-amber-500/90 rounded-full text-white text-sm font-bold">
+                                    🔄 Duplicate (+5 pts)
+                                </span>
+                            </div>
+
+                            <button @click.stop="window.location.href = '{% url 'club:my_collection' %}'"
+                                class="w-full py-4 bg-white text-[#1a0a0c] font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
+                                View in Collection →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</div>
+{% endblock %}

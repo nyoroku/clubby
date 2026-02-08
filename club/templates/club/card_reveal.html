@@ -1,0 +1,125 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Card Revealed! - Melvins Club{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preserve-3d {
+        transform-style: preserve-3d;
+    }
+
+    .card-face-back {
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+
+    .card-face-front {
+        transform: rotateY(180deg);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-8" x-data="{ 
+        flipped: false, 
+        showDetails: false 
+     }" x-init="setTimeout(() => flipped = true, 500); setTimeout(() => showDetails = true, 1200)">
+
+    <div class="max-w-sm w-full">
+        <!-- Card Container -->
+        <div class="relative w-full aspect-[3/4] cursor-pointer" style="perspective: 1000px;"
+            @click="flipped = !flipped">
+
+            <!-- Glow effect behind card -->
+            <div class="absolute inset-0 bg-melvins-gold/20 blur-3xl rounded-full scale-90 animate-pulse"></div>
+
+            <div class="relative w-full h-full preserve-3d transition-transform duration-700 ease-out"
+                :style="flipped ? 'transform: rotateY(180deg)' : 'transform: rotateY(0deg)'">
+
+                <!-- Card Back (Initial View) -->
+                <div class="absolute inset-0 w-full h-full bg-melvins-maroon rounded-3xl border-4 border-white flex flex-col items-center justify-center shadow-2xl card-face-back"
+                    style="backface-visibility: hidden;">
+                    <div
+                        class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+                        <span class="text-4xl">🍃</span>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold text-white">Melvins Club</h3>
+                    <p class="text-white/60 text-sm mt-2 font-medium">Tap to Flip</p>
+                </div>
+
+                <!-- Card Front (Revealed View) -->
+                <div class="absolute inset-0 w-full h-full bg-white rounded-3xl border-4 flex flex-col items-center justify-center p-6 text-center shadow-2xl card-face-front"
+                    :class="{
+                        'border-amber-400 shadow-[0_0_40px_rgba(245,158,11,0.3)]': '{{ revealed_card.card.rarity }}' === 'rare',
+                        'border-blue-400 shadow-[0_0_30px_rgba(96,165,250,0.2)]': '{{ revealed_card.card.rarity }}' === 'uncommon',
+                        'border-melvins-beige shadow-lg': '{{ revealed_card.card.rarity }}' !== 'rare' && '{{ revealed_card.card.rarity }}' !== 'uncommon'
+                     }" style="transform: rotateY(180deg); backface-visibility: hidden;">
+
+                    <!-- Rarity Badge -->
+                    <span
+                        class="absolute top-4 right-4 text-[10px] px-2 py-1 bg-gray-100 rounded-full font-bold uppercase tracking-wider text-melvins-dark/60">
+                        {{ revealed_card.card.get_rarity_display }}
+                    </span>
+
+                    <div class="text-7xl mb-4 drop-shadow-md">🏔️</div>
+
+                    <h3 class="text-2xl font-display font-bold text-melvins-dark mb-1">
+                        {{ revealed_card.card.get_display_title }}
+                    </h3>
+                    <p class="text-melvins-maroon font-bold text-sm mb-4 uppercase tracking-widest">{{
+                        revealed_card.card.estate.region }}</p>
+
+                    <div class="w-full h-px bg-melvins-beige mb-4"></div>
+
+                    <p class="text-xs text-melvins-dark/50 italic mb-6">
+                        "{{ revealed_card.card.flavor_text|default:'Part of the legendary Kenya Tea Estates collection'
+                        }}"
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Badge -->
+        <div class="text-center mt-8" x-show="showDetails" x-transition:enter="transition ease-out duration-500"
+            x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
+            x-cloak>
+
+            {% if revealed_card.is_duplicate %}
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 border border-amber-200 shadow-sm">
+                <span>🔄</span>
+                <span class="text-amber-700 font-bold text-sm">Duplicate Card</span>
+            </div>
+            <p class="text-melvins-dark/50 text-sm mt-2 font-medium">You already have this card (+5 pts)</p>
+            {% else %}
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 border border-green-200 shadow-sm">
+                <span>🆕</span>
+                <span class="text-green-700 font-bold text-sm">New Card!</span>
+            </div>
+            <p class="text-melvins-gold font-bold text-lg mt-2">+{{ revealed_card.card.reward_points }} pts</p>
+            <p class="text-melvins-dark/50 text-sm mt-1 font-medium">Added to your collection</p>
+            {% endif %}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 flex gap-3" x-show="showDetails"
+            x-transition:enter="transition ease-out duration-500 delay-200"
+            x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
+            x-cloak>
+
+            <a href="{% url 'club:my_collection' %}"
+                class="flex-1 py-4 rounded-xl bg-melvins-maroon text-white font-bold text-center hover:bg-melvins-maroon-dark transition shadow-lg shadow-melvins-maroon/20 transform hover:-translate-y-0.5">
+                View Collection
+            </a>
+            <a href="{% url 'club:scan_pack' %}"
+                class="flex-1 py-4 rounded-xl bg-white text-melvins-dark font-bold text-center hover:bg-gray-50 border border-melvins-beige transition shadow-sm hover:shadow-md">
+                Scan Again
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

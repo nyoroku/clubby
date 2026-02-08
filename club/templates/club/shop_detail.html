@@ -1,0 +1,175 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}{{ shop.name }} - Shop Details{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 pb-24">
+
+    <!-- Breadcrumb -->
+    <a href="{% url 'club:shop_finder' %}"
+        class="inline-flex items-center text-sm text-melvins-dark/50 hover:text-melvins-red mb-6 transition">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Shops
+    </a>
+
+    <!-- Shop Header -->
+    <div class="bg-white rounded-[2.5rem] shadow-xl border border-melvins-beige overflow-hidden mb-10">
+        <div class="bg-gradient-to-r from-melvins-dark to-black p-8 sm:p-12 text-white relative">
+            <div
+                class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] transparent-bg">
+            </div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl sm:text-5xl font-display font-bold mb-2">{{ shop.name }}</h1>
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-bold uppercase tracking-wider border border-white/10">
+                            {{ shop.get_county_display }}
+                        </span>
+                        {% if shop.is_verified %}
+                        <span class="flex items-center gap-1 text-green-400 text-sm font-bold">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Verified Partner
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div
+                    class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-3xl backdrop-blur-sm border border-white/20 shadow-inner">
+                    🏪
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 sm:p-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Contact Info -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-bold text-melvins-dark/50 uppercase tracking-widest mb-4">Contact Details
+                    </h3>
+
+                    {% if shop.location_details %}
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-melvins-beige">
+                        <span class="text-2xl">📍</span>
+                        <div>
+                            <span class="block font-bold text-melvins-dark text-sm">Location</span>
+                            <span class="text-melvins-dark/70 text-sm">{{ shop.location_details }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if shop.phone %}
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-melvins-beige">
+                        <span class="text-2xl">📞</span>
+                        <div>
+                            <span class="block font-bold text-melvins-dark text-sm">Phone</span>
+                            <a href="tel:{{ shop.phone }}" class="text-melvins-red font-mono text-sm hover:underline">{{
+                                shop.phone }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if shop.email %}
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-melvins-beige">
+                        <span class="text-2xl">📧</span>
+                        <div>
+                            <span class="block font-bold text-melvins-dark text-sm">Email</span>
+                            <a href="mailto:{{ shop.email }}"
+                                class="text-melvins-red font-mono text-sm hover:underline">{{ shop.email }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- How it Works -->
+                <div class="bg-melvins-cream/30 rounded-2xl p-6 border border-melvins-beige/50">
+                    <h3 class="text-lg font-bold text-melvins-dark mb-4">How to Redeem</h3>
+                    <ol class="space-y-4">
+                        <li class="flex gap-3">
+                            <span
+                                class="flex-shrink-0 w-6 h-6 rounded-full bg-melvins-gold text-white flex items-center justify-center text-xs font-bold">1</span>
+                            <span class="text-sm text-melvins-dark/80">Select a reward from your <a
+                                    href="{% url 'club:dashboard' %}"
+                                    class="text-melvins-red font-bold hover:underline">Dashboard</a>.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span
+                                class="flex-shrink-0 w-6 h-6 rounded-full bg-melvins-gold text-white flex items-center justify-center text-xs font-bold">2</span>
+                            <span class="text-sm text-melvins-dark/80">Choose <strong>{{ shop.name }}</strong> as the
+                                pickup location.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span
+                                class="flex-shrink-0 w-6 h-6 rounded-full bg-melvins-gold text-white flex items-center justify-center text-xs font-bold">3</span>
+                            <span class="text-sm text-melvins-dark/80">Get your <strong>Redemption Code</strong> (e.g.
+                                A2B4-99).</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span
+                                class="flex-shrink-0 w-6 h-6 rounded-full bg-melvins-gold text-white flex items-center justify-center text-xs font-bold">4</span>
+                            <span class="text-sm text-melvins-dark/80">Visit this shop and show the code to
+                                staff.</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Rewards at this Shop -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-display font-bold text-melvins-dark mb-6 pl-4 border-l-4 border-melvins-red">Available
+            Rewards Here</h2>
+
+        {% if available_rewards %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for reward in available_rewards %}
+            <div
+                class="bg-white rounded-2xl overflow-hidden border border-melvins-beige shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 group">
+                <div class="bg-gray-100 h-40 flex items-center justify-center relative overflow-hidden">
+                    {% if reward.image %}
+                    <img src="{{ reward.image.url }}" alt="{{ reward.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <span class="text-6xl group-hover:scale-110 transition-transform duration-300">🎁</span>
+                    {% endif %}
+                    <div
+                        class="absolute top-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full">
+                        {{ reward.cost_points }} pts
+                    </div>
+                </div>
+
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-melvins-dark mb-2">{{ reward.name }}</h3>
+                    <p class="text-sm text-melvins-dark/60 line-clamp-2 mb-4">{{ reward.description }}</p>
+
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'club:rewards' %}"
+                        class="block w-full py-2 bg-melvins-red text-white font-bold rounded-lg text-center hover:bg-melvins-red-dark transition shadow-md">
+                        Redeem Now
+                    </a>
+                    {% else %}
+                    <a href="{% url 'club:request_otp' %}"
+                        class="block w-full py-2 bg-gray-100 text-melvins-dark font-bold rounded-lg text-center hover:bg-gray-200 transition">
+                        Login to Redeem
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12 bg-white rounded-3xl border border-melvins-beige shadow-sm">
+            <p class="text-melvins-dark/50">No specific rewards listed for this shop currently.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

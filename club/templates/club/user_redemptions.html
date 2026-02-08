@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Redemptions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+    <nav class="navbar is-primary">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'club:dashboard' %}">
+                <strong>← Back to Dashboard</strong>
+            </a>
+        </div>
+        <div class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <strong>{{ profile.first_name }} {{ profile.second_name }}</strong>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">🎁 My Redemptions</h1>
+            <p class="subtitle">Your reward and product redemption history</p>
+
+            <!-- Tabs -->
+            <div class="tabs is-boxed">
+                <ul>
+                    <li class="is-active" data-tab="rewards">
+                        <a>Reward Redemptions</a>
+                    </li>
+                    <li data-tab="products">
+                        <a>Product Redemptions</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Reward Redemptions Tab -->
+            <div id="rewards-tab" class="tab-content">
+                <h2 class="title is-4">Reward Redemptions</h2>
+                {% if redemptions %}
+                <div class="columns is-multiline">
+                    {% for redemption in redemptions %}
+                    <div class="column is-12">
+                        <div class="box">
+                            <article class="media">
+                                <div class="media-left">
+                                    <span class="icon is-large">
+                                        {% if redemption.status == 'fulfilled' %}
+                                        <span style="font-size: 3em;">✅</span>
+                                        {% elif redemption.status == 'cancelled' %}
+                                        <span style="font-size: 3em;">❌</span>
+                                        {% else %}
+                                        <span style="font-size: 3em;">⏳</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="media-content">
+                                    <div class="content">
+                                        <p>
+                                            <strong>{{ redemption.reward.name }}</strong>
+                                            <br>
+                                            <span class="tag {% if redemption.status == 'fulfilled' %}is-success{% elif redemption.status == 'pending' %}is-warning{% elif redemption.status == 'cancelled' %}is-danger{% else %}is-info{% endif %}">
+                                                {{ redemption.get_status_display }}
+                                            </span>
+                                            <br>
+                                            <small>{{ redemption.created_at|date:"M d, Y H:i" }}</small>
+                                            <br>
+                                            <small class="has-text-grey">Cost: {{ redemption.reward.cost_points }} points</small>
+                                        </p>
+
+                                        {% if redemption.redeemed_at_shop %}
+                                        <div class="notification is-light">
+                                            <p class="mb-2">
+                                                <strong>🏪 Shop:</strong> {{ redemption.redeemed_at_shop.name }}
+                                            </p>
+                                            {% if redemption.status != 'fulfilled' and redemption.status != 'cancelled' %}
+                                            <p>
+                                                <strong>Your Code:</strong>
+                                                <code style="font-size: 1.5em; background: #ffe08a; padding: 5px 10px; border-radius: 4px;">
+                                                    {{ redemption.redemption_code }}
+                                                </code>
+                                            </p>
+                                            <p class="help mt-2">Show this code at the shop to receive your reward</p>
+                                            {% endif %}
+                                            {% if redemption.fulfilled_at %}
+                                            <p class="has-text-success mt-2">
+                                                <strong>✓ Fulfilled on:</strong> {{ redemption.fulfilled_at|date:"M d, Y H:i" }}
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="notification is-info">
+                    <p class="has-text-centered">
+                        You haven't redeemed any rewards yet.
+                        <br>
+                        <a href="{% url 'club:dashboard' %}" class="button is-primary is-light mt-3">
+                            Browse Rewards
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Product Redemptions Tab -->
+            <div id="products-tab" class="tab-content" style="display: none;">
+                <h2 class="title is-4">Product Redemptions</h2>
+                {% if product_redemptions %}
+                <div class="columns is-multiline">
+                    {% for redemption in product_redemptions %}
+                    <div class="column is-12">
+                        <div class="box">
+                            <article class="media">
+                                <div class="media-left">
+                                    {% if redemption.product.image %}
+                                    <figure class="image is-128x128">
+                                        <img src="{{ redemption.product.image.url }}" alt="{{ redemption.product.name }}">
+                                    </figure>
+                                    {% else %}
+                                    <span class="icon is-large">
+                                        {% if redemption.status == 'fulfilled' %}
+                                        <span style="font-size: 3em;">✅</span>
+                                        {% elif redemption.status == 'cancelled' %}
+                                        <span style="font-size: 3em;">❌</span>
+                                        {% else %}
+                                        <span style="font-size: 3em;">📦</span>
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div class="media-content">
+                                    <div class="content">
+                                        <p>
+                                            <strong>{{ redemption.product.name }}</strong>
+                                            <br>
+                                            <span class="tag {% if redemption.status == 'fulfilled' %}is-success{% elif redemption.status == 'pending' %}is-warning{% elif redemption.status == 'cancelled' %}is-danger{% else %}is-info{% endif %}">
+                                                {{ redemption.get_status_display }}
+                                            </span>
+                                            <br>
+                                            <small>{{ redemption.created_at|date:"M d, Y H:i" }}</small>
+                                            <br>
+                                            <small class="has-text-grey">
+                                                Points Used: {{ redemption.points_deducted }} |
+                                                Value: KES {{ redemption.amount_charged|floatformat:2 }}
+                                            </small>
+                                            <br>
+                                            <small class="has-text-grey">
+                                                Seller: {{ redemption.product.listing_partner.company_name }}
+                                            </small>
+                                        </p>
+
+                                        {% if redemption.redeemed_at_shop %}
+                                        <div class="notification is-warning-light">
+                                            <p class="mb-2">
+                                                <strong>🏪 Pickup Location:</strong> {{ redemption.redeemed_at_shop.name }}
+                                            </p>
+                                            <p class="is-size-7">{{ redemption.redeemed_at_shop.location_details }}</p>
+
+                                            {% if redemption.status != 'fulfilled' and redemption.status != 'cancelled' %}
+                                            <div class="mt-3">
+                                                <p>
+                                                    <strong>Your Redemption Code:</strong>
+                                                </p>
+                                                <p>
+                                                    <code style="font-size: 1.8em; background: #ffe08a; padding: 8px 15px; border-radius: 4px; display: inline-block; margin-top: 5px;">
+                                                        {{ redemption.redemption_code }}
+                                                    </code>
+                                                </p>
+                                                <p class="help mt-2">
+                                                    <strong>Instructions:</strong> Visit {{ redemption.redeemed_at_shop.name }} and show this code to collect your product
+                                                </p>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if redemption.fulfilled_at %}
+                                            <p class="has-text-success mt-3">
+                                                <strong>✓ Collected on:</strong> {{ redemption.fulfilled_at|date:"M d, Y H:i" }}
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                        {% else %}
+                                        <div class="notification is-info-light">
+                                            <p>
+                                                <strong>Redemption Code:</strong>
+                                                <code style="font-size: 1.5em; background: #ffe08a; padding: 5px 10px; border-radius: 4px;">
+                                                    {{ redemption.redemption_code }}
+                                                </code>
+                                            </p>
+                                            {% if redemption.status == 'pending' %}
+                                            <p class="help mt-2">Direct redemption - await fulfillment</p>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="notification is-info">
+                    <p class="has-text-centered">
+                        You haven't redeemed any products yet.
+                        <br>
+                        <a href="{% url 'club:product_catalog' %}" class="button is-primary is-light mt-3">
+                            Browse Products
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tabs li').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tabs li').forEach(t => t.classList.remove('is-active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+
+                this.classList.add('is-active');
+                const tabName = this.getAttribute('data-tab');
+                document.getElementById(tabName + '-tab').style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+

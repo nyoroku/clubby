@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Partner Registration - Request OTP</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+    <section class="hero is-primary is-fullheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-5-tablet is-4-desktop">
+                        <div class="box">
+                            <h1 class="title has-text-centered">🤝 Partner Registration</h1>
+                            <p class="subtitle has-text-centered">Join as an Influencer or Shop</p>
+
+                            {% if messages %}
+                                {% for message in messages %}
+                                <div class="notification is-{{ message.tags }}">
+                                    <button class="delete"></button>
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="field">
+                                    <label class="label">Phone Number</label>
+                                    <div class="control">
+                                        <input class="input is-large" type="tel" name="phone"
+                                               placeholder="0712345678 or +254712345678" required autofocus>
+                                    </div>
+                                    <p class="help">Enter your Kenyan phone number</p>
+                                </div>
+
+                                <div class="field">
+                                    <div class="control">
+                                        <button type="submit" class="button is-primary is-fullwidth is-medium">
+                                            <strong>Send OTP</strong>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <hr>
+                            <div class="has-text-centered">
+                                <p class="is-size-7">Already a customer? <a href="{% url 'club:request_otp' %}">Login as Customer</a></p>
+                            </div>
+                        </div>
+
+                        <div class="box has-background-light">
+                            <h4 class="title is-6">Partner Benefits:</h4>
+                            <div class="content is-small">
+                                <ul>
+                                    <li><strong>Influencers:</strong> Earn points from every scan by referred users</li>
+                                    <li><strong>Shops:</strong> Accept point redemptions + earn from referrals</li>
+                                    <li>Real-time dashboard with earnings tracking</li>
+                                    <li>Unique referral code and shareable links</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+    </script>
+</body>
+</html>
+
+
+
+

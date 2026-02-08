@@ -1,0 +1,733 @@
+/* Melvins Club - Custom Premium Styles */
+
+/* ========================================
+   Glassmorphism Cards
+======================================== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+}
+
+.glass-card-light {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(1, 51, 40, 0.1);
+}
+
+.glass-card-dark {
+    background: rgba(1, 51, 40, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+}
+
+/* ========================================
+   Tea Estate Cards
+======================================== */
+.estate-card {
+    position: relative;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+}
+
+.estate-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s ease;
+    transform-style: preserve-3d;
+}
+
+.estate-card.revealed .estate-card-inner {
+    transform: rotateY(180deg);
+}
+
+.estate-card-front,
+.estate-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.estate-card-back {
+    transform: rotateY(180deg);
+}
+
+/* Rarity Borders */
+.rarity-common {
+    background: linear-gradient(135deg, #E3DCD2, #f8f5f2);
+    border: 3px solid #E3DCD2;
+}
+
+.rarity-uncommon {
+    background: linear-gradient(135deg, #01453a, #013328);
+    border: 3px solid #1a5f4a;
+    box-shadow: 0 0 20px rgba(1, 69, 58, 0.4);
+}
+
+.rarity-rare {
+    background: linear-gradient(135deg, #CC8B65, #e09b5e);
+    border: 3px solid #CC8B65;
+    box-shadow: 0 0 30px rgba(204, 139, 101, 0.5);
+    animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(204, 139, 101, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(204, 139, 101, 0.7);
+    }
+}
+
+/* Shimmer Effect for Rare Cards */
+.shimmer-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-effect::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
+}
+
+/* ========================================
+   3D Icon Containers
+======================================== */
+.icon-3d {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.icon-3d:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.icon-3d-green {
+    background: linear-gradient(145deg, #01453a, #013328);
+}
+
+.icon-3d-copper {
+    background: linear-gradient(145deg, #e09b5e, #CC8B65);
+}
+
+/* ========================================
+   Premium Buttons
+======================================== */
+.btn-melvins {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-melvins-primary {
+    background: linear-gradient(135deg, #CC8B65, #e09b5e);
+    color: white;
+    box-shadow: 0 12px 35px rgba(204, 139, 101, 0.35);
+}
+
+.btn-melvins-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 45px rgba(204, 139, 101, 0.45);
+}
+
+.btn-melvins-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+}
+
+.btn-melvins-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-melvins-forest {
+    background: linear-gradient(135deg, #01453a, #013328);
+    color: white;
+    box-shadow: 0 12px 35px rgba(1, 51, 40, 0.35);
+}
+
+.btn-melvins-forest:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 45px rgba(1, 51, 40, 0.45);
+}
+
+/* ========================================
+   Points Display
+======================================== */
+.points-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #013328, #01453a);
+    border-radius: 50px;
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(1, 51, 40, 0.3);
+}
+
+.points-badge-large {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #013328, #01453a);
+    box-shadow:
+        0 20px 50px rgba(1, 51, 40, 0.4),
+        inset 0 -5px 20px rgba(0, 0, 0, 0.2);
+    animation: float 4s ease-in-out infinite;
+}
+
+/* ========================================
+   Feature Cards (Dashboard)
+======================================== */
+.feature-card {
+    position: relative;
+    padding: 24px;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+}
+
+.feature-card:hover::before {
+    opacity: 1;
+}
+
+/* ========================================
+   Kenya Map Styles
+======================================== */
+.kenya-region {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.kenya-region:hover {
+    filter: brightness(1.2);
+    transform: scale(1.02);
+}
+
+.kenya-region.collected {
+    fill: #CC8B65;
+}
+
+.kenya-region.available {
+    fill: #01453a;
+}
+
+.kenya-region.locked {
+    fill: #E3DCD2;
+    opacity: 0.5;
+}
+
+/* ========================================
+   Collection Progress Bar
+======================================== */
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+/* ========================================
+   Mobile Navigation
+======================================== */
+.mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(1, 51, 40, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 12px 0;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px;
+    color: rgba(255, 255, 255, 0.6);
+    transition: color 0.2s ease;
+}
+
+.mobile-nav-item.active {
+    color: #CC8B65;
+}
+
+.mobile-nav-item:hover {
+    color: white;
+}
+
+/* ========================================
+   Loading States
+======================================== */
+.skeleton {
+    background: linear-gradient(90deg, #E3DCD2 25%, #f8f5f2 50%, #E3DCD2 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ========================================
+   Responsive Utilities
+======================================== */
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .show-mobile {
+        display: block !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .hide-desktop {
+        display: none !important;
+    }
+
+    .show-desktop {
+        display: block !important;
+    }
+}
+
+/* ========================================
+   Premium Animations
+======================================== */
+
+/* Float Animation */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Bounce Animation */
+@keyframes bounce-subtle {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* Fade In Up Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Slide In From Right */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-right {
+    animation: slideInRight 0.4s ease-out forwards;
+}
+
+/* Scale In Animation */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Sparkle Burst */
+@keyframes sparkleBurst {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2) rotate(180deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.animate-sparkle {
+    animation: sparkleBurst 0.8s ease-out forwards;
+}
+
+/* Pulse Glow */
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(204, 139, 101, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(204, 139, 101, 0.8), 0 0 60px rgba(204, 139, 101, 0.4);
+    }
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Gradient Shift */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 5s ease infinite;
+}
+
+/* Card Flip */
+@keyframes cardFlip3D {
+    0% {
+        transform: perspective(600px) rotateY(0deg);
+    }
+
+    100% {
+        transform: perspective(600px) rotateY(180deg);
+    }
+}
+
+.animate-card-flip {
+    animation: cardFlip3D 0.6s ease-in-out forwards;
+}
+
+/* ========================================
+   Staggered Animations for Lists
+======================================== */
+.stagger-animation>*:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.stagger-animation>*:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.stagger-animation>*:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.stagger-animation>*:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.stagger-animation>*:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.stagger-animation>*:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.stagger-animation>*:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.stagger-animation>*:nth-child(8) {
+    animation-delay: 0.4s;
+}
+
+.stagger-animation>*:nth-child(9) {
+    animation-delay: 0.45s;
+}
+
+.stagger-animation>*:nth-child(10) {
+    animation-delay: 0.5s;
+}
+
+.stagger-animation>*:nth-child(11) {
+    animation-delay: 0.55s;
+}
+
+.stagger-animation>*:nth-child(12) {
+    animation-delay: 0.6s;
+}
+
+/* ========================================
+   Enhanced Hover Effects
+======================================== */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.hover-scale {
+    transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+.hover-glow {
+    transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+    box-shadow: 0 0 30px rgba(204, 139, 101, 0.5);
+}
+
+/* ========================================
+   Premium Text Effects
+======================================== */
+.text-gradient-copper {
+    background: linear-gradient(135deg, #CC8B65, #e09b5e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.text-gradient-forest {
+    background: linear-gradient(135deg, #01453a, #1a5f4a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========================================
+   Particle Background
+======================================== */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: rgba(204, 139, 101, 0.3);
+    border-radius: 50%;
+    animation: floatParticle 15s infinite;
+}
+
+@keyframes floatParticle {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100vh) scale(1);
+        opacity: 0;
+    }
+}
+
+/* ========================================
+   Success/Error States
+======================================== */
+.success-pulse {
+    animation: successPulse 0.5s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(0.95);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.error-shake {
+    animation: errorShake 0.5s ease-out;
+}
+
+@keyframes errorShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20%,
+    60% {
+        transform: translateX(-5px);
+    }
+
+    40%,
+    80% {
+        transform: translateX(5px);
+    }
+}

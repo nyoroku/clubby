@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Complete Your Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-8-tablet is-6-desktop">
+                    <div class="box">
+                        <h1 class="title">Complete Your Partner Profile</h1>
+                        <p class="subtitle">Just a few more details...</p>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                            <div class="notification is-{{ message.tags }}">
+                                <button class="delete"></button>
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+
+                            <div class="field">
+                                <label class="label">Business/Partner Name *</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="name"
+                                           placeholder="e.g., Java House, John's Influence" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Partner Type *</label>
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select name="partner_type" id="partner_type" required>
+                                            <option value="">Select type...</option>
+                                            <option value="influencer">Influencer (Earn from referrals)</option>
+                                            <option value="shop">Shop/Retailer (Accept redemptions + earn from referrals)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="help">Choose how you want to participate</p>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Contact Person *</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="contact_person"
+                                           placeholder="Full name of contact person" required>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Email</label>
+                                <div class="control">
+                                    <input class="input" type="email" name="email"
+                                           placeholder="your@email.com">
+                                </div>
+                            </div>
+
+                            <div id="shop-fields" style="display: none;">
+                                <div class="notification is-info is-light">
+                                    <strong>Shop Information</strong> - Help customers find your location
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">County</label>
+                                    <div class="control">
+                                        <div class="select is-fullwidth">
+                                            <select name="county">
+                                                <option value="">Select county...</option>
+                                                {% for value, label in county_choices %}
+                                                <option value="{{ value }}">{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Location Details</label>
+                                    <div class="control">
+                                        <textarea class="textarea" name="location_details"
+                                                  placeholder="e.g., Westlands, Sarit Centre Ground Floor, Shop G12"
+                                                  rows="3"></textarea>
+                                    </div>
+                                    <p class="help">Provide detailed location/address for customers</p>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="control">
+                                    <button type="submit" class="button is-primary is-fullwidth is-medium">
+                                        <strong>Complete Profile</strong>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Show/hide shop fields based on partner type
+        document.getElementById('partner_type').addEventListener('change', function() {
+            const shopFields = document.getElementById('shop-fields');
+            if (this.value === 'shop') {
+                shopFields.style.display = 'block';
+            } else {
+                shopFields.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('.notification .delete').forEach(btn => {
+            btn.addEventListener('click', () => btn.parentElement.remove());
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

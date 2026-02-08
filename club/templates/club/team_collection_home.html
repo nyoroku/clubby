@@ -1,0 +1,135 @@
+{% extends 'club/base.html' %}
+{% load static %}
+
+{% block title %}Team Collection - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-2xl font-display font-bold text-white mb-2">👥 Team Collection</h1>
+        <p class="text-white/50 text-sm">Collect cards together with friends!</p>
+    </div>
+
+    {% if collection %}
+    <!-- Active Campaign Banner -->
+    <section class="glass-card rounded-2xl p-5 mb-8 relative overflow-hidden">
+        <div
+            class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/20 rounded-full blur-[30px] -translate-y-1/2 translate-x-1/2">
+        </div>
+        <div class="flex items-center gap-4 relative z-10">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-xl flex items-center justify-center text-2xl">🍃</div>
+            <div>
+                <h2 class="text-lg font-bold text-white">{{ collection.name }}</h2>
+                <p class="text-white/60 text-sm">{{ collection.theme }}</p>
+                <p class="text-white/40 text-xs mt-1">Ends: {{ collection.end_date|date:"M d, Y" }}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Your Teams Section -->
+    {% if team_memberships %}
+    <section class="mb-8">
+        <h2 class="text-base font-bold text-white mb-4">Your Teams</h2>
+        <div class="space-y-3">
+            {% for membership in team_memberships %}
+            <a href="{% url 'club:team_dashboard' team_id=membership.team.id %}"
+                class="block glass-card rounded-xl p-4 hover:bg-white/15 transition">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <h3 class="font-bold text-white">{{ membership.team.name }}</h3>
+                        <p class="text-xs text-white/50">
+                            {{ membership.team.member_count }}/{{ membership.team.max_members }} members
+                            {% if membership.is_captain %}
+                            <span
+                                class="ml-2 px-2 py-0.5 bg-melvins-gold/20 text-melvins-gold rounded-full text-[10px] font-bold">Captain</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xl font-bold text-emerald-400">{{ membership.team.progress_percentage }}%</div>
+                        <p class="text-[10px] text-white/40">{{ membership.team.cards_collected_count }}/{{
+                            collection.total_cards }} cards</p>
+                    </div>
+                </div>
+                <!-- Progress bar -->
+                <div class="w-full bg-white/10 rounded-full h-2">
+                    <div class="bg-emerald-500 h-2 rounded-full transition-all"
+                        style="width: {{ membership.team.progress_percentage }}%"></div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Create/Join Section -->
+    <section class="mb-8">
+        <div class="grid grid-cols-2 gap-3">
+            <a href="{% url 'club:create_team' %}"
+                class="glass-card rounded-xl p-4 text-center hover:bg-white/15 transition group">
+                <div
+                    class="w-12 h-12 bg-melvins-gold/20 rounded-xl flex items-center justify-center text-2xl mx-auto mb-2 group-hover:scale-110 transition">
+                    ✨</div>
+                <p class="font-bold text-white text-sm">Create Team</p>
+                <p class="text-white/40 text-[10px]">Start your own</p>
+            </a>
+            <a href="{% url 'club:join_team' %}"
+                class="glass-card rounded-xl p-4 text-center hover:bg-white/15 transition group">
+                <div
+                    class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-2xl mx-auto mb-2 group-hover:scale-110 transition">
+                    🔗</div>
+                <p class="font-bold text-white text-sm">Join Team</p>
+                <p class="text-white/40 text-[10px]">With invite code</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Team Leaderboard -->
+    {% if top_teams %}
+    <section class="mb-8">
+        <h2 class="text-base font-bold text-white mb-4">🏆 Team Leaderboard</h2>
+        <div class="glass-card rounded-xl overflow-hidden">
+            <div class="divide-y divide-white/10">
+                {% for team in top_teams %}
+                <div class="flex items-center gap-4 p-4 {% if forloop.first %}bg-melvins-gold/10{% endif %}">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
+                        {% if forloop.counter == 1 %}bg-melvins-gold text-[#1a0a0c]
+                        {% elif forloop.counter == 2 %}bg-gray-400 text-white
+                        {% elif forloop.counter == 3 %}bg-amber-600 text-white
+                        {% else %}bg-white/10 text-white/50{% endif %}">
+                        {{ forloop.counter }}
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-white text-sm">{{ team.name }}</h3>
+                        <p class="text-[10px] text-white/40">{{ team.member_count }} members</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs font-medium text-emerald-400">✓ Complete</span>
+                        <p class="text-[10px] text-white/30">{{ team.completed_at|date:"M d" }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% else %}
+    <!-- No Active Collection -->
+    <section class="glass-card rounded-2xl p-8 text-center">
+        <div class="text-5xl mb-4">😴</div>
+        <h2 class="text-xl font-bold text-white mb-2">No Active Campaign</h2>
+        <p class="text-white/50 text-sm">Check back soon for the next team collection challenge!</p>
+    </section>
+    {% endif %}
+
+    <!-- Back to Collection -->
+    <div class="text-center mt-8">
+        <a href="{% url 'club:my_collection' %}" class="text-melvins-gold hover:underline font-medium text-sm">
+            ← Back to My Collection
+        </a>
+    </div>
+</div>
+{% endblock %}

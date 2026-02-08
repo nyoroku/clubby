@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Complete Profile - Melvins Club</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'melvins': {
+                            'red': '#a81f23',
+                            'red-dark': '#8a191c',
+                            'gold': '#ee9822',
+                            'gold-light': '#f5b04d',
+                            'green': '#245336',
+                            'dark': '#1b1f22',
+                            'cream': '#f8f5ec',
+                            'beige': '#e3dcd2',
+                        }
+                    },
+                    fontFamily: {
+                        'display': ['"Playfair Display"', 'serif'],
+                        'body': ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-[#0D0A09] text-white flex items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Background Effects -->
+    <div class="fixed inset-0 pointer-events-none">
+        <div
+            class="absolute top-0 right-0 w-[600px] h-[600px] bg-melvins-maroon/20 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2">
+        </div>
+        <div
+            class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-melvins-gold/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2">
+        </div>
+    </div>
+
+    <div class="max-w-2xl w-full relative z-10">
+
+        <!-- Logo/Header -->
+        <div class="text-center mb-8">
+            <div
+                class="w-20 h-20 bg-gradient-to-br from-melvins-maroon to-red-900 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-2xl border border-white/10 transform rotate-3">
+                <span class="text-4xl">🍃</span>
+            </div>
+            <h1 class="text-4xl font-display font-bold text-white mb-2">Welcome to the Club</h1>
+            <p class="text-white/60">Let's set up your profile to start earning rewards</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+
+            {% if messages %}
+            {% for message in messages %}
+            <div
+                class="mb-6 p-4 rounded-xl border flex justify-between items-center text-sm font-medium
+                {% if message.tags == 'error' %}bg-red-500/10 border-red-500/20 text-red-400{% else %}bg-green-500/10 border-green-500/20 text-green-400{% endif %}">
+                <span>{{ message }}</span>
+                <button onclick="this.parentElement.remove()" class="opacity-70 hover:opacity-100">✕</button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-melvins-gold uppercase tracking-widest mb-2">First
+                            Name</label>
+                        <input type="text" name="first_name" placeholder="Enter first name" required
+                            class="w-full px-5 py-4 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-melvins-maroon focus:ring-1 focus:ring-melvins-maroon transition hover:bg-black/30">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-melvins-gold uppercase tracking-widest mb-2">Second
+                            Name</label>
+                        <input type="text" name="second_name" placeholder="Enter second name" required
+                            class="w-full px-5 py-4 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-melvins-maroon focus:ring-1 focus:ring-melvins-maroon transition hover:bg-black/30">
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        class="block text-xs font-bold text-melvins-gold uppercase tracking-widest mb-2">County</label>
+                    <div class="relative">
+                        <select name="county" required
+                            class="w-full px-5 py-4 bg-black/20 border border-white/10 rounded-xl text-white focus:outline-none focus:border-melvins-maroon focus:ring-1 focus:ring-melvins-maroon transition appearance-none hover:bg-black/30 cursor-pointer">
+                            <option value="" class="bg-melvins-dark">Select your county...</option>
+                            <option value="mombasa" class="bg-melvins-dark">Mombasa</option>
+                            <option value="khwale" class="bg-melvins-dark">Kwale</option>
+                            <option value="kilifi" class="bg-melvins-dark">Kilifi</option>
+                            <option value="nairobi" class="bg-melvins-dark">Nairobi</option>
+                            <option value="nakuru" class="bg-melvins-dark">Nakuru</option>
+                            <option value="kiambu" class="bg-melvins-dark">Kiambu</option>
+                            <option value="machakos" class="bg-melvins-dark">Machakos</option>
+                            <option value="kisumu" class="bg-melvins-dark">Kisumu</option>
+                            <option value="uasin_gishu" class="bg-melvins-dark">Uasin Gishu (Eldoret)</option>
+                            <option value="kericho" class="bg-melvins-dark">Kericho</option>
+                            <!-- Add remaining counties as needed, truncated for aesthetics -->
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-white/50">
+                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                                <path
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-melvins-gold uppercase tracking-widest mb-2">I drink
+                        tea...</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="buyer_type" value="home" required class="peer sr-only">
+                            <div
+                                class="px-5 py-4 bg-black/20 border border-white/10 rounded-xl text-center transition hover:bg-black/30 peer-checked:bg-melvins-maroon peer-checked:border-melvins-maroon peer-checked:text-white peer-checked:shadow-lg">
+                                <span class="font-bold">At Home 🏠</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="buyer_type" value="business" required class="peer sr-only">
+                            <div
+                                class="px-5 py-4 bg-black/20 border border-white/10 rounded-xl text-center transition hover:bg-black/30 peer-checked:bg-melvins-maroon peer-checked:border-melvins-maroon peer-checked:text-white peer-checked:shadow-lg">
+                                <span class="font-bold">For Business 💼</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-melvins-gold uppercase tracking-widest mb-2">Referral
+                        Code (Optional)</label>
+                    <input type="text" name="referral_code" value="{{ prefilled_referral_code|default:'' }}"
+                        placeholder="FRIEND123" maxlength="6"
+                        class="w-full px-5 py-4 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/30 tracking-[0.2em] font-mono text-center uppercase focus:outline-none focus:border-melvins-gold focus:ring-1 focus:ring-melvins-gold transition hover:bg-black/30">
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit"
+                        class="w-full py-5 bg-gradient-to-r from-melvins-maroon to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold rounded-xl transition shadow-lg hover:shadow-red-900/40 transform hover:-translate-y-1 relative overflow-hidden group">
+                        <span class="relative z-10">Complete Registration</span>
+                        <div
+                            class="absolute inset-0 bg-white/20 blur-md transform translate-y-full group-hover:translate-y-0 transition duration-500">
+                        </div>
+                    </button>
+                    <p class="text-center text-xs text-white/40 mt-4">By continuing, you agree to our Terms & Privacy
+                        Policy.</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-uppercase referral code
+        document.querySelector('input[name="referral_code"]')?.addEventListener('input', function (e) {
+            this.value = this.value.toUpperCase();
+        });
+    </script>
+</body>
+
+</html>
