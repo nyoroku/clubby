@@ -279,7 +279,7 @@ class ListingPartner(models.Model):
     # Financial Tracking
     total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.00,
                                         help_text="Total revenue from redemptions")
-    Melvins_commission_earned = models.DecimalField(max_digits=12, decimal_places=2, default=0.00,
+    melvins_commission_earned = models.DecimalField(max_digits=12, decimal_places=2, default=0.00,
                                                    help_text="Total commission earned by Melvins")
     partner_earnings = models.DecimalField(max_digits=12, decimal_places=2, default=0.00,
                                            help_text="Net earnings for partner (after commission)")

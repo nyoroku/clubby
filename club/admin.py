@@ -681,7 +681,7 @@ class ListingPartnerAdmin(admin.ModelAdmin):
                     'total_products_count', 'pending_payout', 'total_paid_out', 'created_at']
     list_filter = ['approved', 'active', 'profile_completed', 'created_at']
     search_fields = ['company_name', 'code', 'phone', 'email', 'contact_person']
-    readonly_fields = ['code', 'total_revenue', 'Melvins_commission_earned',
+    readonly_fields = ['code', 'total_revenue', 'melvins_commission_earned',
                        'partner_earnings', 'pending_payout', 'total_paid_out',
                        'created_at', 'updated_at']
 
@@ -696,7 +696,7 @@ class ListingPartnerAdmin(admin.ModelAdmin):
             'fields': ('bank_name', 'bank_account_number', 'bank_account_name', 'mpesa_number')
         }),
         ('Commission & Financials', {
-            'fields': ('commission_rate', 'total_revenue', 'Melvins_commission_earned',
+            'fields': ('commission_rate', 'total_revenue', 'melvins_commission_earned',
                        'partner_earnings', 'pending_payout', 'total_paid_out')
         }),
         ('Status', {

@@ -1932,11 +1932,11 @@ def redeem_product(request, product_id):
                 # Update listing partner financials
                 listing_partner = product.listing_partner
                 listing_partner.total_revenue += earnings['total']
-                listing_partner.Melvins_commission_earned += earnings['Melvins_commission']
+                listing_partner.melvins_commission_earned += earnings['Melvins_commission']
                 listing_partner.partner_earnings += earnings['partner_earning']
                 listing_partner.pending_payout += earnings['partner_earning']
                 listing_partner.save(update_fields=[
-                    'total_revenue', 'Melvins_commission_earned',
+                    'total_revenue', 'melvins_commission_earned',
                     'partner_earnings', 'pending_payout'
                 ])
 
