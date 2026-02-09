@@ -430,11 +430,16 @@ def complete_profile(request):
             profile.profile_completed = True
             
             # UTM / Traffic Source Tracking
-            if not profile.utm_source and 'utm_data' in request.session:
-                utm_data = request.session['utm_data']
-                profile.utm_source = utm_data.get('utm_source')
-                profile.utm_medium = utm_data.get('utm_medium')
-                profile.utm_campaign = utm_data.get('utm_campaign')
+            if not profile.utm_source:
+                if 'utm_data' in request.session:
+                    utm_data = request.session['utm_data']
+                    profile.utm_source = utm_data.get('utm_source')
+                    profile.utm_medium = utm_data.get('utm_medium')
+                    profile.utm_campaign = utm_data.get('utm_campaign')
+                elif referral_code:
+                    # If referred and no UTM, mark source as Referral
+                    profile.utm_source = 'Referral'
+                    profile.utm_medium = 'Link'
 
             if referral_code and not profile.referred_by:
                 try:
@@ -443,6 +448,7 @@ def complete_profile(request):
                         profile.referred_by = referrer
 
                         settings = ReferralSettings.get_settings()
+                        # Always award points if linked, unless explicitly disabled
                         if settings.referral_enabled:
                             referrer.points += settings.points_for_referrer
                             referrer.referral_points_earned += settings.points_for_referrer
@@ -461,6 +467,8 @@ def complete_profile(request):
                                 request,
                                 f'Referral applied! You earned {settings.points_for_referee} points!'
                             )
+                        else:
+                            print(f"DEBUG: Referral system disabled. Points not awarded for {profile.phone}")
                 except Profile.DoesNotExist:
                     messages.warning(request, 'Invalid referral code')
 
@@ -882,7 +890,7 @@ def referral_page(request):
 
     # Build absolute referral link
     referral_link = request.build_absolute_uri(
-        f'/club/request-otp/?ref={profile.referral_code}'
+        f'/?ref={profile.referral_code}'
     )
 
     context = {
@@ -1052,21 +1060,6 @@ def partner_complete_profile(request):
         'county_choices': Profile.COUNTY_CHOICES,
     }
     return render(request, 'club/partner_complete_profile.html', context)
-
-
-@login_required
-def partner_referral_link(request):
-    """Partner's referral link page"""
-    try:
-        partnership = request.user.partnership
-    except Partnership.DoesNotExist:
-        messages.error(request, 'Partner account not found')
-        return redirect('club:partner_register_otp')
-
-    context = {
-        'partnership': partnership,
-    }
-    return render(request, 'club/partner_referral_link.html', context)
 
 
 # ============ USER VIEWS ============

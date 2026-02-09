@@ -157,8 +157,8 @@ class PartnershipAdmin(admin.ModelAdmin):
 
     def registration_link(self, obj):
         if obj.code:
-            url = f'/request-otp/?partner={obj.code}'
-            full_url = f'https://yoursite.com{url}'  # Update with your domain
+            url = f'/?partner={obj.code}'
+            # full_url = f'https://yoursite.com{url}'  # Update with your domain
             return format_html(
                 '<div style="background: #f3f4f6; padding: 12px; border-radius: 8px;">'
                 '<strong style="color: #1f2937;">Registration URL:</strong><br>'
