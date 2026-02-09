@@ -3514,62 +3514,83 @@ def contribute_to_team(request, team_id, card_id):
 @login_required
 def management_dashboard(request):
     """
-    Datafa.st style management dashboard
+    Enhanced Datafa.st style management dashboard
     High density, actionable metrics for staff/admins
     """
     if not request.user.is_staff:
         messages.error(request, "Access denied. Staff only.")
         return redirect('club:dashboard')
     
-    # 1. KPI Pulse
+    # Time ranges
+    now = timezone.now()
+    t24h = now - timedelta(days=1)
+    prev_t24h = now - timedelta(days=2)
+    
+    # 1. KPI Pulse & Trends
     total_users = Profile.objects.count()
-    new_users_24h = Profile.objects.filter(created_at__gte=timezone.now() - timedelta(days=1)).count()
+    users_24h = Profile.objects.filter(created_at__gte=t24h).count()
+    prev_users_24h = Profile.objects.filter(created_at__range=(prev_t24h, t24h)).count()
     
     total_scans = Scan.objects.count()
-    scans_24h = Scan.objects.filter(scanned_at__gte=timezone.now() - timedelta(days=1)).count()
+    scans_24h = Scan.objects.filter(scanned_at__gte=t24h).count()
+    prev_scans_24h = Scan.objects.filter(scanned_at__range=(prev_t24h, t24h)).count()
     
     total_redemptions = ProductRedemption.objects.count()
-    redemptions_24h = ProductRedemption.objects.filter(created_at__gte=timezone.now() - timedelta(days=1)).count()
+    redemptions_24h = ProductRedemption.objects.filter(created_at__gte=t24h).count()
+    prev_redemptions_24h = ProductRedemption.objects.filter(created_at__range=(prev_t24h, t24h)).count()
     
+    # Helper for trend
+    def get_trend(current, previous):
+        if previous == 0:
+            return 100 if current > 0 else 0
+        return round(((current - previous) / previous) * 100, 1)
+
+    trends = {
+        'users': get_trend(users_24h, prev_users_24h),
+        'scans': get_trend(scans_24h, prev_scans_24h),
+        'redemptions': get_trend(redemptions_24h, prev_redemptions_24h),
+    }
+
     # Revenue (Commission)
     total_revenue = ListingPartner.objects.aggregate(total=Sum('melvins_commission_earned'))['total'] or 0
     
-    # 2. Geographic Breakdown (Counties)
+    # 2. Filtering & User List
+    search_query = request.GET.get('q', '')
+    users = Profile.objects.all().order_by('-created_at')
+    
+    if search_query:
+        users = users.filter(
+            Q(phone__icontains=search_query) |
+            Q(first_name__icontains=search_query) |
+            Q(second_name__icontains=search_query) |
+            Q(utm_source__icontains=search_query) |
+            Q(county__icontains=search_query)
+        )
+    
+    recent_users = users[:50]
+    
+    # 3. Geographic Breakdown
     county_data = Profile.objects.values('county').annotate(
         user_count=Count('id')
     ).order_by('-user_count')
     
-    # Calculate % for bars
     if total_users > 0:
         for c in county_data:
             c['user_percent'] = (c['user_count'] / total_users) * 100
     
-    # 3. Channel Tracking (Partners Types)
-    # Organic vs Referred
+    # 4. Channel Tracking
     total_referred = Profile.objects.filter(referred_by__isnull=False).count()
     organic_users = total_users - total_referred
     
-    top_partners = Partnership.objects.annotate(
-        referrals=Count('referred_profiles'),
-        earnings_count=Count('earnings')
-    ).order_by('-referrals')[:10]
-    
-    # Traffic Sources (UTM)
     traffic_sources = Profile.objects.values('utm_source').annotate(
         count=Count('id')
     ).order_by('-count')
     
-    # Top Shops by redemptions
     top_shops = Partnership.objects.filter(partner_type='shop').annotate(
-        redemption_count=Count('productredemption')  # Note: related name on Partnership side?
-        # Checking model: models.py line 487 related_name='available_rewards' on Reward.
-        # But ProductRedemption has foreign key 'redeemed_at_shop'.
-        # Backward relation: productredemption_set (default) or check model.
-        # models.py line 697: redeemed_at_shop = ForeignKey(Partnership...
-        # It doesn't specify related_name, so it defaults to productredemption_set.
+        redemption_count=Count('productredemption')
     ).order_by('-redemption_count')[:10]
     
-    # 4. Activity Feed (Merge Scans & Redemptions)
+    # 5. Activity Feed
     recent_scans = Scan.objects.select_related('profile', 'pack').order_by('-scanned_at')[:20]
     recent_redemptions = ProductRedemption.objects.select_related('profile', 'product').order_by('-created_at')[:20]
     
@@ -3593,19 +3614,12 @@ def management_dashboard(request):
             'time': r.created_at,
             'icon': '🎁'
         })
-        
-    # Sort by time desc
     activity_feed.sort(key=lambda x: x['time'], reverse=True)
     activity_feed = activity_feed[:30]
     
-    start_date = timezone.now() - timedelta(days=30)
-    
-    # Daily Scans Count
-    daily_scans = Scan.objects.filter(scanned_at__gte=start_date).annotate(
-        date=TruncMonth('scanned_at')  # Using TruncMonth for simplicity or TruncDate
-    )
-    # Actually need TruncDate for daily chart
+    # 6. Chart Logic
     from django.db.models.functions import TruncDate
+    start_date = now - timedelta(days=30)
     
     daily_scans = Scan.objects.filter(scanned_at__gte=start_date)\
         .annotate(date=TruncDate('scanned_at'))\
@@ -3619,24 +3633,23 @@ def management_dashboard(request):
         .annotate(count=Count('id'))\
         .order_by('date')
         
-    # Format for Chart.js
+    scan_dict = {item['date']: item['count'] for item in daily_scans}
+    redemption_dict = {item['date']: item['count'] for item in daily_redemptions}
+    
     chart_labels = []
     scan_data = []
     redemption_data = []
     
-    # Create a dict of date -> count to fill zeros
-    scan_dict = {item['date']: item['count'] for item in daily_scans}
-    redemption_dict = {item['date']: item['count'] for item in daily_redemptions}
-    
     for i in range(30):
-        d = (timezone.now() - timedelta(days=29-i)).date()
+        d = (now - timedelta(days=29-i)).date()
         chart_labels.append(d.strftime('%d %b'))
         scan_data.append(scan_dict.get(d, 0))
         redemption_data.append(redemption_dict.get(d, 0))
     
     context = {
         'total_users': total_users,
-        'new_users_24h': new_users_24h,
+        'users_24h': users_24h,
+        'trends': trends,
         'total_scans': total_scans,
         'scans_24h': scans_24h,
         'total_redemptions': total_redemptions,
@@ -3645,14 +3658,14 @@ def management_dashboard(request):
         'county_data': county_data,
         'organic_users': organic_users,
         'total_referred': total_referred,
-        'top_partners': top_partners,
         'traffic_sources': traffic_sources,
         'top_shops': top_shops,
+        'recent_users': recent_users,
         'activity_feed': activity_feed,
-        'now': timezone.now(),
         'chart_labels': chart_labels,
         'scan_data': scan_data,
         'redemption_data': redemption_data,
+        'search_query': search_query,
     }
     
     return render(request, 'club/management_dashboard.html', context)

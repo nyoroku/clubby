@@ -4,304 +4,30 @@
 
 {% block title %}Management Dashboard - Melvins Club{% endblock %}
 
-{% block content %}
-<div class="min-h-screen bg-[#111] text-gray-200 p-6 md:p-8 font-sans">
-
-    <!-- Top Bar -->
-    <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-        <div>
-            <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                <span class="text-melvins-gold">⚡</span> Club Management
-            </h1>
-            <p class="text-gray-500 text-sm mt-1">Real-time overview • Last 30 Days</p>
-        </div>
-        <div class="flex gap-3">
-            <div
-                class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-xs text-gray-400 font-mono flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                LIVE
-            </div>
-            <a href="{% url 'club:dashboard' %}"
-                class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm transition">
-                Back to App
-            </a>
-        </div>
-    </div>
-
-    <!-- KPI Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <!-- Users -->
-        <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
-            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Total Users</h3>
-            <div class="flex items-end justify-between">
-                <div class="text-3xl font-mono text-white group-hover:text-blue-400 transition">{{ total_users|intcomma}}</div>
-                <div
-                    class="text-xs font-mono {% if new_users_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
-                    +{{ new_users_24h }} (24h)
-                </div>
-            </div>
-        </div>
-
-        <!-- Scans -->
-        <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
-            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Total Scans</h3>
-            <div class="flex items-end justify-between">
-                <div class="text-3xl font-mono text-white group-hover:text-melvins-gold transition">{{total_scans|intcomma }}</div>
-                <div class="text-xs font-mono {% if scans_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
-                    +{{ scans_24h }} (24h)
-                </div>
-            </div>
-        </div>
-
-        <!-- Redemptions -->
-        <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
-            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Redemptions</h3>
-            <div class="flex items-end justify-between">
-                <div class="text-3xl font-mono text-white group-hover:text-purple-400 transition">{{total_redemptions|intcomma }}</div>
-                <div
-                    class="text-xs font-mono {% if redemptions_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
-                    +{{ redemptions_24h }} (24h)
-                </div>
-            </div>
-        </div>
-
-        <!-- Revenue -->
-        <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
-            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Commission (Rev)</h3>
-            <div class="flex items-end justify-between">
-                <div class="text-3xl font-mono text-white group-hover:text-green-400 transition">Ksh {{total_revenue|floatformat:0|intcomma }}</div>
-                <div class="text-xs text-gray-500">Lifetime</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Chart -->
-    <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-6 mb-8">
-        <h3 class="text-gray-400 text-xs uppercase font-bold mb-4">Activity Trend (30 Days)</h3>
-        <div class="h-64 w-full">
-            <canvas id="activityChart"></canvas>
-        </div>
-    </div>
-
-    <!-- Split Grid: Regions & Partners -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-
-        <!-- County Leaderboard -->
-        <div class="lg:col-span-1 bg-[#1a1a1a] border border-gray-800 rounded-lg p-0 overflow-hidden">
-            <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-                <h3 class="text-white font-bold text-sm">📍 County Users</h3>
-                <span class="text-xs text-gray-500">Top distributions</span>
-            </div>
-            <div class="max-h-[400px] overflow-y-auto custom-scrollbar">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-900 text-gray-500 text-xs uppercase sticky top-0">
-                        <tr>
-                            <th class="p-3 font-medium">County</th>
-                            <th class="p-3 font-medium text-right">Users</th>
-                            <th class="p-3 font-medium w-24">Density</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-sm divide-y divide-gray-800">
-                        {% for c in county_data %}
-                        <tr class="hover:bg-gray-800/50 transition">
-                            <td class="p-3 text-gray-300 font-medium capitalize">{{ c.county|default:"Unknown" }}</td>
-                            <td class="p-3 text-right font-mono text-white">{{ c.user_count|intcomma }}</td>
-                            <td class="p-3">
-                                <div class="w-full bg-gray-800 rounded-full h-1.5">
-                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ c.user_percent }}%">
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Channels & Feed -->
-        <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-
-            <!-- Partners Leaderboard -->
-            <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-0 overflow-hidden">
-                <div class="p-4 border-b border-gray-800">
-                    <h3 class="text-white font-bold text-sm">🏆 Top Partners</h3>
-                </div>
-                <div class="p-4">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="flex-1 bg-gray-900 rounded-lg p-3 text-center border border-gray-800">
-                            <div class="text-xs text-gray-500 uppercase">Organic</div>
-                            <div class="text-xl font-mono text-white">{{ organic_users|intcomma }}</div>
-                        </div>
-                        <div class="flex-1 bg-gray-900 rounded-lg p-3 text-center border border-gray-800">
-                            <div class="text-xs text-gray-500 uppercase">Referred</div>
-                            <div class="text-xl font-mono text-melvins-gold">{{ total_referred|intcomma }}</div>
-                        </div>
-                    </div>
-
-                    <h4 class="text-xs text-gray-500 uppercase font-bold mb-3">Influencers (By Referrals)</h4>
-                    <ul class="space-y-3 mb-6">
-                        {% for p in top_partners %}
-                        <li class="flex justify-between items-center text-sm">
-                            <span class="text-gray-300">{{ p.name }}</span>
-                            <span class="font-mono text-white bg-gray-800 px-2 py-0.5 rounded text-xs">{{ p.referrals }}
-                                refs</span>
-                        </li>
-                        {% empty %}
-                        <li class="text-gray-600 italic">No partners yet</li>
-                        {% endfor %}
-                    </ul>
-
-                    <!-- Traffic Sources -->
-                    <h4 class="text-xs text-gray-500 uppercase font-bold mb-3 mt-6">Traffic Sources (UTM)</h4>
-                    <ul class="space-y-3">
-                        {% for source in traffic_sources %}
-                        <li class="flex justify-between items-center text-sm">
-                            <span class="text-gray-300 capitalize">{{ source.utm_source|default:"Direct / Unknown"}}</span>
-                            <span class="font-mono text-blue-400 bg-gray-800 px-2 py-0.5 rounded text-xs">{{source.count }} users</span>
-                        </li>
-                        {% empty %}
-                        <li class="text-gray-600 italic">No tracked sources yet</li>
-                        {% endfor %}
-                    </ul>
-
-                    <h4 class="text-xs text-gray-500 uppercase font-bold mb-3">Shops (By Redemptions)</h4>
-                    <ul class="space-y-3">
-                        {% for s in top_shops %}
-                        <li class="flex justify-between items-center text-sm">
-                            <span class="text-gray-300">{{ s.name }}</span>
-                            <span class="font-mono text-green-400 bg-gray-800 px-2 py-0.5 rounded text-xs">{{s.redemption_count }} redemptions</span>
-                        </li>
-                        {% empty %}
-                        <li class="text-gray-600 italic">No shops yet</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Live Feed -->
-            <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-0 overflow-hidden h-[400px] flex flex-col">
-                <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-[#151515]">
-                    <h3 class="text-white font-bold text-sm flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                        Live Feed
-                    </h3>
-                </div>
-                <div class="overflow-y-auto flex-1 p-4 custom-scrollbar space-y-4">
-                    {% for item in activity_feed %}
-                    <div
-                        class="flex gap-3 items-start animate-fade-in text-sm border-l-2 {% if item.type == 'scan' %}border-melvins-gold{% else %}border-purple-500{% endif %} pl-3">
-                        <div class="text-xl pt-0.5">{{ item.icon }}</div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-baseline">
-                                <strong class="text-gray-200">{{ item.user.first_name|default:"User" }}</strong>
-                                <span class="text-xs text-gray-600 font-mono">{{ item.time|date:"H:i" }}</span>
-                            </div>
-                            <p class="text-gray-400 text-xs">{{ item.desc }}</p>
-                            <p
-                                class="font-mono text-xs mt-1 {% if item.type == 'scan' %}text-melvins-gold{% else %}text-purple-400{% endif %}">
-                                {{ item.value }}
-                            </p>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="text-center text-gray-600 py-10">
-                        No recent activity
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('activityChart').getContext('2d');
-
-    // Gradient for scans
-    const scanGradient = ctx.createLinearGradient(0, 0, 0, 400);
-    scanGradient.addColorStop(0, 'rgba(212, 165, 54, 0.2)');
-    scanGradient.addColorStop(1, 'rgba(212, 165, 54, 0)');
-
-    // Gradient for redemptions
-    const redeemGradient = ctx.createLinearGradient(0, 0, 0, 400);
-    redeemGradient.addColorStop(0, 'rgba(168, 85, 247, 0.2)');
-    redeemGradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {{ chart_labels| safe }},
-        datasets: [
-        {
-            label: 'Scans',
-            data: {{ scan_data| safe }},
-        borderColor: '#d4a536',
-        backgroundColor: scanGradient,
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 0,
-        pointHoverRadius: 4
-                },
-        {
-            label: 'Redemptions',
-            data: {{ redemption_data| safe }},
-        borderColor: '#a855f7',
-        backgroundColor: redeemGradient,
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 0,
-        pointHoverRadius: 4
-                }
-    ]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            mode: 'index',
-            intersect: false,
-        },
-        plugins: {
-            legend: {
-                labels: { color: '#9ca3af', font: { family: 'Inter' } }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(17, 17, 17, 0.9)',
-                titleColor: '#fff',
-                bodyColor: '#ccc',
-                borderColor: '#333',
-                borderWidth: 1,
-                padding: 10
-            }
-        },
-        scales: {
-            y: {
-                grid: { color: '#333', drawBorder: false },
-                ticks: { color: '#6b7280' }
-            },
-            x: {
-                grid: { display: false },
-                ticks: { color: '#6b7280', maxTicksLimit: 10 }
-            }
-        }
-    }
-    });
-
-    // Auto-refresh feed every 30s
-    // Simple reload for now, could use HTMX partial later
-    setTimeout(() => {
-        // location.reload(); 
-        // Disabled full reload to avoid chart flicker, best to use HTMX
-    }, 30000);
-</script>
-
+{% block extra_css %}
 <style>
+    .glass-dark {
+        background: rgba(26, 26, 26, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .accent-gradient-blue {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .accent-gradient-gold {
+        background: linear-gradient(135deg, #d4a536, #b48a2a);
+    }
+
+    .accent-gradient-purple {
+        background: linear-gradient(135deg, #a855f7, #7e22ce);
+    }
+
+    .accent-gradient-green {
+        background: linear-gradient(135deg, #10b981, #047857);
+    }
+
     .custom-scrollbar::-webkit-scrollbar {
         width: 4px;
     }
@@ -314,9 +40,398 @@
         background: #333;
         border-radius: 2px;
     }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #444;
-    }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#0a0a0a] text-gray-200 p-4 md:p-8 font-sans">
+
+    <!-- Top Navigation Bar -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                <span
+                    class="w-10 h-10 flex items-center justify-center bg-melvins-gold/10 text-melvins-gold rounded-xl border border-melvins-gold/20 shadow-lg shadow-melvins-gold/5">⚡</span>
+                Insights Center
+            </h1>
+            <p class="text-gray-500 text-sm mt-1 ml-13 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                System Live • Real-time Attribution
+            </p>
+        </div>
+
+        <form method="GET" class="relative group w-full md:w-96">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Search phone, name, county or UTM..."
+                class="w-full bg-gray-900/50 border border-gray-800 rounded-xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-melvins-gold/50 focus:border-melvins-gold outline-none transition-all group-hover:border-gray-700">
+            <svg class="w-5 h-5 absolute left-4 top-3.5 text-gray-500 group-focus-within:text-melvins-gold transition-colors"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </form>
+    </div>
+
+    <!-- KPI Pulse Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Users Card -->
+        <div
+            class="glass-dark rounded-2xl p-6 hover:shadow-2xl hover:shadow-blue-500/5 transition-all group relative overflow-hidden">
+            <div
+                class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-700">
+            </div>
+            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-widest mb-4">Total Users</h3>
+            <div class="flex items-end justify-between relative z-10">
+                <div class="text-4xl font-mono text-white group-hover:scale-105 transition-transform origin-left">{{
+                    total_users|intcomma }}</div>
+                <div class="text-right">
+                    <div class="text-sm font-bold text-white">+{{ users_24h }}</div>
+                    <div
+                        class="text-[10px] font-mono {% if trends.users >= 0 %}text-green-400{% else %}text-red-400{% endif %} flex items-center justify-end">
+                        {% if trends.users >= 0 %}▲{% else %}▼{% endif %} {{ trends.users }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scans Card -->
+        <div
+            class="glass-dark rounded-2xl p-6 hover:shadow-2xl hover:shadow-melvins-gold/5 transition-all group relative overflow-hidden">
+            <div
+                class="absolute -top-10 -right-10 w-32 h-32 bg-melvins-gold/10 rounded-full blur-3xl group-hover:bg-melvins-gold/20 transition-all duration-700">
+            </div>
+            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-widest mb-4">Total Scans</h3>
+            <div class="flex items-end justify-between relative z-10">
+                <div class="text-4xl font-mono text-white group-hover:scale-105 transition-transform origin-left">{{
+                    total_scans|intcomma }}</div>
+                <div class="text-right">
+                    <div class="text-sm font-bold text-white">+{{ scans_24h }}</div>
+                    <div
+                        class="text-[10px] font-mono {% if trends.scans >= 0 %}text-green-400{% else %}text-red-400{% endif %} flex items-center justify-end">
+                        {% if trends.scans >= 0 %}▲{% else %}▼{% endif %} {{ trends.scans }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Redemptions Card -->
+        <div
+            class="glass-dark rounded-2xl p-6 hover:shadow-2xl hover:shadow-purple-500/5 transition-all group relative overflow-hidden">
+            <div
+                class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all duration-700">
+            </div>
+            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-widest mb-4">Redemptions</h3>
+            <div class="flex items-end justify-between relative z-10">
+                <div class="text-4xl font-mono text-white group-hover:scale-105 transition-transform origin-left">{{
+                    total_redemptions|intcomma }}</div>
+                <div class="text-right">
+                    <div class="text-sm font-bold text-white">+{{ redemptions_24h }}</div>
+                    <div
+                        class="text-[10px] font-mono {% if trends.redemptions >= 0 %}text-green-400{% else %}text-red-400{% endif %} flex items-center justify-end">
+                        {% if trends.redemptions >= 0 %}▲{% else %}▼{% endif %} {{ trends.redemptions }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Card -->
+        <div
+            class="glass-dark rounded-2xl p-6 hover:shadow-2xl hover:shadow-green-500/5 transition-all group relative overflow-hidden">
+            <div
+                class="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 rounded-full blur-3xl group-hover:bg-green-500/20 transition-all duration-700">
+            </div>
+            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-widest mb-4">Est. Revenue</h3>
+            <div class="flex items-end justify-between relative z-10">
+                <div class="text-3xl font-mono text-white group-hover:scale-105 transition-transform origin-left">Ksh {{
+                    total_revenue|floatformat:0|intcomma }}</div>
+                <div class="text-right">
+                    <div class="text-[10px] text-gray-500 font-bold uppercase">Net Commission</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Activity Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+
+        <!-- Activity Chart -->
+        <div class="lg:col-span-3 glass-dark rounded-2xl p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-white font-bold text-lg flex items-center gap-2">
+                    <span class="w-1.5 h-6 bg-melvins-gold rounded-full"></span>
+                    Activity Overview
+                </h3>
+                <div class="flex gap-4 text-[10px] uppercase font-bold tracking-widest opacity-60">
+                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-melvins-gold"></span>
+                        Scans</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                        Redemptions</span>
+                </div>
+            </div>
+            <div class="h-80 w-full relative">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Attribution Sources -->
+        <div class="lg:col-span-1 glass-dark rounded-2xl p-6 flex flex-col">
+            <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
+                <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>
+                Top Sources
+            </h3>
+            <div class="space-y-4 overflow-y-auto custom-scrollbar flex-1 pr-2">
+                {% for source in traffic_sources %}
+                <div class="flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center text-xs font-bold text-blue-400">
+                            {{ source.utm_source|default:"?"|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-200 font-medium capitalize">{{
+                                source.utm_source|default:"Direct / Organic" }}</div>
+                            <div class="text-[10px] text-gray-500 capitalize">{{ source.count }} attributed users</div>
+                        </div>
+                    </div>
+                    <div class="text-xs font-mono text-blue-400 px-2 py-1 bg-blue-500/5 rounded">
+                        {% widthratio source.count total_users 100 %}%
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-gray-800">
+                <h4 class="text-[10px] text-gray-500 uppercase font-bold mb-4">Referral Status</h4>
+                <div class="flex items-center gap-4">
+                    <div class="flex-1 bg-gray-900/50 rounded-xl p-3 border border-gray-800/50">
+                        <div class="text-xl font-mono text-white">{{ organic_users|intcomma }}</div>
+                        <div class="text-[10px] text-gray-500 uppercase">Organic</div>
+                    </div>
+                    <div class="flex-1 bg-gray-900/50 rounded-xl p-3 border border-gray-800/50">
+                        <div class="text-xl font-mono text-melvins-gold">{{ total_referred|intcomma }}</div>
+                        <div class="text-[10px] text-gray-500 uppercase">Referred</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Tables Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+
+        <!-- User Leaderboard (Recent / Filtered) -->
+        <div class="lg:col-span-2 glass-dark rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <div class="p-6 border-b border-gray-800/50 flex justify-between items-center bg-gray-900/20">
+                <h3 class="text-white font-bold text-lg flex items-center gap-2">
+                    <span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+                    Recent Explorers
+                </h3>
+                <span
+                    class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded font-bold border border-emerald-500/20 tracking-widest uppercase">
+                    Last 50 Records
+                </span>
+            </div>
+            <div class="overflow-x-auto flex-1 custom-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-[#0f0f0f] text-gray-500 text-[10px] uppercase tracking-wider sticky top-0 z-10">
+                        <tr>
+                            <th class="p-4 font-bold">User Information</th>
+                            <th class="p-4 font-bold">Points</th>
+                            <th class="p-4 font-bold">Region</th>
+                            <th class="p-4 font-bold">Source</th>
+                            <th class="p-4 font-bold text-right">Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-gray-800/50">
+                        {% for user in recent_users %}
+                        <tr
+                            class="hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-emerald-500">
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-9 h-9 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 flex items-center justify-center text-gray-400 text-xs font-bold">
+                                        {{ user.first_name|default:"?"|slice:":1"|upper }}{{
+                                        user.second_name|default:"?"|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-gray-200">{{ user.first_name }} {{ user.second_name
+                                            }}</div>
+                                        <div class="text-xs text-gray-500 font-mono">{{ user.phone }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <div
+                                    class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-melvins-gold/10 text-melvins-gold font-mono text-xs font-bold">
+                                    🍃 {{ user.points|intcomma }}
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <span class="text-gray-400 capitalize text-xs">📍 {{ user.county|default:"Unknown"
+                                    }}</span>
+                            </td>
+                            <td class="p-4">
+                                <span
+                                    class="text-[10px] rounded px-2 py-0.5 border {% if user.utm_source %}border-blue-500/20 text-blue-400 bg-blue-500/5{% else %}border-gray-800 text-gray-600 bg-gray-900/30{% endif %} font-bold uppercase tracking-tighter">
+                                    {{ user.utm_source|default:"Organic" }}
+                                </span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <div class="text-xs text-gray-500">{{ user.created_at|date:"d M Y" }}</div>
+                                <div class="text-[10px] text-gray-700 font-mono">{{ user.created_at|timesince }} ago
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sidebar Activity & Feeds -->
+        <div class="lg:col-span-1 space-y-8">
+            <!-- Region Breakdown -->
+            <div class="glass-dark rounded-2xl p-0 overflow-hidden shadow-2xl">
+                <div class="p-6 border-b border-gray-800/50 bg-gray-900/20">
+                    <h3 class="text-white font-bold text-lg mb-1">🌍 Hot Regions</h3>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">User density per county</p>
+                </div>
+                <div class="p-6 max-h-[300px] overflow-y-auto custom-scrollbar space-y-4">
+                    {% for c in county_data %}
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-300 font-medium capitalize">{{ c.county|default:"Other" }}</span>
+                            <span class="text-gray-500 font-mono">{{ c.user_count }}</span>
+                        </div>
+                        <div class="w-full bg-gray-800/50 rounded-full h-1.5 overflow-hidden">
+                            <div class="accent-gradient-blue h-1.5 rounded-full transition-all duration-1000"
+                                style="width: {{ c.user_percent }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Live Feed -->
+            <div class="glass-dark rounded-2xl p-0 overflow-hidden shadow-2xl h-[450px] flex flex-col">
+                <div class="p-6 border-b border-gray-800/50 bg-[#151515] flex justify-between items-center">
+                    <h3 class="text-white font-bold text-lg flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
+                        Pulse
+                    </h3>
+                </div>
+                <div class="overflow-y-auto flex-1 p-6 custom-scrollbar space-y-6">
+                    {% for item in activity_feed %}
+                    <div class="flex gap-4 items-start relative group">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-xl shadow-lg group-hover:scale-110 transition-transform">
+                                {{ item.icon }}
+                            </div>
+                            <div class="w-px h-full bg-gray-800 absolute top-10 -z-10"></div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-baseline mb-1">
+                                <strong class="text-sm text-gray-200">{{ item.user.first_name|default:"Anon" }}</strong>
+                                <span class="text-[10px] text-gray-600 font-mono">{{ item.time|timesince }} ago</span>
+                            </div>
+                            <p class="text-gray-500 text-xs">{{ item.desc }}</p>
+                            <p
+                                class="font-mono text-[10px] mt-1.5 inline-block px-2 py-0.5 rounded {% if item.type == 'scan' %}bg-melvins-gold/10 text-melvins-gold{% else %}bg-purple-500/10 text-purple-400{% endif %} font-bold">
+                                {{ item.value }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('activityChart').getContext('2d');
+
+    const scanGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    scanGradient.addColorStop(0, 'rgba(212, 165, 54, 0.4)');
+    scanGradient.addColorStop(1, 'rgba(212, 165, 54, 0)');
+
+    const redeemGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    redeemGradient.addColorStop(0, 'rgba(168, 85, 247, 0.4)');
+    redeemGradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels| safe }},
+        datasets: [
+        {
+            label: 'Scans',
+            data: {{ scan_data| safe }},
+        borderColor: '#d4a536',
+        backgroundColor: scanGradient,
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: '#d4a536',
+        pointHoverBorderWidth: 2,
+        pointHoverBorderColor: '#fff'
+                },
+        {
+            label: 'Redemptions',
+            data: {{ redemption_data| safe }},
+        borderColor: '#a855f7',
+        backgroundColor: redeemGradient,
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: '#a855f7',
+        pointHoverBorderWidth: 2,
+        pointHoverBorderColor: '#fff'
+                }
+    ]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(17, 17, 17, 0.95)',
+                titleColor: '#fff',
+                bodyColor: '#ccc',
+                borderColor: '#444',
+                borderWidth: 1,
+                padding: 12,
+                usePointStyle: true,
+                titleFont: { size: 14, weight: 'bold' }
+            }
+        },
+        scales: {
+            y: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                ticks: { color: '#6b7280', font: { family: 'Monaco', size: 10 } }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { color: '#6b7280', maxTicksLimit: 12, font: { size: 10 } }
+            }
+        }
+    }
+    });
+
+    // Handle Search Bar Focus
+    document.addEventListener('keydown', e => {
+        if (e.key === '/' && e.target.tagName !== 'INPUT') {
+            e.preventDefault();
+            document.querySelector('input[name="q"]').focus();
+        }
+    });
+</script>
 {% endblock %}

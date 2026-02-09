@@ -187,13 +187,6 @@
                     <a href="{% url 'club:rewards' %}"
                         class="text-white/80 hover:text-white transition font-medium text-sm">Rewards</a>
 
-                    {% if user.is_staff %}
-                    <a href="{% url 'club:management_dashboard' %}"
-                        class="text-melvins-gold hover:text-white transition font-bold text-sm border border-melvins-gold/30 px-3 py-1 rounded-lg bg-melvins-gold/10">
-                        ⚡ Management
-                    </a>
-                    {% endif %}
-
                     <!-- Points Badge -->
                     <div class="flex items-center gap-2 px-4 py-2 rounded-full glass-card">
                         <span class="text-melvins-gold font-bold">🍃</span>
@@ -243,12 +236,6 @@
                     Collection</a>
                 <a href="{% url 'club:rewards' %}"
                     class="block py-3 px-4 rounded-xl glass-card hover:bg-white/20 text-white transition">Rewards</a>
-
-                {% if user.is_staff %}
-                <a href="{% url 'club:management_dashboard' %}"
-                    class="block py-3 px-4 rounded-xl bg-melvins-gold/10 border border-melvins-gold/30 text-melvins-gold font-bold transition">⚡
-                    Management Dashboard</a>
-                {% endif %}
                 <a href="{% url 'club:logout' %}"
                     class="block py-3 px-4 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition">Sign
                     Out</a>
