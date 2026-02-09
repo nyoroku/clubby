@@ -3610,7 +3610,7 @@ def management_dashboard(request):
     ).order_by('-count')
     
     top_shops = Partnership.objects.filter(partner_type='shop').annotate(
-        redemption_count=Count('productredemption')
+        redemption_count=Count('productredemption_set')
     ).order_by('-redemption_count')[:10]
     
     # 5. Activity Feed
