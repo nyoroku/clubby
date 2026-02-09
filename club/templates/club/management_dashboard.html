@@ -34,8 +34,7 @@
         <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
             <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Total Users</h3>
             <div class="flex items-end justify-between">
-                <div class="text-3xl font-mono text-white group-hover:text-blue-400 transition">{{ total_users|intcomma
-                    }}</div>
+                <div class="text-3xl font-mono text-white group-hover:text-blue-400 transition">{{ total_users|intcomma}}</div>
                 <div
                     class="text-xs font-mono {% if new_users_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
                     +{{ new_users_24h }} (24h)
@@ -47,8 +46,7 @@
         <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
             <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Total Scans</h3>
             <div class="flex items-end justify-between">
-                <div class="text-3xl font-mono text-white group-hover:text-melvins-gold transition">{{
-                    total_scans|intcomma }}</div>
+                <div class="text-3xl font-mono text-white group-hover:text-melvins-gold transition">{{total_scans|intcomma }}</div>
                 <div class="text-xs font-mono {% if scans_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
                     +{{ scans_24h }} (24h)
                 </div>
@@ -59,8 +57,7 @@
         <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
             <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Redemptions</h3>
             <div class="flex items-end justify-between">
-                <div class="text-3xl font-mono text-white group-hover:text-purple-400 transition">{{
-                    total_redemptions|intcomma }}</div>
+                <div class="text-3xl font-mono text-white group-hover:text-purple-400 transition">{{total_redemptions|intcomma }}</div>
                 <div
                     class="text-xs font-mono {% if redemptions_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
                     +{{ redemptions_24h }} (24h)
@@ -72,8 +69,7 @@
         <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
             <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Commission (Rev)</h3>
             <div class="flex items-end justify-between">
-                <div class="text-3xl font-mono text-white group-hover:text-green-400 transition">Ksh {{
-                    total_revenue|floatformat:0|intcomma }}</div>
+                <div class="text-3xl font-mono text-white group-hover:text-green-400 transition">Ksh {{total_revenue|floatformat:0|intcomma }}</div>
                 <div class="text-xs text-gray-500">Lifetime</div>
             </div>
         </div>
@@ -161,10 +157,8 @@
                     <ul class="space-y-3">
                         {% for source in traffic_sources %}
                         <li class="flex justify-between items-center text-sm">
-                            <span class="text-gray-300 capitalize">{{ source.utm_source|default:"Direct / Unknown"
-                                }}</span>
-                            <span class="font-mono text-blue-400 bg-gray-800 px-2 py-0.5 rounded text-xs">{{
-                                source.count }} users</span>
+                            <span class="text-gray-300 capitalize">{{ source.utm_source|default:"Direct / Unknown"}}</span>
+                            <span class="font-mono text-blue-400 bg-gray-800 px-2 py-0.5 rounded text-xs">{{source.count }} users</span>
                         </li>
                         {% empty %}
                         <li class="text-gray-600 italic">No tracked sources yet</li>
@@ -176,8 +170,7 @@
                         {% for s in top_shops %}
                         <li class="flex justify-between items-center text-sm">
                             <span class="text-gray-300">{{ s.name }}</span>
-                            <span class="font-mono text-green-400 bg-gray-800 px-2 py-0.5 rounded text-xs">{{
-                                s.redemption_count }} redemptions</span>
+                            <span class="font-mono text-green-400 bg-gray-800 px-2 py-0.5 rounded text-xs">{{s.redemption_count }} redemptions</span>
                         </li>
                         {% empty %}
                         <li class="text-gray-600 italic">No shops yet</li>

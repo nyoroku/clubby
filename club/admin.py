@@ -809,12 +809,14 @@ class ProductListingAdmin(admin.ModelAdmin):
 @admin.register(ProductRedemption)
 class ProductRedemptionAdmin(admin.ModelAdmin):
     list_display = ['redemption_code', 'product', 'profile', 'points_deducted',
-                    'partner_earning', 'Melvins_commission', 'status', 'paid_to_partner',
+                    'partner_earning', 'Melvins_commission', 
+                    'status', 'paid_to_partner',
                     'created_at']
     list_filter = ['status', 'paid_to_partner', 'created_at', 'product__listing_partner']
     search_fields = ['redemption_code', 'profile__phone', 'product__name']
     readonly_fields = ['product', 'profile', 'points_deducted', 'amount_charged',
-                       'Melvins_commission', 'partner_earning', 'redemption_code',
+                       'Melvins_commission', 
+                       'partner_earning', 'redemption_code',
                        'created_at', 'fulfilled_at']
     date_hierarchy = 'created_at'
 
@@ -823,7 +825,9 @@ class ProductRedemptionAdmin(admin.ModelAdmin):
             'fields': ('product', 'profile', 'redeemed_at_shop', 'redemption_code')
         }),
         ('Financial', {
-            'fields': ('points_deducted', 'amount_charged', 'Melvins_commission', 'partner_earning')
+            'fields': ('points_deducted', 'amount_charged', 
+                       'Melvins_commission', 
+                       'partner_earning')
         }),
         ('Status & Tracking', {
             'fields': ('status', 'created_at', 'fulfilled_at')
