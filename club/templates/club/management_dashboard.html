@@ -225,15 +225,15 @@
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Regions</option>
                         {% for c in all_counties %}
-                        <option value="{{ c }}" {% if county_filter==c %}selected{% endif %}>{{ c|title }}</option>
+                        <option value="{{ c }}" {% if county_filter == c %}selected{% endif %}>{{ c|title }}</option>
                         {% endfor %}
                     </select>
 
                     <select name="status" onchange="this.form.submit()"
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Status</option>
-                        <option value="active" {% if status_filter=='active' %}selected{% endif %}>Active</option>
-                        <option value="inactive" {% if status_filter=='inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
                     </select>
                 </form>
             </div>
@@ -260,27 +260,22 @@
                                     <div class="font-bold text-gray-900 dark:text-gray-200">{{ user.first_name }}
                                         {{user.second_name }}</div>
                                     <div class="text-xs text-gray-500 font-mono">{{ user.phone }}</div>
-                                    <div class="text-[10px] text-gray-400 capitalize md:hidden">{{
-                                        user.county|default:"--" }}</div>
+                                    <div class="text-[10px] text-gray-400 capitalize md:hidden">{{user.county|default:"--" }}</div>
                                 </div>
                             </td>
                             <td class="p-4 text-center">
                                 <span
-                                    class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{
-                                    user.scan_count }}</span>
+                                    class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.scan_count }}</span>
                             </td>
                             <td class="p-4 text-center">
                                 <span
-                                    class="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{
-                                    user.redemption_count }}</span>
+                                    class="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.redemption_count }}</span>
                             </td>
                             <td class="p-4">
-                                <span class="text-melvins-gold font-mono text-xs font-bold">{{
-                                    user.points|intcomma}}</span>
+                                <span class="text-melvins-gold font-mono text-xs font-bold">{{user.points|intcomma}}</span>
                             </td>
                             <td class="p-4">
-                                <div class="text-[10px] font-bold uppercase text-blue-500">{{
-                                    user.utm_source|default:"Organic" }}</div>
+                                <div class="text-[10px] font-bold uppercase text-blue-500">{{user.utm_source|default:"Organic" }}</div>
                                 <div class="text-[10px] text-gray-400 capitalize">{{ user.county|default:"--" }}</div>
                             </td>
                             <td class="p-4 text-right text-xs text-gray-400">
@@ -331,8 +326,7 @@
                     {% for c in county_data %}
                     <div class="space-y-2">
                         <div class="flex justify-between text-xs font-medium">
-                            <span class="text-gray-600 dark:text-gray-300 capitalize">{{
-                                c.county|default:"Other"}}</span>
+                            <span class="text-gray-600 dark:text-gray-300 capitalize">{{c.county|default:"Other"}}</span>
                             <span class="text-gray-400 font-mono">{{ c.user_count }}</span>
                         </div>
                         <div class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
@@ -357,8 +351,7 @@
                         <div class="flex-1">
                             <div class="flex justify-between items-baseline mb-1">
                                 <strong
-                                    class="text-sm text-gray-800 dark:text-gray-200">{{item.user.first_name|default:"User"
-                                    }}</strong>
+                                    class="text-sm text-gray-800 dark:text-gray-200">{{item.user.first_name|default:"User"}}</strong>
                                 <span class="text-[10px] text-gray-400">{{ item.time|timesince }} ago</span>
                             </div>
                             <p class="text-gray-500 text-xs">{{ item.desc }}</p>
