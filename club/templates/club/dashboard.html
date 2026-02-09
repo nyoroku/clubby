@@ -9,35 +9,33 @@
 
     <!-- Welcome Header -->
     <header class="text-center mb-8">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Welcome back</h1>
-        <p class="text-gray-500 dark:text-white/60 text-sm font-medium">{{ profile.first_name|default:profile.phone }}
-        </p>
+        <h1 class="text-2xl font-bold text-gray-900">Welcome back</h1>
+        <p class="text-gray-500 text-sm font-medium">{{ profile.first_name|default:profile.phone }}</p>
     </header>
 
     <!-- Points Hero Card (Glassmorphism) -->
     <section class="mb-6">
         <div
             class="bg-gradient-to-br from-melvins-gold via-[#d4a020] to-melvins-gold rounded-3xl p-0.5 shadow-xl shadow-melvins-gold/10">
-            <div
-                class="bg-white dark:bg-gradient-to-br dark:from-[#2a1518]/95 dark:to-[#1a0a0c]/95 backdrop-blur-xl rounded-[1.4rem] p-6">
+            <div class="bg-white backdrop-blur-xl rounded-[1.4rem] p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-[10px] text-melvins-gold uppercase tracking-widest font-bold mb-1">Your Points
                         </p>
-                        <p class="text-4xl font-black text-gray-900 dark:text-white">{{ profile.points|default:0 }}</p>
+                        <p class="text-4xl font-black text-gray-900">{{ profile.points|default:0 }}</p>
                     </div>
                     <div
-                        class="w-16 h-16 bg-melvins-gold/10 dark:bg-melvins-gold/20 rounded-2xl flex items-center justify-center border border-melvins-gold/20">
+                        class="w-16 h-16 bg-melvins-gold/10 rounded-2xl flex items-center justify-center border border-melvins-gold/20">
                         <span class="text-4xl">🏆</span>
                     </div>
                 </div>
                 <div class="flex gap-3 mt-5">
                     <a href="{% url 'club:rewards' %}"
-                        class="flex-1 py-3 bg-melvins-gold text-white dark:text-[#1a0a0c] font-bold text-sm rounded-xl text-center hover:bg-melvins-gold-light transition shadow-lg shadow-melvins-gold/20">
+                        class="flex-1 py-3 bg-melvins-gold text-white font-bold text-sm rounded-xl text-center hover:bg-melvins-gold-light transition shadow-lg shadow-melvins-gold/20">
                         Redeem
                     </a>
                     <a href="{% url 'club:transfer_points' %}"
-                        class="flex-1 py-3 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white font-bold text-sm rounded-xl text-center hover:bg-gray-200 dark:hover:bg-white/20 transition border border-gray-200 dark:border-white/20">
+                        class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold text-sm rounded-xl text-center hover:bg-gray-200 transition border border-gray-200">
                         Transfer
                     </a>
                 </div>
@@ -52,12 +50,11 @@
             <!-- Scan Pack -->
             <a href="{% url 'club:scan_pack' %}" class="group">
                 <div
-                    class="bg-white dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-gray-200 dark:border-white/10 hover:shadow-lg transition-all duration-300">
+                    class="bg-white backdrop-blur-md rounded-2xl p-5 border border-gray-200 hover:shadow-lg transition-all duration-300">
                     <div class="flex flex-col">
-                        <h3 class="font-bold text-gray-900 dark:text-white text-base mb-1">Scan Pack</h3>
-                        <p
-                            class="text-gray-500 dark:text-white/50 text-[10px] mb-4 font-medium uppercase tracking-tight">
-                            Earn points now</p>
+                        <h3 class="font-bold text-gray-900 text-base mb-1">Scan Pack</h3>
+                        <p class="text-gray-500 text-[10px] mb-4 font-medium uppercase tracking-tight">Earn points now
+                        </p>
                         <div
                             class="self-end w-12 h-12 bg-gradient-to-br from-melvins-gold to-[#d4a020] rounded-xl flex items-center justify-center transform group-hover:rotate-6 transition-transform shadow-md">
                             <span class="text-2xl">📦</span>
@@ -69,11 +66,10 @@
             <!-- My Collection -->
             <a href="{% url 'club:my_collection' %}" class="group">
                 <div
-                    class="bg-white dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-gray-200 dark:border-white/10 hover:shadow-lg transition-all duration-300">
+                    class="bg-white backdrop-blur-md rounded-2xl p-5 border border-gray-200 hover:shadow-lg transition-all duration-300">
                     <div class="flex flex-col">
-                        <h3 class="font-bold text-gray-900 dark:text-white text-base mb-1">Collection</h3>
-                        <p
-                            class="text-gray-500 dark:text-white/50 text-[10px] mb-4 font-medium uppercase tracking-tight">
+                        <h3 class="font-bold text-gray-900 text-base mb-1">Collection</h3>
+                        <p class="text-gray-500 text-[10px] mb-4 font-medium uppercase tracking-tight">
                             {{ user_card_ids|length|default:0 }}/{{ active_collection.total_cards|default:12 }} Cards
                         </p>
                         <div
@@ -87,12 +83,10 @@
             <!-- Rewards -->
             <a href="{% url 'club:rewards' %}" class="group">
                 <div
-                    class="bg-white dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-gray-200 dark:border-white/10 hover:shadow-lg transition-all duration-300">
+                    class="bg-white backdrop-blur-md rounded-2xl p-5 border border-gray-200 hover:shadow-lg transition-all duration-300">
                     <div class="flex flex-col">
-                        <h3 class="font-bold text-gray-900 dark:text-white text-base mb-1">Rewards</h3>
-                        <p
-                            class="text-gray-500 dark:text-white/50 text-[10px] mb-4 font-medium uppercase tracking-tight">
-                            Claim prizes</p>
+                        <h3 class="font-bold text-gray-900 text-base mb-1">Rewards</h3>
+                        <p class="text-gray-500 text-[10px] mb-4 font-medium uppercase tracking-tight">Claim prizes</p>
                         <div
                             class="self-end w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center transform group-hover:-rotate-6 transition-transform shadow-md">
                             <span class="text-2xl">🎁</span>
@@ -104,12 +98,11 @@
             <!-- Refer Friends -->
             <a href="{% url 'club:referral_page' %}" class="group">
                 <div
-                    class="bg-white dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-gray-200 dark:border-white/10 hover:shadow-lg transition-all duration-300">
+                    class="bg-white backdrop-blur-md rounded-2xl p-5 border border-gray-200 hover:shadow-lg transition-all duration-300">
                     <div class="flex flex-col">
-                        <h3 class="font-bold text-gray-900 dark:text-white text-base mb-1">Refer</h3>
-                        <p
-                            class="text-gray-500 dark:text-white/50 text-[10px] mb-4 font-medium uppercase tracking-tight">
-                            Invite friends</p>
+                        <h3 class="font-bold text-gray-900 text-base mb-1">Refer</h3>
+                        <p class="text-gray-500 text-[10px] mb-4 font-medium uppercase tracking-tight">Invite friends
+                        </p>
                         <div
                             class="self-end w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-transform shadow-md">
                             <span class="text-2xl">👥</span>
@@ -124,24 +117,22 @@
     <!-- Invite Friends Section -->
     <section class="mb-8" x-data="{ copied: false }">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-base font-bold text-gray-900 dark:text-white">Invite Friends</h2>
+            <h2 class="text-base font-bold text-gray-900">Invite Friends</h2>
             <a href="{% url 'club:team_collection_home' %}"
                 class="text-xs text-melvins-gold font-bold hover:underline">My Team →</a>
         </div>
 
-        <div
-            class="bg-white dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div class="bg-white backdrop-blur-md rounded-2xl p-5 border border-gray-200 shadow-sm">
             <!-- Referral Code -->
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <p class="text-[10px] text-gray-500 dark:text-white/50 uppercase tracking-widest font-bold mb-1">
-                        Invite Code</p>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Invite Code</p>
                     <p class="text-2xl font-black text-melvins-gold tracking-widest">{{ profile.referral_code }}</p>
                 </div>
                 <button
                     @click="navigator.clipboard.writeText('{{ profile.referral_code }}'); copied=true; setTimeout(()=> copied = false, 2000)"
                     class="px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm"
-                    :class="copied ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20'">
+                    :class="copied ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
                     <span x-show="!copied">📋 Copy</span>
                     <span x-show="copied" x-cloak>✓ Copied!</span>
                 </button>
@@ -156,16 +147,14 @@
                 </a>
                 <button
                     @click="navigator.share ? navigator.share({title: 'Join Melvins Club', text: 'Use my code {{ profile.referral_code }} to join!', url: '{{ request.scheme }}://{{ request.get_host }}{% url 'club:user_login' %}?ref={{ profile.referral_code }}'}) : null"
-                    class="flex-1 py-3 bg-melvins-gold hover:bg-melvins-gold-light text-white dark:text-[#1a0a0c] rounded-xl font-bold text-center text-sm transition flex items-center justify-center gap-2 shadow-md">
+                    class="flex-1 py-3 bg-melvins-gold hover:bg-melvins-gold-light text-white rounded-xl font-bold text-center text-sm transition flex items-center justify-center gap-2 shadow-md">
                     <span>📤</span> Share
                 </button>
             </div>
 
-            <div
-                class="bg-gray-50 dark:bg-white/5 rounded-xl p-3 text-xs text-gray-500 dark:text-white/60 space-y-1 font-medium">
-                <p>👤 <strong class="text-gray-700 dark:text-white/80">New friends:</strong> Both earn 50 points</p>
-                <p>👥 <strong class="text-gray-700 dark:text-white/80">Existing:</strong> Add to your collection team
-                </p>
+            <div class="bg-gray-50 rounded-xl p-3 text-xs text-gray-500 space-y-1 font-medium">
+                <p>👤 <strong class="text-gray-700">New friends:</strong> Both earn 50 points</p>
+                <p>👥 <strong class="text-gray-700">Existing:</strong> Add to your collection team</p>
             </div>
         </div>
     </section>
@@ -174,35 +163,32 @@
     {% if collection_cards %}
     <section class="mb-8">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-base font-bold text-gray-900 dark:text-white">Tea Estates</h2>
+            <h2 class="text-base font-bold text-gray-900">Tea Estates</h2>
             <a href="{% url 'club:my_collection' %}" class="text-xs text-melvins-gold font-bold hover:underline">View
                 All →</a>
         </div>
 
-        <div
-            class="bg-white dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div class="bg-white backdrop-blur-md rounded-2xl p-5 border border-gray-200 shadow-sm">
             <div class="flex items-center justify-between mb-5">
                 <div class="flex items-center gap-3">
                     <div
-                        class="w-10 h-10 bg-melvins-gold/10 dark:bg-melvins-gold/20 rounded-full flex items-center justify-center border border-melvins-gold/20">
+                        class="w-10 h-10 bg-melvins-gold/10 rounded-full flex items-center justify-center border border-melvins-gold/20">
                         <span class="text-xl">🍃</span>
                     </div>
                     <div>
-                        <p class="font-black text-gray-900 dark:text-white text-lg">{{ user_card_ids|length|default:0 }}
-                            / {{ active_collection.total_cards|default:12 }}</p>
-                        <p class="text-[10px] text-gray-500 dark:text-white/50 uppercase tracking-widest font-bold">
-                            Collected</p>
+                        <p class="font-black text-gray-900 text-lg">{{ user_card_ids|length|default:0 }} / {{
+                            active_collection.total_cards|default:12 }}</p>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Collected</p>
                     </div>
                 </div>
                 {% if cards_remaining > 0 %}
                 <div class="text-right">
                     <p class="font-black text-melvins-gold text-lg">{{ cards_remaining }}</p>
-                    <p class="text-[10px] text-gray-500 dark:text-white/50 uppercase tracking-widest font-bold">To Go
-                    </p>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">To Go</p>
                 </div>
                 {% else %}
                 <span
-                    class="px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/20 uppercase tracking-tighter">✓
+                    class="px-3 py-1 bg-emerald-500/10 text-emerald-600 text-[10px] font-bold rounded-full border border-emerald-500/20 uppercase tracking-tighter">✓
                     Complete</span>
                 {% endif %}
             </div>
@@ -210,7 +196,7 @@
             <div class="grid grid-cols-4 gap-2">
                 {% for item in collection_cards|slice:":8" %}
                 <div
-                    class="aspect-[3/4] rounded-lg overflow-hidden relative shadow-sm {% if item.collected %}ring-2 ring-melvins-gold{% else %}bg-gray-100 dark:bg-white/5{% endif %}">
+                    class="aspect-[3/4] rounded-lg overflow-hidden relative shadow-sm {% if item.collected %}ring-2 ring-melvins-gold{% else %}bg-gray-100{% endif %}">
                     {% if item.collected %}
                     <div class="w-full h-full bg-cover bg-center"
                         style="background-image: url('{% if item.card.card_image %}{{ item.card.card_image.url }}{% else %}https://images.unsplash.com/photo-1597305877447-0849319e6d8a?auto=format&fit=crop&w=200&q=60{% endif %}');">
@@ -221,7 +207,7 @@
                     </div>
                     {% else %}
                     <div class="w-full h-full flex flex-col items-center justify-center">
-                        <span class="text-gray-300 dark:text-white/20 text-sm">🔒</span>
+                        <span class="text-gray-300 text-sm">🔒</span>
                     </div>
                     {% endif %}
                 </div>
@@ -233,33 +219,30 @@
 
     <!-- Recent Activity -->
     <section class="mb-8">
-        <h2 class="text-base font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
+        <h2 class="text-base font-bold text-gray-900 mb-4">Recent Activity</h2>
         <div class="space-y-3">
             {% if recent_scans %}
             {% for scan in recent_scans|slice:":3" %}
             <div
-                class="bg-white dark:bg-white/10 backdrop-blur-md rounded-xl p-4 flex items-center justify-between border border-gray-200 dark:border-white/10 shadow-sm">
+                class="bg-white backdrop-blur-md rounded-xl p-4 flex items-center justify-between border border-gray-200 shadow-sm">
                 <div class="flex items-center gap-3">
                     <div
-                        class="w-10 h-10 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full flex items-center justify-center border border-emerald-500/20">
-                        <span class="text-emerald-600 dark:text-emerald-400 font-black text-sm">+</span>
+                        class="w-10 h-10 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20">
+                        <span class="text-emerald-600 font-black text-sm">+</span>
                     </div>
                     <div>
-                        <p class="font-bold text-gray-900 dark:text-white text-sm">Pack Scanned</p>
-                        <p class="text-[10px] text-gray-500 dark:text-white/50 font-medium">{{ scan.created_at|timesince
-                            }} ago</p>
+                        <p class="font-bold text-gray-900 text-sm">Pack Scanned</p>
+                        <p class="text-[10px] text-gray-500 font-medium">{{ scan.created_at|timesince }} ago</p>
                     </div>
                 </div>
-                <span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">+{{ scan.points_earned }}
-                    pts</span>
+                <span class="text-emerald-600 font-bold text-sm">+{{ scan.points_earned }} pts</span>
             </div>
             {% endfor %}
             {% else %}
-            <div
-                class="bg-white dark:bg-white/10 backdrop-blur-md rounded-xl p-8 text-center border border-gray-200 dark:border-white/10 shadow-sm">
-                <p class="text-gray-500 dark:text-white/50 text-sm mb-4 font-medium">No activity yet. Start earning!</p>
+            <div class="bg-white backdrop-blur-md rounded-xl p-8 text-center border border-gray-200 shadow-sm">
+                <p class="text-gray-500 text-sm mb-4 font-medium">No activity yet. Start earning!</p>
                 <a href="{% url 'club:scan_pack' %}"
-                    class="inline-block px-6 py-3 bg-melvins-gold text-white dark:text-[#1a0a0c] rounded-full font-bold text-sm hover:bg-melvins-gold-light transition shadow-lg shadow-melvins-gold/20">
+                    class="inline-block px-6 py-3 bg-melvins-gold text-white rounded-full font-bold text-sm hover:bg-melvins-gold-light transition shadow-lg shadow-melvins-gold/20">
                     Scan Your First Pack
                 </a>
             </div>
@@ -270,12 +253,12 @@
     <!-- Pro Tip -->
     <section class="pb-8">
         <div
-            class="bg-gradient-to-r from-melvins-gold/10 to-transparent dark:from-melvins-gold/20 dark:to-melvins-gold/5 rounded-2xl p-5 border border-melvins-gold/20 shadow-sm">
+            class="bg-gradient-to-r from-melvins-gold/10 to-transparent rounded-2xl p-5 border border-melvins-gold/20 shadow-sm">
             <div class="flex items-start gap-3">
                 <span class="text-2xl">💡</span>
                 <div>
-                    <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-1">Pro Tip</h3>
-                    <p class="text-gray-600 dark:text-white/70 text-xs leading-relaxed font-medium">
+                    <h3 class="font-bold text-gray-900 text-sm mb-1">Pro Tip</h3>
+                    <p class="text-gray-600 text-xs leading-relaxed font-medium">
                         Collect all {{ active_collection.total_cards|default:12 }} Tea Estate cards to unlock
                         {{ active_collection.completion_reward_points|default:500 }} bonus points!
                     </p>

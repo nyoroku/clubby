@@ -1,9 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" x-data="{ 
-    mobileMenuOpen: false, 
-    darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-}" :class="{ 'dark': darkMode }" class="scroll-smooth">
+<html lang="en" x-data="{ mobileMenuOpen: false }" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
@@ -75,16 +72,8 @@
             border-radius: 3px;
         }
 
-        .dark ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(139, 35, 50, 0.3);
-        }
-
-        .dark ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
         }
 
         /* HTMX transitions */
@@ -118,30 +107,17 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        .dark .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: none;
-        }
-
-        /* Mobile nav - Adaptive */
+        /* Mobile nav */
         .mobile-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(to top, rgba(90, 21, 21, 0.98), rgba(90, 21, 21, 0.95));
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding: 0.5rem 0 1rem;
             z-index: 50;
-            box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .dark .mobile-nav {
-            background: linear-gradient(to top, rgba(90, 21, 21, 0.98), rgba(90, 21, 21, 0.95));
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: none;
         }
 
         .mobile-nav-item {
@@ -150,12 +126,8 @@
             align-items: center;
             gap: 2px;
             padding: 0.5rem 1rem;
-            color: rgba(90, 21, 21, 0.6);
-            transition: all 0.2s;
-        }
-
-        .dark .mobile-nav-item {
             color: rgba(255, 255, 255, 0.6);
+            transition: all 0.2s;
         }
 
         .mobile-nav-item.active,
@@ -167,30 +139,27 @@
     {% block extra_css %}{% endblock %}
 </head>
 
-<body
-    class="min-h-screen transition-colors duration-300 bg-melvins-cream dark:bg-gradient-to-br dark:from-melvins-maroon dark:via-melvins-maroon-dark dark:to-[#3d2830] text-melvins-dark dark:text-white pb-16">
+<body class="min-h-screen bg-melvins-cream text-melvins-dark pb-16">
     <!-- Decorative blur circles -->
     <div
-        class="fixed top-0 right-0 w-96 h-96 bg-melvins-gold/15 dark:bg-melvins-gold/15 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none">
+        class="fixed top-0 right-0 w-96 h-96 bg-melvins-gold/15 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none">
     </div>
     <div
-        class="fixed bottom-0 left-0 w-80 h-80 bg-melvins-maroon/5 dark:bg-white/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none">
+        class="fixed bottom-0 left-0 w-80 h-80 bg-melvins-maroon/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3 pointer-events-none">
     </div>
 
     <!-- Loading Indicator -->
     <div id="global-loader"
-        class="htmx-indicator fixed inset-0 bg-white/95 dark:bg-melvins-maroon-dark/95 backdrop-blur-sm z-50 flex items-center justify-center">
+        class="htmx-indicator fixed inset-0 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-center">
         <div class="flex flex-col items-center gap-3">
-            <div
-                class="w-12 h-12 border-4 border-melvins-maroon/30 dark:border-white/30 border-t-melvins-gold rounded-full animate-spin">
+            <div class="w-12 h-12 border-4 border-melvins-maroon/30 border-t-melvins-gold rounded-full animate-spin">
             </div>
-            <span class="text-melvins-maroon dark:text-white text-sm font-medium">Brewing...</span>
+            <span class="text-melvins-maroon text-sm font-medium">Brewing...</span>
         </div>
     </div>
 
     <!-- Top Navigation (Glassmorphism) -->
-    <nav
-        class="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-melvins-maroon-dark/90 backdrop-blur-xl border-b border-gray-200 dark:border-white/10">
+    <nav class="fixed top-0 left-0 right-0 z-40 bg-melvins-maroon shadow-lg border-b border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <!-- SVG Logo -->
@@ -213,19 +182,6 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center gap-6">
-                    <!-- Theme Toggle -->
-                    <button @click="darkMode = !darkMode; localStorage.setItem('theme', darkMode ? 'dark' : 'light')"
-                        class="p-2 rounded-lg text-white/70 hover:text-white transition-colors">
-                        <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                        <svg x-show="darkMode" x-cloak class="w-5 h-5 text-melvins-gold" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.95 17.05l.707.707M7.05 7.05l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                        </svg>
-                    </button>
                     {% if user.is_authenticated %}
                     <a href="{% url 'club:dashboard' %}"
                         class="text-white/80 hover:text-white transition font-medium text-sm">Dashboard</a>
@@ -245,9 +201,8 @@
                         Out</a>
                     {% else %}
                     <a href="{% url 'club:request_otp' %}"
-                        class="px-5 py-2 bg-melvins-gold hover:bg-melvins-gold-light text-white font-bold rounded-full transition shadow-md text-sm">
-                        Join the Club
-                    </a>
+                        class="px-5 py-2 bg-melvins-gold hover:bg-melvins-gold-light text-white font-bold rounded-full transition shadow-md text-sm">Join
+                        the Club</a>
                     {% endif %}
                 </div>
 
@@ -283,14 +238,6 @@
                     Collection</a>
                 <a href="{% url 'club:rewards' %}"
                     class="block py-3 px-4 rounded-xl glass-card hover:bg-white/20 text-white transition">Rewards</a>
-
-                <!-- Theme Toggle Mobile -->
-                <button @click="darkMode = !darkMode; localStorage.setItem('theme', darkMode ? 'dark' : 'light')"
-                    class="w-full flex items-center justify-between py-3 px-4 rounded-xl glass-card text-white/80 hover:bg-white/10 transition">
-                    <span class="font-medium">Appearance</span>
-                    <span x-text="darkMode ? 'Dark Mode' : 'Light Mode'"
-                        class="text-xs font-bold text-melvins-gold"></span>
-                </button>
                 <a href="{% url 'club:logout' %}"
                     class="block py-3 px-4 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition">Sign
                     Out</a>
@@ -308,8 +255,7 @@
     <div class="fixed top-20 right-4 z-50 space-y-2 max-w-sm" x-data="{ show: true }" x-show="show"
         x-init="setTimeout(() => show = false, 5000)">
         {% for message in messages %}
-        <div class="glass-card p-4 rounded-xl shadow-lg border-l-4 
-            {% if message.tags == 'error' %}border-red-400{% elif message.tags == 'success' %}border-emerald-400{% else %}border-melvins-gold{% endif %}"
+        <div class="glass-card p-4 rounded-xl shadow-lg border-l-4 {% if message.tags == 'error' %}border-red-400{% elif message.tags == 'success' %}border-emerald-400{% else %}border-melvins-gold{% endif %}"
             x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-x-0"
             x-transition:leave-end="opacity-0 translate-x-full">
             <p class="text-white text-sm">{{ message }}</p>
