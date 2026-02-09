@@ -190,7 +190,7 @@
 
     <!-- Top Navigation (Glassmorphism) -->
     <nav
-        class="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-melvins-maroon-dark/90 backdrop-blur-xl border-b border-gray-200 dark:border-white/10">
+        class="fixed top-0 left-0 right-0 z-40 bg-melvins-maroon/95 dark:bg-melvins-maroon-dark/95 backdrop-blur-xl border-b border-white/10 shadow-lg transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <!-- SVG Logo -->
@@ -215,7 +215,7 @@
                 <div class="hidden md:flex items-center gap-6">
                     <!-- Theme Toggle -->
                     <button @click="darkMode = !darkMode; localStorage.setItem('theme', darkMode ? 'dark' : 'light')"
-                        class="p-2 rounded-lg text-white/70 hover:text-white transition-colors">
+                        class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all shadow-sm border border-white/10">
                         <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -286,7 +286,7 @@
 
                 <!-- Theme Toggle Mobile -->
                 <button @click="darkMode = !darkMode; localStorage.setItem('theme', darkMode ? 'dark' : 'light')"
-                    class="w-full flex items-center justify-between py-3 px-4 rounded-xl glass-card text-white/80 hover:bg-white/10 transition">
+                    class="w-full flex items-center justify-between py-3 px-4 rounded-xl bg-white/10 text-white/80 hover:bg-white/20 transition backdrop-blur-sm shadow-sm border border-white/10">
                     <span class="font-medium">Appearance</span>
                     <span x-text="darkMode ? 'Dark Mode' : 'Light Mode'"
                         class="text-xs font-bold text-melvins-gold"></span>
