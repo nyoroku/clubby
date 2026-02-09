@@ -3554,8 +3554,40 @@ def management_dashboard(request):
     # Revenue (Commission)
     total_revenue = ListingPartner.objects.aggregate(total=Sum('melvins_commission_earned'))['total'] or 0
     
-    # 2. User List (Recent)
-    recent_users = Profile.objects.all().order_by('-created_at')[:50]
+    # 2. User List (Enriched with Search & Filters)
+    from django.core.paginator import Paginator
+    
+    # Base queryset with annotations for performance
+    users_qs = Profile.objects.select_related('user').annotate(
+        scan_count=Count('scan', distinct=True),
+        redemption_count=Count('productredemption', distinct=True)
+    ).order_by('-created_at')
+
+    # Filtering
+    search_query = request.GET.get('q', '').strip()
+    county_filter = request.GET.get('county', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+
+    if search_query:
+        users_qs = users_qs.filter(
+            Q(first_name__icontains=search_query) | 
+            Q(second_name__icontains=search_query) |
+            Q(phone__icontains=search_query) |
+            Q(user__email__icontains=search_query)
+        )
+
+    if county_filter:
+        users_qs = users_qs.filter(county=county_filter)
+
+    if status_filter == 'active':
+        users_qs = users_qs.filter(user__is_active=True)
+    elif status_filter == 'inactive':
+        users_qs = users_qs.filter(user__is_active=False)
+
+    # Pagination
+    paginator = Paginator(users_qs, 50)
+    page_number = request.GET.get('page')
+    recent_users = paginator.get_page(page_number)
     
     # 3. Geographic Breakdown
     county_data = Profile.objects.values('county').annotate(
@@ -3565,6 +3597,9 @@ def management_dashboard(request):
     if total_users > 0:
         for c in county_data:
             c['user_percent'] = (c['user_count'] / total_users) * 100
+            
+    # Distinct counties for filter dropdown
+    all_counties = [c['county'] for c in county_data if c['county']]
     
     # 4. Channel Tracking
     total_referred = Profile.objects.filter(referred_by__isnull=False).count()
@@ -3653,6 +3688,10 @@ def management_dashboard(request):
         'chart_labels': chart_labels,
         'scan_data': scan_data,
         'redemption_data': redemption_data,
+        'all_counties': all_counties, # For dropdown
+        'search_query': search_query,
+        'county_filter': county_filter,
+        'status_filter': status_filter,
     }
     
     return render(request, 'club/management_dashboard.html', context)
