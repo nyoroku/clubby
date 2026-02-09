@@ -3560,7 +3560,7 @@ def management_dashboard(request):
     # Base queryset with annotations for performance
     users_qs = Profile.objects.select_related('user').annotate(
         scan_count=Count('scan', distinct=True),
-        redemption_count=Count('productredemption', distinct=True)
+        redemption_count=Count('product_redemptions', distinct=True)
     ).order_by('-created_at')
 
     # Filtering
