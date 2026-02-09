@@ -4,91 +4,104 @@
 {% block title %}Rewards - Melvins Club{% endblock %}
 
 {% block content %}
-<div class="max-w-lg mx-auto px-4 py-8" x-data="{ filter: 'all' }">
+<div class="max-w-lg mx-auto px-4 py-8 pb-24 transition-colors duration-300" x-data="{ filter: 'all' }">
 
     <!-- Header -->
-    <div class="text-center mb-8">
-        <h1 class="text-2xl font-display font-bold text-white mb-2">Rewards Center</h1>
-        <p class="text-white/50 text-sm">Redeem points for exclusive rewards</p>
+    <div class="text-center mb-10">
+        <h1 class="text-3xl font-display font-black text-gray-900 dark:text-white mb-2 tracking-tight">Rewards Center
+        </h1>
+        <p class="text-gray-500 dark:text-white/60 text-sm font-medium">Redeem points for exclusive rewards</p>
     </div>
 
     <!-- Points Balance Card -->
-    <section class="mb-8">
-        <div class="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
+    <section class="mb-10">
+        <div
+            class="glass-card rounded-[2rem] p-8 text-center relative overflow-hidden shadow-xl border border-gray-100 dark:border-white/10">
             <div
-                class="absolute top-0 right-0 w-24 h-24 bg-melvins-gold/20 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2">
+                class="absolute top-0 right-0 w-32 h-32 bg-melvins-gold/20 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2">
             </div>
             <div class="relative z-10">
-                <span class="text-white/50 text-xs font-bold uppercase tracking-wider block mb-2">Your Balance</span>
-                <div class="flex items-center justify-center gap-2">
-                    <span class="text-4xl font-bold text-white">{{ profile.points|default:0 }}</span>
-                    <span class="text-melvins-gold font-bold text-sm bg-melvins-gold/20 px-2 py-1 rounded">PTS</span>
+                <span
+                    class="text-gray-400 dark:text-white/50 text-[10px] font-black uppercase tracking-[0.2em] block mb-3">Your
+                    Balance</span>
+                <div class="flex items-center justify-center gap-3">
+                    <span class="text-5xl font-black text-gray-900 dark:text-white tracking-tighter">{{
+                        profile.points|default:0 }}</span>
+                    <span
+                        class="text-melvins-gold font-black text-xs bg-melvins-gold/10 dark:bg-melvins-gold/20 px-3 py-1.5 rounded-xl border border-melvins-gold/20">PTS</span>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Filter Tabs -->
-    <section class="flex flex-wrap justify-center gap-2 mb-6">
+    <section class="flex flex-wrap justify-center gap-2.5 mb-8">
         <button @click="filter = 'all'"
-            :class="filter === 'all' ? 'bg-melvins-gold text-[#1a0a0c]' : 'glass-card text-white/70 hover:text-white'"
-            class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+            :class="filter === 'all' ? 'bg-melvins-gold text-white dark:text-[#1a0a0c] shadow-lg shadow-melvins-gold/30' : 'glass-card text-gray-500 dark:text-white/70 hover:text-melvins-gold'"
+            class="px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">
             All
         </button>
         <button @click="filter = 'products'"
-            :class="filter === 'products' ? 'bg-melvins-gold text-[#1a0a0c]' : 'glass-card text-white/70 hover:text-white'"
-            class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+            :class="filter === 'products' ? 'bg-melvins-gold text-white dark:text-[#1a0a0c] shadow-lg shadow-melvins-gold/30' : 'glass-card text-gray-500 dark:text-white/70 hover:text-melvins-gold'"
+            class="px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">
             🎁 Products
         </button>
         <button @click="filter = 'vouchers'"
-            :class="filter === 'vouchers' ? 'bg-melvins-gold text-[#1a0a0c]' : 'glass-card text-white/70 hover:text-white'"
-            class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+            :class="filter === 'vouchers' ? 'bg-melvins-gold text-white dark:text-[#1a0a0c] shadow-lg shadow-melvins-gold/30' : 'glass-card text-gray-500 dark:text-white/70 hover:text-melvins-gold'"
+            class="px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">
             🎟️ Vouchers
         </button>
         <button @click="filter = 'experiences'"
-            :class="filter === 'experiences' ? 'bg-melvins-gold text-[#1a0a0c]' : 'glass-card text-white/70 hover:text-white'"
-            class="px-4 py-2 rounded-full text-xs font-bold transition-all">
+            :class="filter === 'experiences' ? 'bg-melvins-gold text-white dark:text-[#1a0a0c] shadow-lg shadow-melvins-gold/30' : 'glass-card text-gray-500 dark:text-white/70 hover:text-melvins-gold'"
+            class="px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">
             🏆 Experiences
         </button>
     </section>
 
     <!-- Rewards Grid -->
-    <section class="space-y-4">
+    <section class="space-y-5">
         {% if rewards %}
         {% for reward in rewards %}
-        <div class="glass-card rounded-2xl overflow-hidden group"
+        <div class="glass-card rounded-[1.5rem] overflow-hidden group shadow-sm hover:shadow-md transition-shadow"
             x-show="filter === 'all' || filter === '{{ reward.category|default:'products' }}'"
             x-transition.opacity.duration.300ms>
 
-            <div class="flex gap-4 p-4">
+            <div class="flex gap-5 p-5">
                 <!-- Image -->
-                <div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-white/10">
+                <div
+                    class="w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 shadow-inner">
                     {% if reward.image %}
-                    <img src="{{ reward.image.url }}" alt="{{ reward.name }}" class="w-full h-full object-cover">
+                    <img src="{{ reward.image.url }}" alt="{{ reward.name }}"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     {% else %}
-                    <div class="w-full h-full flex items-center justify-center text-3xl opacity-50">{{
+                    <div class="w-full h-full flex items-center justify-center text-4xl opacity-50">{{
                         reward.icon|default:"🎁" }}</div>
                     {% endif %}
                 </div>
 
                 <!-- Details -->
-                <div class="flex-grow flex flex-col justify-between">
+                <div class="flex-grow flex flex-col justify-between py-1">
                     <div>
-                        <h3 class="font-bold text-white text-base mb-1">{{ reward.name }}</h3>
-                        <p class="text-white/50 text-xs line-clamp-2">{{ reward.description }}</p>
+                        <h3 class="font-black text-gray-900 dark:text-white text-lg mb-1 leading-tight">{{ reward.name
+                            }}</h3>
+                        <p class="text-gray-500 dark:text-white/50 text-xs line-clamp-2 font-medium leading-relaxed">{{
+                            reward.description }}</p>
                     </div>
 
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="text-melvins-gold font-bold text-sm">{{ reward.points_required }} pts</span>
+                    <div class="flex items-center justify-between mt-3">
+                        <span class="text-melvins-gold font-black text-sm tracking-tight">{{ reward.points_required }}
+                            PTS</span>
 
                         {% if profile.points >= reward.points_required %}
                         <a href="{% url 'club:redeem_product' reward.id %}"
-                            class="px-4 py-2 bg-melvins-gold text-[#1a0a0c] font-bold text-xs rounded-full hover:bg-melvins-gold-light transition">
+                            class="px-6 py-2 bg-melvins-gold text-white dark:text-[#1a0a0c] font-black text-[10px] uppercase tracking-widest rounded-full hover:bg-melvins-gold-light transition shadow-lg shadow-melvins-gold/20 active:scale-95">
                             Redeem
                         </a>
                         {% else %}
-                        <span class="px-3 py-1.5 bg-white/10 text-white/40 font-bold text-xs rounded-full">
-                            🔒 {{ reward.points_required|add:"-"|add:profile.points }} more
+                        <span
+                            class="px-4 py-2 bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-white/30 font-black text-[9px] uppercase tracking-widest rounded-full divide-x divide-gray-200 dark:divide-white/10">
+                            <span class="pr-2">🔒 Locked</span>
+                            <span class="pl-2">{{ reward.points_required|add:"-profile.points" }} more</span>
                         </span>
                         {% endif %}
                     </div>
@@ -98,23 +111,28 @@
         {% endfor %}
         {% else %}
         <!-- Placeholder Rewards -->
-        <div class="glass-card rounded-2xl p-6 text-center">
-            <p class="text-white/50 text-sm mb-4">No rewards available yet</p>
+        <div
+            class="glass-card rounded-[2rem] p-10 text-center border-dashed border-2 border-gray-200 dark:border-white/10 shadow-none bg-transparent">
+            <div class="text-4xl mb-4 opacity-50 grayscale">🎁</div>
+            <p class="text-gray-500 dark:text-white/50 text-sm mb-6 font-medium">No rewards available yet.<br>Check back
+                soon!</p>
             <a href="{% url 'club:scan_pack' %}"
-                class="inline-block px-4 py-2 bg-melvins-gold text-[#1a0a0c] font-bold text-sm rounded-full">
-                Scan to Earn Points
+                class="inline-block px-8 py-3 bg-melvins-gold text-white dark:text-[#1a0a0c] font-black text-xs uppercase tracking-widest rounded-xl shadow-lg shadow-melvins-gold/20">
+                Scan to Earn
             </a>
         </div>
         {% endif %}
     </section>
 
     <!-- Earn More CTA -->
-    <section class="mt-8">
-        <div class="glass-card rounded-2xl p-6 text-center border border-melvins-gold/20">
-            <h3 class="font-bold text-white text-base mb-2">Need more points?</h3>
-            <p class="text-white/50 text-xs mb-4">Scan tea packs to unlock more rewards</p>
+    <section class="mt-12">
+        <div
+            class="glass-card rounded-[2rem] p-8 text-center border-2 border-melvins-gold/10 dark:border-melvins-gold/20 bg-gradient-to-b from-transparent to-melvins-gold/5">
+            <h3 class="font-black text-gray-900 dark:text-white text-xl mb-2 tracking-tight">Need more points?</h3>
+            <p class="text-gray-500 dark:text-white/50 text-xs mb-6 font-medium">Scan tea packs with your unique codes
+                to unlock more exclusive club rewards.</p>
             <a href="{% url 'club:scan_pack' %}"
-                class="inline-block px-6 py-3 bg-melvins-gold text-[#1a0a0c] rounded-xl font-bold text-sm hover:bg-melvins-gold-light transition">
+                class="inline-block px-10 py-4 bg-melvins-gold text-white dark:text-[#1a0a0c] rounded-[1.2rem] font-black text-xs uppercase tracking-widest hover:bg-melvins-gold-light shadow-xl shadow-melvins-gold/30 transition-all active:scale-95">
                 📦 Scan a Pack
             </a>
         </div>

@@ -3554,20 +3554,8 @@ def management_dashboard(request):
     # Revenue (Commission)
     total_revenue = ListingPartner.objects.aggregate(total=Sum('melvins_commission_earned'))['total'] or 0
     
-    # 2. Filtering & User List
-    search_query = request.GET.get('q', '')
-    users = Profile.objects.all().order_by('-created_at')
-    
-    if search_query:
-        users = users.filter(
-            Q(phone__icontains=search_query) |
-            Q(first_name__icontains=search_query) |
-            Q(second_name__icontains=search_query) |
-            Q(utm_source__icontains=search_query) |
-            Q(county__icontains=search_query)
-        )
-    
-    recent_users = users[:50]
+    # 2. User List (Recent)
+    recent_users = Profile.objects.all().order_by('-created_at')[:50]
     
     # 3. Geographic Breakdown
     county_data = Profile.objects.values('county').annotate(
@@ -3665,7 +3653,6 @@ def management_dashboard(request):
         'chart_labels': chart_labels,
         'scan_data': scan_data,
         'redemption_data': redemption_data,
-        'search_query': search_query,
     }
     
     return render(request, 'club/management_dashboard.html', context)
