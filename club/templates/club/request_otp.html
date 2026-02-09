@@ -58,6 +58,7 @@
                 {% csrf_token %}
 
                 <div>
+                    <input type="hidden" name="referral_code" value="{{ referral_code }}">
                     <label class="block text-white/80 text-sm font-bold mb-2">Phone Number</label>
                     <input type="tel" name="phone" placeholder="0712345678" required autofocus
                         class="w-full bg-black/20 border border-white/20 rounded-xl px-4 py-4 text-white placeholder-white/30 focus:outline-none focus:border-melvins-gold transition text-lg">

@@ -235,6 +235,11 @@ def request_otp(request):
 
     # NEW: Handle referral code from link
     referral_code = request.GET.get('ref', '').strip().upper()
+    
+    # NEW: Handle UTM parameters
+    utm_source = request.GET.get('utm_source', '').strip()
+    utm_medium = request.GET.get('utm_medium', '').strip()
+    utm_campaign = request.GET.get('utm_campaign', '').strip()
 
     if partnership_code:
         try:
@@ -242,12 +247,26 @@ def request_otp(request):
         except Partnership.DoesNotExist:
             messages.warning(request, f'Partnership code "{partnership_code}" is invalid.')
             partnership_code = None
+            
+    # Store initial params in session immediately when landing
+    if referral_code:
+        request.session['referral_code'] = referral_code
+    
+    if utm_source:
+        request.session['utm_data'] = {
+            'utm_source': utm_source,
+            'utm_medium': utm_medium,
+            'utm_campaign': utm_campaign
+        }
 
     if request.method == 'POST':
         phone = request.POST.get('phone', '').strip()
-        # Get referral code from form if provided
-        if not referral_code:
-            referral_code = request.POST.get('referral_code', '').strip().upper()
+        # Get referral code from form if provided, else fall back to session/GET
+        form_referral_code = request.POST.get('referral_code', '').strip().upper()
+        if form_referral_code:
+            referral_code = form_referral_code
+        elif not referral_code:
+            referral_code = request.session.get('referral_code', '')
 
         if not phone:
             messages.error(request, 'Phone number is required')
@@ -262,6 +281,8 @@ def request_otp(request):
             request.session['otp_phone'] = phone
             if partnership_code:
                 request.session['partnership_code'] = partnership_code
+            
+            # Re-save referral code to session to be sure
             if referral_code:
                 request.session['referral_code'] = referral_code
 
@@ -271,7 +292,7 @@ def request_otp(request):
     context = {
         'partnership': partnership,
         'partnership_code': partnership_code,
-        'referral_code': referral_code,  # Pass to template
+        'referral_code': referral_code or request.session.get('referral_code', ''),  # Pass to template
     }
     return render(request, 'club/request_otp.html', context)
 
@@ -338,6 +359,15 @@ def verify_otp(request):
                     partnership=partnership,
                     profile_completed=False
                 )
+                
+                # Check for UTM data in session and save immediately
+                if 'utm_data' in request.session:
+                    utm_data = request.session['utm_data']
+                    profile.utm_source = utm_data.get('utm_source')
+                    profile.utm_medium = utm_data.get('utm_medium')
+                    profile.utm_campaign = utm_data.get('utm_campaign')
+                    profile.save(update_fields=['utm_source', 'utm_medium', 'utm_campaign'])
+                    
                 created = True
 
             login(request, profile.user, backend='django.contrib.auth.backends.ModelBackend')
@@ -891,6 +921,18 @@ def partner_register_otp(request):
 
             messages.success(request, f'OTP sent to {phone}')
             return redirect('club:partner_verify_otp')
+
+    # Capture UTMs
+    utm_source = request.GET.get('utm_source', '').strip()
+    utm_medium = request.GET.get('utm_medium', '').strip()
+    utm_campaign = request.GET.get('utm_campaign', '').strip()
+
+    if utm_source:
+        request.session['utm_data'] = {
+            'utm_source': utm_source,
+            'utm_medium': utm_medium,
+            'utm_campaign': utm_campaign
+        }
 
     return render(request, 'club/partner_register_otp.html')
 
@@ -2322,7 +2364,19 @@ def user_login(request):
     """User login - phone entry with partnership/referral code support"""
     partnership = None
     partnership_code = request.GET.get('partner') or request.POST.get('partnership_code', '').strip().upper()
+    
+    # Capture Referrals & UTMs
     referral_code = request.GET.get('ref', '').strip().upper()
+    if not referral_code:
+        referral_code = request.session.get('referral_code', '')
+        
+    utm_source = request.GET.get('utm_source', '').strip()
+    if utm_source:
+        request.session['utm_data'] = {
+            'utm_source': utm_source,
+            'utm_medium': request.GET.get('utm_medium', '').strip(),
+            'utm_campaign': request.GET.get('utm_campaign', '').strip()
+        }
 
     if partnership_code:
         try:
@@ -2413,6 +2467,15 @@ def user_pin(request):
                 partnership=partnership,
                 profile_completed=False
             )
+            
+            # Check for UTM data in session and save immediately
+            if 'utm_data' in request.session:
+                utm_data = request.session['utm_data']
+                profile.utm_source = utm_data.get('utm_source')
+                profile.utm_medium = utm_data.get('utm_medium')
+                profile.utm_campaign = utm_data.get('utm_campaign')
+                profile.save(update_fields=['utm_source', 'utm_medium', 'utm_campaign'])
+
             profile.set_pin(pin)
 
             login(request, profile.user, backend='django.contrib.auth.backends.ModelBackend')
@@ -2926,6 +2989,22 @@ def user_logout(request):
 
 def landing_page(request):
     """Public landing page - main entry point"""
+    # Capture Referrals & UTMs
+    referral_code = request.GET.get('ref', '').strip().upper()
+    utm_source = request.GET.get('utm_source', '').strip()
+    utm_medium = request.GET.get('utm_medium', '').strip()
+    utm_campaign = request.GET.get('utm_campaign', '').strip()
+
+    if referral_code:
+        request.session['referral_code'] = referral_code
+        
+    if utm_source:
+        request.session['utm_data'] = {
+            'utm_source': utm_source,
+            'utm_medium': utm_medium,
+            'utm_campaign': utm_campaign
+        }
+
     if request.user.is_authenticated:
         if hasattr(request.user, 'profile'):
             return redirect('club:dashboard')
