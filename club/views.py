@@ -398,6 +398,13 @@ def complete_profile(request):
             profile.county = county
             profile.buyer_type = buyer_type
             profile.profile_completed = True
+            
+            # UTM / Traffic Source Tracking
+            if not profile.utm_source and 'utm_data' in request.session:
+                utm_data = request.session['utm_data']
+                profile.utm_source = utm_data.get('utm_source')
+                profile.utm_medium = utm_data.get('utm_medium')
+                profile.utm_campaign = utm_data.get('utm_campaign')
 
             if referral_code and not profile.referred_by:
                 try:
@@ -3500,3 +3507,152 @@ def contribute_to_team(request, team_id, card_id):
         messages.error(request, message)
     
     return redirect('club:team_dashboard', team_id=team_id)
+
+
+# ============ MANAGEMENT DASHBOARD ============
+
+@login_required
+def management_dashboard(request):
+    """
+    Datafa.st style management dashboard
+    High density, actionable metrics for staff/admins
+    """
+    if not request.user.is_staff:
+        messages.error(request, "Access denied. Staff only.")
+        return redirect('club:dashboard')
+    
+    # 1. KPI Pulse
+    total_users = Profile.objects.count()
+    new_users_24h = Profile.objects.filter(created_at__gte=timezone.now() - timedelta(days=1)).count()
+    
+    total_scans = Scan.objects.count()
+    scans_24h = Scan.objects.filter(scanned_at__gte=timezone.now() - timedelta(days=1)).count()
+    
+    total_redemptions = ProductRedemption.objects.count()
+    redemptions_24h = ProductRedemption.objects.filter(created_at__gte=timezone.now() - timedelta(days=1)).count()
+    
+    # Revenue (Commission)
+    total_revenue = ListingPartner.objects.aggregate(total=Sum('melvins_commission_earned'))['total'] or 0
+    
+    # 2. Geographic Breakdown (Counties)
+    county_data = Profile.objects.values('county').annotate(
+        user_count=Count('id')
+    ).order_by('-user_count')
+    
+    # Calculate % for bars
+    if total_users > 0:
+        for c in county_data:
+            c['user_percent'] = (c['user_count'] / total_users) * 100
+    
+    # 3. Channel Tracking (Partners Types)
+    # Organic vs Referred
+    total_referred = Profile.objects.filter(referred_by__isnull=False).count()
+    organic_users = total_users - total_referred
+    
+    top_partners = Partnership.objects.annotate(
+        referrals=Count('referred_profiles'),
+        earnings_count=Count('earnings')
+    ).order_by('-referrals')[:10]
+    
+    # Traffic Sources (UTM)
+    traffic_sources = Profile.objects.values('utm_source').annotate(
+        count=Count('id')
+    ).order_by('-count')
+    
+    # Top Shops by redemptions
+    top_shops = Partnership.objects.filter(partner_type='shop').annotate(
+        redemption_count=Count('productredemption')  # Note: related name on Partnership side?
+        # Checking model: models.py line 487 related_name='available_rewards' on Reward.
+        # But ProductRedemption has foreign key 'redeemed_at_shop'.
+        # Backward relation: productredemption_set (default) or check model.
+        # models.py line 697: redeemed_at_shop = ForeignKey(Partnership...
+        # It doesn't specify related_name, so it defaults to productredemption_set.
+    ).order_by('-redemption_count')[:10]
+    
+    # 4. Activity Feed (Merge Scans & Redemptions)
+    recent_scans = Scan.objects.select_related('profile', 'pack').order_by('-scanned_at')[:20]
+    recent_redemptions = ProductRedemption.objects.select_related('profile', 'product').order_by('-created_at')[:20]
+    
+    activity_feed = []
+    for s in recent_scans:
+        activity_feed.append({
+            'type': 'scan',
+            'user': s.profile,
+            'desc': f"Scanned Pack",
+            'value': f"+{s.points_awarded} pts",
+            'time': s.scanned_at,
+            'icon': '📷'
+        })
+        
+    for r in recent_redemptions:
+        activity_feed.append({
+            'type': 'redeem',
+            'user': r.profile,
+            'desc': f"Redeemed {r.product.name}",
+            'value': f"-{r.points_deducted} pts",
+            'time': r.created_at,
+            'icon': '🎁'
+        })
+        
+    # Sort by time desc
+    activity_feed.sort(key=lambda x: x['time'], reverse=True)
+    activity_feed = activity_feed[:30]
+    
+    start_date = timezone.now() - timedelta(days=30)
+    
+    # Daily Scans Count
+    daily_scans = Scan.objects.filter(scanned_at__gte=start_date).annotate(
+        date=TruncMonth('scanned_at')  # Using TruncMonth for simplicity or TruncDate
+    )
+    # Actually need TruncDate for daily chart
+    from django.db.models.functions import TruncDate
+    
+    daily_scans = Scan.objects.filter(scanned_at__gte=start_date)\
+        .annotate(date=TruncDate('scanned_at'))\
+        .values('date')\
+        .annotate(count=Count('id'))\
+        .order_by('date')
+        
+    daily_redemptions = ProductRedemption.objects.filter(created_at__gte=start_date)\
+        .annotate(date=TruncDate('created_at'))\
+        .values('date')\
+        .annotate(count=Count('id'))\
+        .order_by('date')
+        
+    # Format for Chart.js
+    chart_labels = []
+    scan_data = []
+    redemption_data = []
+    
+    # Create a dict of date -> count to fill zeros
+    scan_dict = {item['date']: item['count'] for item in daily_scans}
+    redemption_dict = {item['date']: item['count'] for item in daily_redemptions}
+    
+    for i in range(30):
+        d = (timezone.now() - timedelta(days=29-i)).date()
+        chart_labels.append(d.strftime('%d %b'))
+        scan_data.append(scan_dict.get(d, 0))
+        redemption_data.append(redemption_dict.get(d, 0))
+    
+    context = {
+        'total_users': total_users,
+        'new_users_24h': new_users_24h,
+        'total_scans': total_scans,
+        'scans_24h': scans_24h,
+        'total_redemptions': total_redemptions,
+        'redemptions_24h': redemptions_24h,
+        'total_revenue': total_revenue,
+        'county_data': county_data,
+        'organic_users': organic_users,
+        'total_referred': total_referred,
+        'top_partners': top_partners,
+        'traffic_sources': traffic_sources,
+        'top_shops': top_shops,
+        'activity_feed': activity_feed,
+        'now': timezone.now(),
+        'chart_labels': chart_labels,
+        'scan_data': scan_data,
+        'redemption_data': redemption_data,
+    }
+    
+    return render(request, 'club/management_dashboard.html', context)

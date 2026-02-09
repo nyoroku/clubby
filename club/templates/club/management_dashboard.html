@@ -1,0 +1,329 @@
+{% extends 'club/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Management Dashboard - Melvins Club{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#111] text-gray-200 p-6 md:p-8 font-sans">
+
+    <!-- Top Bar -->
+    <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                <span class="text-melvins-gold">⚡</span> Club Management
+            </h1>
+            <p class="text-gray-500 text-sm mt-1">Real-time overview • Last 30 Days</p>
+        </div>
+        <div class="flex gap-3">
+            <div
+                class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-xs text-gray-400 font-mono flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                LIVE
+            </div>
+            <a href="{% url 'club:dashboard' %}"
+                class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm transition">
+                Back to App
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <!-- Users -->
+        <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
+            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Total Users</h3>
+            <div class="flex items-end justify-between">
+                <div class="text-3xl font-mono text-white group-hover:text-blue-400 transition">{{ total_users|intcomma
+                    }}</div>
+                <div
+                    class="text-xs font-mono {% if new_users_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
+                    +{{ new_users_24h }} (24h)
+                </div>
+            </div>
+        </div>
+
+        <!-- Scans -->
+        <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
+            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Total Scans</h3>
+            <div class="flex items-end justify-between">
+                <div class="text-3xl font-mono text-white group-hover:text-melvins-gold transition">{{
+                    total_scans|intcomma }}</div>
+                <div class="text-xs font-mono {% if scans_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
+                    +{{ scans_24h }} (24h)
+                </div>
+            </div>
+        </div>
+
+        <!-- Redemptions -->
+        <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
+            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Redemptions</h3>
+            <div class="flex items-end justify-between">
+                <div class="text-3xl font-mono text-white group-hover:text-purple-400 transition">{{
+                    total_redemptions|intcomma }}</div>
+                <div
+                    class="text-xs font-mono {% if redemptions_24h > 0 %}text-green-500{% else %}text-gray-600{% endif %}">
+                    +{{ redemptions_24h }} (24h)
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue -->
+        <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-5 hover:border-gray-700 transition group">
+            <h3 class="text-gray-500 text-xs uppercase font-bold tracking-wider mb-2">Commission (Rev)</h3>
+            <div class="flex items-end justify-between">
+                <div class="text-3xl font-mono text-white group-hover:text-green-400 transition">Ksh {{
+                    total_revenue|floatformat:0|intcomma }}</div>
+                <div class="text-xs text-gray-500">Lifetime</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Chart -->
+    <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-6 mb-8">
+        <h3 class="text-gray-400 text-xs uppercase font-bold mb-4">Activity Trend (30 Days)</h3>
+        <div class="h-64 w-full">
+            <canvas id="activityChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Split Grid: Regions & Partners -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+
+        <!-- County Leaderboard -->
+        <div class="lg:col-span-1 bg-[#1a1a1a] border border-gray-800 rounded-lg p-0 overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+                <h3 class="text-white font-bold text-sm">📍 County Users</h3>
+                <span class="text-xs text-gray-500">Top distributions</span>
+            </div>
+            <div class="max-h-[400px] overflow-y-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-900 text-gray-500 text-xs uppercase sticky top-0">
+                        <tr>
+                            <th class="p-3 font-medium">County</th>
+                            <th class="p-3 font-medium text-right">Users</th>
+                            <th class="p-3 font-medium w-24">Density</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-gray-800">
+                        {% for c in county_data %}
+                        <tr class="hover:bg-gray-800/50 transition">
+                            <td class="p-3 text-gray-300 font-medium capitalize">{{ c.county|default:"Unknown" }}</td>
+                            <td class="p-3 text-right font-mono text-white">{{ c.user_count|intcomma }}</td>
+                            <td class="p-3">
+                                <div class="w-full bg-gray-800 rounded-full h-1.5">
+                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ c.user_percent }}%">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Channels & Feed -->
+        <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Partners Leaderboard -->
+            <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-0 overflow-hidden">
+                <div class="p-4 border-b border-gray-800">
+                    <h3 class="text-white font-bold text-sm">🏆 Top Partners</h3>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="flex-1 bg-gray-900 rounded-lg p-3 text-center border border-gray-800">
+                            <div class="text-xs text-gray-500 uppercase">Organic</div>
+                            <div class="text-xl font-mono text-white">{{ organic_users|intcomma }}</div>
+                        </div>
+                        <div class="flex-1 bg-gray-900 rounded-lg p-3 text-center border border-gray-800">
+                            <div class="text-xs text-gray-500 uppercase">Referred</div>
+                            <div class="text-xl font-mono text-melvins-gold">{{ total_referred|intcomma }}</div>
+                        </div>
+                    </div>
+
+                    <h4 class="text-xs text-gray-500 uppercase font-bold mb-3">Influencers (By Referrals)</h4>
+                    <ul class="space-y-3 mb-6">
+                        {% for p in top_partners %}
+                        <li class="flex justify-between items-center text-sm">
+                            <span class="text-gray-300">{{ p.name }}</span>
+                            <span class="font-mono text-white bg-gray-800 px-2 py-0.5 rounded text-xs">{{ p.referrals }}
+                                refs</span>
+                        </li>
+                        {% empty %}
+                        <li class="text-gray-600 italic">No partners yet</li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Traffic Sources -->
+                    <h4 class="text-xs text-gray-500 uppercase font-bold mb-3 mt-6">Traffic Sources (UTM)</h4>
+                    <ul class="space-y-3">
+                        {% for source in traffic_sources %}
+                        <li class="flex justify-between items-center text-sm">
+                            <span class="text-gray-300 capitalize">{{ source.utm_source|default:"Direct / Unknown"
+                                }}</span>
+                            <span class="font-mono text-blue-400 bg-gray-800 px-2 py-0.5 rounded text-xs">{{
+                                source.count }} users</span>
+                        </li>
+                        {% empty %}
+                        <li class="text-gray-600 italic">No tracked sources yet</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h4 class="text-xs text-gray-500 uppercase font-bold mb-3">Shops (By Redemptions)</h4>
+                    <ul class="space-y-3">
+                        {% for s in top_shops %}
+                        <li class="flex justify-between items-center text-sm">
+                            <span class="text-gray-300">{{ s.name }}</span>
+                            <span class="font-mono text-green-400 bg-gray-800 px-2 py-0.5 rounded text-xs">{{
+                                s.redemption_count }} redemptions</span>
+                        </li>
+                        {% empty %}
+                        <li class="text-gray-600 italic">No shops yet</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Live Feed -->
+            <div class="bg-[#1a1a1a] border border-gray-800 rounded-lg p-0 overflow-hidden h-[400px] flex flex-col">
+                <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-[#151515]">
+                    <h3 class="text-white font-bold text-sm flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                        Live Feed
+                    </h3>
+                </div>
+                <div class="overflow-y-auto flex-1 p-4 custom-scrollbar space-y-4">
+                    {% for item in activity_feed %}
+                    <div
+                        class="flex gap-3 items-start animate-fade-in text-sm border-l-2 {% if item.type == 'scan' %}border-melvins-gold{% else %}border-purple-500{% endif %} pl-3">
+                        <div class="text-xl pt-0.5">{{ item.icon }}</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-baseline">
+                                <strong class="text-gray-200">{{ item.user.first_name|default:"User" }}</strong>
+                                <span class="text-xs text-gray-600 font-mono">{{ item.time|date:"H:i" }}</span>
+                            </div>
+                            <p class="text-gray-400 text-xs">{{ item.desc }}</p>
+                            <p
+                                class="font-mono text-xs mt-1 {% if item.type == 'scan' %}text-melvins-gold{% else %}text-purple-400{% endif %}">
+                                {{ item.value }}
+                            </p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-gray-600 py-10">
+                        No recent activity
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('activityChart').getContext('2d');
+
+    // Gradient for scans
+    const scanGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    scanGradient.addColorStop(0, 'rgba(212, 165, 54, 0.2)');
+    scanGradient.addColorStop(1, 'rgba(212, 165, 54, 0)');
+
+    // Gradient for redemptions
+    const redeemGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    redeemGradient.addColorStop(0, 'rgba(168, 85, 247, 0.2)');
+    redeemGradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels| safe }},
+        datasets: [
+        {
+            label: 'Scans',
+            data: {{ scan_data| safe }},
+        borderColor: '#d4a536',
+        backgroundColor: scanGradient,
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 0,
+        pointHoverRadius: 4
+                },
+        {
+            label: 'Redemptions',
+            data: {{ redemption_data| safe }},
+        borderColor: '#a855f7',
+        backgroundColor: redeemGradient,
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true,
+        pointRadius: 0,
+        pointHoverRadius: 4
+                }
+    ]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        plugins: {
+            legend: {
+                labels: { color: '#9ca3af', font: { family: 'Inter' } }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(17, 17, 17, 0.9)',
+                titleColor: '#fff',
+                bodyColor: '#ccc',
+                borderColor: '#333',
+                borderWidth: 1,
+                padding: 10
+            }
+        },
+        scales: {
+            y: {
+                grid: { color: '#333', drawBorder: false },
+                ticks: { color: '#6b7280' }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { color: '#6b7280', maxTicksLimit: 10 }
+            }
+        }
+    }
+    });
+
+    // Auto-refresh feed every 30s
+    // Simple reload for now, could use HTMX partial later
+    setTimeout(() => {
+        // location.reload(); 
+        // Disabled full reload to avoid chart flicker, best to use HTMX
+    }, 30000);
+</script>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #111;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 2px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #444;
+    }
+</style>
+{% endblock %}

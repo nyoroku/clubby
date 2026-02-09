@@ -201,6 +201,11 @@ class Profile(models.Model):
     partnership = models.ForeignKey(Partnership, null=True, blank=True, on_delete=models.SET_NULL,
                                     related_name='referred_profiles',
                                     help_text="Partnership that referred this user")
+                                    
+    # UTM / Traffic Source Tracking
+    utm_source = models.CharField(max_length=100, null=True, blank=True, help_text="e.g. facebook, twitter, email")
+    utm_medium = models.CharField(max_length=100, null=True, blank=True, help_text="e.g. cpc, banner, email")
+    utm_campaign = models.CharField(max_length=100, null=True, blank=True, help_text="e.g. spring_sale")
 
     def save(self, *args, **kwargs):
         # Generate unique referral code if not exists

@@ -85,5 +85,8 @@ urlpatterns = [
     
     # ============ REWARDS ============
     path('rewards/', views.rewards, name='rewards'),
+    
+    # ============ MANAGEMENT ============
+    path('management/dashboard/', views.management_dashboard, name='management_dashboard'),
 ]
 
