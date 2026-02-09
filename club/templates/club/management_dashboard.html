@@ -171,8 +171,7 @@
                             {{ source.utm_source|default:"?"|slice:":1"|upper }}
                         </div>
                         <div>
-                            <div class="text-sm text-gray-700 dark:text-gray-200 font-medium capitalize">{{
-                                source.utm_source|default:"Direct / Organic" }}</div>
+                            <div class="text-sm text-gray-700 dark:text-gray-200 font-medium capitalize">{{source.utm_source|default:"Direct / Organic" }}</div>
                             <div class="text-[10px] text-gray-400 capitalize">{{ source.count }} users</div>
                         </div>
                     </div>
@@ -227,14 +226,12 @@
                             class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors border-l-2 border-transparent">
                             <td class="p-4">
                                 <div>
-                                    <div class="font-bold text-gray-900 dark:text-gray-200">{{ user.first_name }} {{
-                                        user.second_name }}</div>
+                                    <div class="font-bold text-gray-900 dark:text-gray-200">{{ user.first_name }} {{user.second_name }}</div>
                                     <div class="text-xs text-gray-500 font-mono">{{ user.phone }}</div>
                                 </div>
                             </td>
                             <td class="p-4">
-                                <span class="text-melvins-gold font-mono text-xs font-bold">{{ user.points|intcomma
-                                    }}</span>
+                                <span class="text-melvins-gold font-mono text-xs font-bold">{{ user.points|intcomma}}</span>
                             </td>
                             <td class="p-4 text-gray-500 dark:text-gray-400 capitalize text-xs">
                                 {{ user.county|default:"--" }}
@@ -261,8 +258,7 @@
                     {% for c in county_data %}
                     <div class="space-y-2">
                         <div class="flex justify-between text-xs font-medium">
-                            <span class="text-gray-600 dark:text-gray-300 capitalize">{{ c.county|default:"Other"
-                                }}</span>
+                            <span class="text-gray-600 dark:text-gray-300 capitalize">{{ c.county|default:"Other"}}</span>
                             <span class="text-gray-400 font-mono">{{ c.user_count }}</span>
                         </div>
                         <div class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
@@ -286,8 +282,7 @@
                         class="flex gap-4 items-start border-l-2 {% if item.type == 'scan' %}border-melvins-gold{% else %}border-purple-500{% endif %} pl-3">
                         <div class="flex-1">
                             <div class="flex justify-between items-baseline mb-1">
-                                <strong class="text-sm text-gray-800 dark:text-gray-200">{{
-                                    item.user.first_name|default:"User" }}</strong>
+                                <strong class="text-sm text-gray-800 dark:text-gray-200">{{item.user.first_name|default:"User" }}</strong>
                                 <span class="text-[10px] text-gray-400">{{ item.time|timesince }} ago</span>
                             </div>
                             <p class="text-gray-500 text-xs">{{ item.desc }}</p>
