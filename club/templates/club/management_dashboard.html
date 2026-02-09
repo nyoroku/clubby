@@ -7,11 +7,7 @@
 {% block extra_css %}
 <style>
     .glass-card-adaptive {
-        @apply bg-white/80 backdrop-blur-xl border border-gray-200 shadow-sm transition-all duration-300;
-    }
-
-    .dark .glass-card-adaptive {
-        @apply bg-gray-900/60 border-white/5 shadow-none;
+        @apply bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl border border-gray-200 dark:border-white/5 shadow-sm dark:shadow-none;
     }
 
     .accent-gradient-blue {
@@ -39,17 +35,13 @@
     }
 
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        @apply bg-gray-300 rounded-full;
-    }
-
-    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-        @apply bg-gray-800;
+        @apply bg-gray-300 dark:bg-gray-800 rounded-full;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div x-data="{ darkMode: localStorage.getItem('mgmt_theme') === 'dark' }" :class="{ 'dark': darkMode }"
+<div
     class="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-200 p-4 md:p-8 font-sans transition-colors duration-300">
 
     <!-- Top Navigation Bar -->
@@ -66,21 +58,7 @@
             </p>
         </div>
 
-        <div class="flex items-center gap-4">
-            <!-- Theme Toggle -->
-            <button
-                @click="darkMode = !darkMode; localStorage.setItem('mgmt_theme', darkMode ? 'dark' : 'light'); window.dispatchEvent(new CustomEvent('mgmt-theme-changed'))"
-                class="p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 text-gray-400 hover:text-melvins-gold transition-all shadow-sm">
-                <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-                <svg x-show="darkMode" x-cloak class="w-5 h-5 text-melvins-gold" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.95 17.05l.707.707M7.05 7.05l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                </svg>
-            </button>
+        <div class="flex items-center gap-3">
             <span class="text-xs font-mono text-gray-400 bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded">V2.0</span>
         </div>
     </div>
@@ -114,7 +92,7 @@
                     class="text-4xl font-mono text-gray-900 dark:text-white group-hover:scale-105 transition-transform origin-left">
                     {{ total_scans|intcomma }}</div>
                 <div class="text-right">
-                    <div class="text-sm font-bold text-gray-900 dark:text-white">+{{ scans_24h }}</div>
+                    <div class="text-sm font-bold text-white">+{{ scans_24h }}</div>
                     <div
                         class="text-[10px] font-mono {% if trends.scans >= 0 %}text-green-500{% else %}text-red-500{% endif %} flex items-center justify-end">
                         {% if trends.scans >= 0 %}▲{% else %}▼{% endif %} {{ trends.scans }}%
@@ -158,6 +136,7 @@
 
     <!-- Main Activity Section -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+
         <!-- Activity Chart -->
         <div class="lg:col-span-3 glass-card-adaptive rounded-2xl p-6">
             <div class="flex justify-between items-center mb-6">
@@ -220,6 +199,7 @@
 
     <!-- Data Tables Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+
         <!-- User Table -->
         <div class="lg:col-span-2 glass-card-adaptive rounded-2xl overflow-hidden flex flex-col">
             <div
@@ -327,28 +307,18 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    let activityChart;
+    const ctx = document.getElementById('activityChart').getContext('2d');
 
-    function initChart() {
-        const chartElement = document.getElementById('activityChart');
-        if (!chartElement) return;
+    // Check dark mode
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+    const textColor = isDark ? '#9ca3af' : '#6b7280';
 
-        const ctx = chartElement.getContext('2d');
-        const container = document.querySelector('[x-data]');
-        const isDark = container && container.classList.contains('dark');
-
-        const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-        const textColor = isDark ? '#9ca3af' : '#6b7280';
-
-        if (activityChart) {
-            activityChart.destroy();
-        }
-
-        activityChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {{ chart_labels| safe }},
-    datasets: [
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels| safe }},
+        datasets: [
         {
             label: 'Scans',
             data: {{ scan_data| safe }},
@@ -358,7 +328,7 @@
         tension: 0.4,
         fill: true,
         pointRadius: 0
-                    },
+                },
         {
             label: 'Redemptions',
             data: {{ redemption_data| safe }},
@@ -368,13 +338,13 @@
         tension: 0.4,
         fill: true,
         pointRadius: 0
-                    }
+                }
     ]
-            },
-    options: {
+        },
+        options: {
         responsive: true,
-            maintainAspectRatio: false,
-                plugins: {
+        maintainAspectRatio: false,
+        plugins: {
             legend: { display: false }
         },
         scales: {
@@ -388,12 +358,11 @@
             }
         }
     }
-        });
-    }
+    });
 
-    document.addEventListener('DOMContentLoaded', initChart);
-    window.addEventListener('mgmt-theme-changed', () => {
-        setTimeout(initChart, 50);
+    // Listen for theme changes to update chart (optional, simple reload is cleaner for Chart.js)
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'theme') location.reload();
     });
 </script>
 {% endblock %}

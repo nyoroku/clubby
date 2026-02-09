@@ -1,7 +1,10 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en" x-data="{ mobileMenu: false }" class="scroll-smooth">
+<html lang="en" x-data="{ 
+    mobileMenu: false, 
+    darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+}" :class="{ 'dark': darkMode }" class="scroll-smooth">
 
 <head>
     <meta charset="utf-8">
@@ -17,6 +20,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -88,7 +92,8 @@
     </style>
 </head>
 
-<body class="bg-melvins-cream text-melvins-dark">
+<body
+    class="bg-melvins-cream dark:bg-melvins-maroon-dark text-melvins-dark dark:text-white transition-colors duration-300">
 
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-melvins-maroon shadow-lg transition-all duration-300">
@@ -121,8 +126,21 @@
                         class="text-white/90 hover:text-white font-medium uppercase tracking-wide text-sm transition">Collection</a>
                     <a href="#rewards"
                         class="text-white/90 hover:text-white font-medium uppercase tracking-wide text-sm transition">Rewards</a>
-                    <a href="#partner"
-                        class="text-white/90 hover:text-white font-medium uppercase tracking-wide text-sm transition">Partners</a>
+
+                    <!-- Theme Toggle -->
+                    <button @click="darkMode = !darkMode; localStorage.setItem('theme', darkMode ? 'dark' : 'light')"
+                        class="p-2 rounded-lg text-white/70 hover:text-white transition-colors">
+                        <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                        <svg x-show="darkMode" x-cloak class="w-5 h-5 text-melvins-gold" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.95 17.05l.707.707M7.05 7.05l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                        </svg>
+                    </button>
+
                     <a href="{% url 'club:user_login' %}"
                         class="px-6 py-2.5 bg-melvins-gold hover:bg-melvins-gold-light text-white font-bold rounded-full transition shadow-md text-sm uppercase tracking-wide">
                         Join the Club
@@ -257,7 +275,8 @@
     </section>
 
     <!-- How It Works -->
-    <section id="how-it-works" class="py-24 relative bg-melvins-cream transition-colors duration-300">
+    <section id="how-it-works"
+        class="py-24 relative bg-melvins-cream dark:bg-melvins-maroon-dark transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-16">
                 <span class="text-melvins-maroon font-bold uppercase tracking-widest text-sm">Simple Process</span>
@@ -268,7 +287,7 @@
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Step 1 -->
                 <div
-                    class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition group border border-melvins-beige">
+                    class="bg-white dark:bg-white/5 rounded-3xl p-8 shadow-lg hover:shadow-xl transition group border border-melvins-beige dark:border-white/10">
                     <div
                         class="w-16 h-16 bg-melvins-maroon/10 text-melvins-maroon rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition">
                         📦
@@ -309,7 +328,7 @@
     </section>
 
     <!-- Tea Estates Collection -->
-    <section id="collection" class="py-24 bg-white transition-colors duration-300">
+    <section id="collection" class="py-24 bg-white dark:bg-black/10 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <div>
@@ -413,7 +432,8 @@
     </section>
 
     <!-- Rewards Section -->
-    <section id="rewards" class="py-24 bg-melvins-cream relative overflow-hidden transition-colors duration-300">
+    <section id="rewards"
+        class="py-24 bg-melvins-cream dark:bg-melvins-maroon-dark relative overflow-hidden transition-colors duration-300">
         <!-- Background decoration -->
         <div class="absolute top-0 right-0 w-64 h-64 bg-melvins-gold/5 rounded-full blur-3xl"></div>
         <div class="absolute bottom-0 left-0 w-64 h-64 bg-melvins-maroon/5 rounded-full blur-3xl"></div>
@@ -428,7 +448,7 @@
 
             <div class="grid md:grid-cols-4 gap-6">
                 <div
-                    class="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition border border-melvins-beige">
+                    class="bg-white dark:bg-white/5 rounded-2xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition border border-melvins-beige dark:border-white/10">
                     <div class="text-5xl mb-4">🎁</div>
                     <h3 class="font-bold mb-2 text-melvins-dark text-lg">Free Products</h3>
                     <p class="text-sm text-melvins-dark/60">Redeem for Melvins Tea products</p>
@@ -455,7 +475,7 @@
     </section>
 
     <!-- Partner With Us Section -->
-    <section id="partner" class="py-20 bg-white transition-colors duration-300">
+    <section id="partner" class="py-20 bg-white dark:bg-black/10 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-12">
                 <span class="text-melvins-maroon font-bold uppercase tracking-widest text-sm">Join Our Network</span>
