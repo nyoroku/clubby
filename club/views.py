@@ -2502,11 +2502,11 @@ def user_pin(request):
                 # Update UTMs for existing users if source is Organic/None
                 if 'utm_data' in request.session:
                     utm_data = request.session['utm_data']
-                    if not profile.utm_source or profile.utm_source in ['Organic', 'None', '', 'direct', 'Direct']:
-                        profile.utm_source = utm_data.get('utm_source')
-                        profile.utm_medium = utm_data.get('utm_medium')
-                        profile.utm_campaign = utm_data.get('utm_campaign')
-                        profile.save(update_fields=['utm_source', 'utm_medium', 'utm_campaign'])
+                    # FORCE UPDATE: Always update to latest source (Last Touch)
+                    profile.utm_source = utm_data.get('utm_source')
+                    profile.utm_medium = utm_data.get('utm_medium')
+                    profile.utm_campaign = utm_data.get('utm_campaign')
+                    profile.save(update_fields=['utm_source', 'utm_medium', 'utm_campaign'])
 
                 if profile.profile_completed:
                     messages.success(request, f'PIN set! Welcome back, {profile.first_name}!')
@@ -3016,12 +3016,11 @@ def landing_page(request):
             if 'utm_data' in request.session:
                 utm_data = request.session['utm_data']
                 profile = request.user.profile
-                # Update if current is empty/organic/direct
-                if not profile.utm_source or profile.utm_source in ['Organic', 'None', '', 'direct', 'Direct']:
-                    profile.utm_source = utm_data.get('utm_source')
-                    profile.utm_medium = utm_data.get('utm_medium')
-                    profile.utm_campaign = utm_data.get('utm_campaign')
-                    profile.save(update_fields=['utm_source', 'utm_medium', 'utm_campaign'])
+                # FORCE UPDATE: Always update to latest source (Last Touch)
+                profile.utm_source = utm_data.get('utm_source')
+                profile.utm_medium = utm_data.get('utm_medium')
+                profile.utm_campaign = utm_data.get('utm_campaign')
+                profile.save(update_fields=['utm_source', 'utm_medium', 'utm_campaign'])
 
             return redirect('club:dashboard')
         elif hasattr(request.user, 'partnership'):
@@ -3134,16 +3133,33 @@ def my_collection(request):
     
     # Build card grid with collected status
     cards_with_status = []
-    for card in all_cards:
         cards_with_status.append({
             'card': card,
             'collected': card.id in user_collected_set
         })
     
+    # Generate share URLs server-side
+    base_url = f"https://{request.get_host()}/"
+    ref_param = f"?ref={profile.referral_code}"
+    
+    # WhatsApp (allows raw text mostly, but better to structure it simply)
+    # We construct the target link first
+    target_link = f"{base_url}{ref_param}"
+    
+    # WhatsApp
+    whatsapp_text = f"Join me on Melvins Club! Use my code {profile.referral_code} to join and we'll both earn rewards! {target_link}&utm_source=whatsapp"
+    whatsapp_url = f"https://wa.me/?text={quote(whatsapp_text)}"
+    
+    # Facebook (requires strictly encoded u parameter)
+    fb_target = f"{target_link}&utm_source=facebook"
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={quote(fb_target)}"
+
     context = {
         'profile': profile,
         'collection': active_collection,
         'cards_with_status': cards_with_status,
+        'whatsapp_share_url': whatsapp_url,
+        'facebook_share_url': facebook_url,
         'collected_count': collected_count,
         'total_count': total_count,
         'progress_percent': progress_percent,

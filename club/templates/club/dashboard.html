@@ -149,13 +149,11 @@
 
             <!-- Share Buttons -->
             <div class="flex gap-3 mb-4">
-                <a href="https://wa.me/?text=Join%20me%20on%20Melvins%20Club!%20Use%20my%20code%20{{ profile.referral_code }}%20to%20join%20and%20we'll%20both%20earn%20rewards!%20https://{{ request.get_host }}/?ref={{ profile.referral_code }}%26utm_source=whatsapp"
-                    target="_blank"
+                <a href="{{ whatsapp_share_url }}" target="_blank"
                     class="flex-1 py-3 bg-[#25D366] hover:bg-[#1fba59] rounded-xl font-bold text-center text-sm text-white transition flex items-center justify-center gap-2 shadow-md">
                     <span>📱</span> WhatsApp
                 </a>
-                <a href="https://www.facebook.com/sharer/sharer.php?u=https://{{ request.get_host }}/?ref={{ profile.referral_code }}%26utm_source=facebook"
-                    target="_blank"
+                <a href="{{ facebook_share_url }}" target="_blank"
                     class="flex-1 py-3 bg-[#1877F2] hover:bg-[#166fe5] rounded-xl font-bold text-center text-sm text-white transition flex items-center justify-center gap-2 shadow-md">
                     <span>f</span> Facebook
                 </a>
