@@ -149,16 +149,16 @@
 
             <!-- Share Buttons -->
             <div class="flex gap-3 mb-4">
-                <a href="https://wa.me/?text=Join%20me%20on%20Melvins%20Club!%20Use%20my%20code%20{{ profile.referral_code }}%20to%20join%20and%20we'll%20both%20earn%20rewards!%20{{ request.scheme }}://{{ request.get_host }}{% url 'club:user_login' %}?ref={{ profile.referral_code }}"
+                <a href="https://wa.me/?text=Join%20me%20on%20Melvins%20Club!%20Use%20my%20code%20{{ profile.referral_code }}%20to%20join%20and%20we'll%20both%20earn%20rewards!%20https://{{ request.get_host }}/?ref={{ profile.referral_code }}%26utm_source=whatsapp"
                     target="_blank"
                     class="flex-1 py-3 bg-[#25D366] hover:bg-[#1fba59] rounded-xl font-bold text-center text-sm text-white transition flex items-center justify-center gap-2 shadow-md">
                     <span>📱</span> WhatsApp
                 </a>
-                <button
-                    @click="navigator.share ? navigator.share({title: 'Join Melvins Club', text: 'Use my code {{ profile.referral_code }} to join!', url: '{{ request.scheme }}://{{ request.get_host }}{% url 'club:user_login' %}?ref={{ profile.referral_code }}'}) : null"
-                    class="flex-1 py-3 bg-melvins-gold hover:bg-melvins-gold-light text-white dark:text-[#1a0a0c] rounded-xl font-bold text-center text-sm transition flex items-center justify-center gap-2 shadow-md">
-                    <span>📤</span> Share
-                </button>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://{{ request.get_host }}/?ref={{ profile.referral_code }}%26utm_source=facebook"
+                    target="_blank"
+                    class="flex-1 py-3 bg-[#1877F2] hover:bg-[#166fe5] rounded-xl font-bold text-center text-sm text-white transition flex items-center justify-center gap-2 shadow-md">
+                    <span>f</span> Facebook
+                </a>
             </div>
 
             <div
@@ -246,7 +246,8 @@
                     </div>
                     <div>
                         <p class="font-bold text-gray-900 dark:text-white text-sm">Pack Scanned</p>
-                        <p class="text-[10px] text-gray-500 dark:text-white/50 font-medium">{{ scan.created_at|timesince}} ago</p>
+                        <p class="text-[10px] text-gray-500 dark:text-white/50 font-medium">{{
+                            scan.created_at|timesince}} ago</p>
                     </div>
                 </div>
                 <span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm">+{{ scan.points_earned }}

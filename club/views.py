@@ -428,15 +428,10 @@ def complete_profile(request):
             profile.county = county
             profile.buyer_type = buyer_type
             profile.profile_completed = True
-            
-            # DEBUG: Check session
-            if 'utm_data' in request.session:
-                messages.info(request, f"DEBUG COMPLETE: UTM Session Data: {request.session['utm_data']}")
-            else:
-                messages.info(request, "DEBUG COMPLETE: No UTM Data in Session")
 
             # UTM / Traffic Source Tracking
-            if not profile.utm_source:
+            # Update if empty OR if current source is 'Organic'/None
+            if not profile.utm_source or profile.utm_source in ['Organic', 'None', '']:
                 if 'utm_data' in request.session:
                     utm_data = request.session['utm_data']
                     profile.utm_source = utm_data.get('utm_source')
@@ -498,7 +493,8 @@ def complete_profile(request):
 
     context = {
         'profile': profile,
-        'prefilled_referral_code': session_referral_code,  # Pre-fill form
+        'prefilled_referral_code': session_referral_code,
+        'referral_link': request.build_absolute_uri(f'/?ref={profile.referral_code}') if profile.referral_code else '',
     }
     return render(request, 'club/profile.html', context)
 
@@ -2377,12 +2373,6 @@ def user_login(request):
             'utm_medium': request.GET.get('utm_medium', '').strip(),
             'utm_campaign': request.GET.get('utm_campaign', '').strip()
         }
-    
-    # DEBUG: Check session
-    if 'utm_data' in request.session:
-        messages.info(request, f"DEBUG LOGIN: UTM Session Data: {request.session['utm_data']}")
-    else:
-        messages.info(request, "DEBUG LOGIN: No UTM Data in Session")
 
     if partnership_code:
         try:
@@ -2438,12 +2428,6 @@ def user_pin(request):
         except Partnership.DoesNotExist:
             partnership_code = None
     
-    # DEBUG: Check session
-    if 'utm_data' in request.session:
-        messages.info(request, f"DEBUG PIN: UTM Session Data: {request.session['utm_data']}")
-    else:
-        messages.info(request, "DEBUG PIN: No UTM Data in Session")
-
     # Check if user exists
     try:
         profile = Profile.objects.get(phone=phone)
@@ -2514,6 +2498,15 @@ def user_pin(request):
                 request.session.pop('user_phone', None)
                 request.session.pop('partnership_code', None)
                 request.session.pop('referral_code', None)
+
+                # Update UTMs for existing users if source is Organic/None
+                if 'utm_data' in request.session:
+                    utm_data = request.session['utm_data']
+                    if not profile.utm_source or profile.utm_source in ['Organic', 'None', '', 'direct', 'Direct']:
+                        profile.utm_source = utm_data.get('utm_source')
+                        profile.utm_medium = utm_data.get('utm_medium')
+                        profile.utm_campaign = utm_data.get('utm_campaign')
+                        profile.save(update_fields=['utm_source', 'utm_medium', 'utm_campaign'])
 
                 if profile.profile_completed:
                     messages.success(request, f'PIN set! Welcome back, {profile.first_name}!')
@@ -3017,14 +3010,19 @@ def landing_page(request):
             'utm_campaign': utm_campaign
         }
 
-    # DEBUG: Check session
-    if 'utm_data' in request.session:
-        messages.info(request, f"DEBUG LANDING: UTM Session Data: {request.session['utm_data']}")
-    else:
-        messages.info(request, "DEBUG LANDING: No UTM Data in Session")
-
     if request.user.is_authenticated:
         if hasattr(request.user, 'profile'):
+            # Update UTMs if present in session for existing logged-in user
+            if 'utm_data' in request.session:
+                utm_data = request.session['utm_data']
+                profile = request.user.profile
+                # Update if current is empty/organic/direct
+                if not profile.utm_source or profile.utm_source in ['Organic', 'None', '', 'direct', 'Direct']:
+                    profile.utm_source = utm_data.get('utm_source')
+                    profile.utm_medium = utm_data.get('utm_medium')
+                    profile.utm_campaign = utm_data.get('utm_campaign')
+                    profile.save(update_fields=['utm_source', 'utm_medium', 'utm_campaign'])
+
             return redirect('club:dashboard')
         elif hasattr(request.user, 'partnership'):
             return redirect('club:partner_dashboard')
