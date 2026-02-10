@@ -3812,6 +3812,14 @@ def management_dashboard(request):
         scan_data.append(scan_dict.get(d, 0))
         redemption_data.append(redemption_dict.get(d, 0))
     
+    # Internal Management Sharing
+    base_url = f"https://{request.get_host()}/"
+    management_link = f"{base_url}management/dashboard/"
+    
+    # WhatsApp
+    whatsapp_text = f"Check out the Melvins Club Management Dashboard: {management_link}"
+    whatsapp_url = f"https://wa.me/?text={quote(whatsapp_text)}"
+    
     context = {
         'total_users': total_users,
         'users_24h': users_24h,
@@ -3835,6 +3843,8 @@ def management_dashboard(request):
         'search_query': search_query,
         'county_filter': county_filter,
         'status_filter': status_filter,
+        'whatsapp_share_url': whatsapp_url,
+        'management_link': management_link,
     }
     
     return render(request, 'club/management_dashboard.html', context)

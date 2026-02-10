@@ -41,8 +41,8 @@
 {% endblock %}
 
 {% block content %}
-<div
-    class="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-200 p-4 md:p-8 font-sans transition-colors duration-300">
+<div class="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-200 p-4 md:p-8 font-sans transition-colors duration-300"
+    x-data="{ copied: false }">
 
     <!-- Top Navigation Bar -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -59,6 +59,22 @@
         </div>
 
         <div class="flex items-center gap-3">
+            <!-- Share Dashboard -->
+            <div
+                class="flex items-center gap-2 bg-white dark:bg-gray-900 p-1.5 rounded-xl border border-gray-200 dark:border-white/5 shadow-sm">
+                <button
+                    @click="navigator.clipboard.writeText('{{ management_link }}'); copied=true; setTimeout(()=> copied = false, 2000)"
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2"
+                    :class="copied ? 'bg-emerald-500 text-white' : 'bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10'">
+                    <span x-show="!copied">🔗 Copy Link</span>
+                    <span x-show="copied" x-cloak>✓ Copied</span>
+                </button>
+                <a href="{{ whatsapp_share_url }}" target="_blank"
+                    class="px-3 py-1.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                    <span>📱</span> WhatsApp
+                </a>
+            </div>
+
             <span class="text-xs font-mono text-gray-400 bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded">V2.0</span>
         </div>
     </div>
@@ -225,15 +241,15 @@
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Regions</option>
                         {% for c in all_counties %}
-                        <option value="{{ c }}" {% if county_filter == c %}selected{% endif %}>{{ c|title }}</option>
+                        <option value="{{ c }}" {% if county_filter==c %}selected{% endif %}>{{ c|title }}</option>
                         {% endfor %}
                     </select>
 
                     <select name="status" onchange="this.form.submit()"
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Status</option>
-                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
-                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="active" {% if status_filter=='active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status_filter=='inactive' %}selected{% endif %}>Inactive</option>
                     </select>
                 </form>
             </div>
@@ -260,22 +276,27 @@
                                     <div class="font-bold text-gray-900 dark:text-gray-200">{{ user.first_name }}
                                         {{user.second_name }}</div>
                                     <div class="text-xs text-gray-500 font-mono">{{ user.phone }}</div>
-                                    <div class="text-[10px] text-gray-400 capitalize md:hidden">{{user.county|default:"--" }}</div>
+                                    <div class="text-[10px] text-gray-400 capitalize md:hidden">
+                                        {{user.county|default:"--" }}</div>
                                 </div>
                             </td>
                             <td class="p-4 text-center">
                                 <span
-                                    class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.scan_count }}</span>
+                                    class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.scan_count
+                                    }}</span>
                             </td>
                             <td class="p-4 text-center">
                                 <span
-                                    class="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.redemption_count }}</span>
+                                    class="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.redemption_count
+                                    }}</span>
                             </td>
                             <td class="p-4">
-                                <span class="text-melvins-gold font-mono text-xs font-bold">{{user.points|intcomma}}</span>
+                                <span
+                                    class="text-melvins-gold font-mono text-xs font-bold">{{user.points|intcomma}}</span>
                             </td>
                             <td class="p-4">
-                                <div class="text-[10px] font-bold uppercase text-blue-500">{{user.utm_source|default:"Organic" }}</div>
+                                <div class="text-[10px] font-bold uppercase text-blue-500">
+                                    {{user.utm_source|default:"Organic" }}</div>
                                 <div class="text-[10px] text-gray-400 capitalize">{{ user.county|default:"--" }}</div>
                             </td>
                             <td class="p-4 text-right text-xs text-gray-400">
@@ -326,7 +347,8 @@
                     {% for c in county_data %}
                     <div class="space-y-2">
                         <div class="flex justify-between text-xs font-medium">
-                            <span class="text-gray-600 dark:text-gray-300 capitalize">{{c.county|default:"Other"}}</span>
+                            <span
+                                class="text-gray-600 dark:text-gray-300 capitalize">{{c.county|default:"Other"}}</span>
                             <span class="text-gray-400 font-mono">{{ c.user_count }}</span>
                         </div>
                         <div class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
