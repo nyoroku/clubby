@@ -14,6 +14,7 @@ from django.views.decorators.http import require_http_methods
 from django.db.models.functions import TruncMonth
 from datetime import timedelta
 from django.utils.crypto import get_random_string
+from urllib.parse import quote
 import random
 
 from .models import (
@@ -592,6 +593,19 @@ def dashboard(request):
         # Calculate stroke-dashoffset: 220 (circumference) - (220 * percentage / 100)
         progress_offset = 220 - int((220 * collection_progress) / 100)
 
+    # Generate share URLs server-side
+    base_url = f"https://{request.get_host()}/"
+    ref_param = f"?ref={profile.referral_code}"
+    target_link = f"{base_url}{ref_param}"
+    
+    # WhatsApp
+    whatsapp_text = f"Join me on Melvins Club! Use my code {profile.referral_code} to join and we'll both earn rewards! {target_link}&utm_source=whatsapp"
+    whatsapp_url = f"https://wa.me/?text={quote(whatsapp_text)}"
+    
+    # Facebook
+    fb_target = f"{target_link}&utm_source=facebook"
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={quote(fb_target)}"
+
     context = {
         'profile': profile,
         'recent_scans': recent_scans,
@@ -611,6 +625,8 @@ def dashboard(request):
         'active_collection': active_collection,
         'collection_cards': collection_cards,
         'cards_remaining': cards_remaining,
+        'whatsapp_share_url': whatsapp_url,
+        'facebook_share_url': facebook_url,
     }
 
     return render(request, 'club/dashboard.html', context)
