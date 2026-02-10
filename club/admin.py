@@ -5,6 +5,7 @@ from django.db.models import Sum, Count
 from django.urls import path
 from django.shortcuts import render
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.http import HttpResponse
 from django.utils import timezone
 from datetime import timedelta
@@ -144,11 +145,11 @@ class PartnershipAdmin(admin.ModelAdmin):
 
     def active_badge(self, obj):
         if obj.active:
-            return format_html(
+            return mark_safe(
                 '<span style="background: #10b981; color: white; padding: 4px 12px; '
                 'border-radius: 12px; font-size: 11px; font-weight: bold;">✓ ACTIVE</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="background: #ef4444; color: white; padding: 4px 12px; '
             'border-radius: 12px; font-size: 11px; font-weight: bold;">✕ INACTIVE</span>'
         )
@@ -158,7 +159,8 @@ class PartnershipAdmin(admin.ModelAdmin):
     def registration_link(self, obj):
         if obj.code:
             url = f'/?partner={obj.code}'
-            # full_url = f'https://yoursite.com{url}'  # Update with your domain
+            # Get current domain if possible, or fallback
+            full_url = url
             return format_html(
                 '<div style="background: #f3f4f6; padding: 12px; border-radius: 8px;">'
                 '<strong style="color: #1f2937;">Registration URL:</strong><br>'
@@ -402,7 +404,7 @@ class ProfileAdmin(admin.ModelAdmin):
                 '<i class="fas fa-handshake"></i> {}</span>',
                 obj.partnership.name
             )
-        return format_html(
+        return mark_safe(
             '<span style="color: #94a3b8; font-size: 11px;">No partner</span>'
         )
 
