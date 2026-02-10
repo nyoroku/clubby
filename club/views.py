@@ -429,6 +429,12 @@ def complete_profile(request):
             profile.buyer_type = buyer_type
             profile.profile_completed = True
             
+            # DEBUG: Check session
+            if 'utm_data' in request.session:
+                messages.info(request, f"DEBUG COMPLETE: UTM Session Data: {request.session['utm_data']}")
+            else:
+                messages.info(request, "DEBUG COMPLETE: No UTM Data in Session")
+
             # UTM / Traffic Source Tracking
             if not profile.utm_source:
                 if 'utm_data' in request.session:
@@ -1695,6 +1701,7 @@ def listing_partner_complete_profile(request):
             listing_partner.bank_account_number = bank_account_number
             listing_partner.bank_account_name = bank_account_name
             listing_partner.mpesa_number = mpesa_number
+            listing_partner.mpesa_number = mpesa_number
             listing_partner.profile_completed = True
             listing_partner.save()
 
@@ -2370,6 +2377,12 @@ def user_login(request):
             'utm_medium': request.GET.get('utm_medium', '').strip(),
             'utm_campaign': request.GET.get('utm_campaign', '').strip()
         }
+    
+    # DEBUG: Check session
+    if 'utm_data' in request.session:
+        messages.info(request, f"DEBUG LOGIN: UTM Session Data: {request.session['utm_data']}")
+    else:
+        messages.info(request, "DEBUG LOGIN: No UTM Data in Session")
 
     if partnership_code:
         try:
@@ -2424,6 +2437,12 @@ def user_pin(request):
             partnership = Partnership.objects.get(code=partnership_code, active=True)
         except Partnership.DoesNotExist:
             partnership_code = None
+    
+    # DEBUG: Check session
+    if 'utm_data' in request.session:
+        messages.info(request, f"DEBUG PIN: UTM Session Data: {request.session['utm_data']}")
+    else:
+        messages.info(request, "DEBUG PIN: No UTM Data in Session")
 
     # Check if user exists
     try:
@@ -2997,6 +3016,12 @@ def landing_page(request):
             'utm_medium': utm_medium,
             'utm_campaign': utm_campaign
         }
+
+    # DEBUG: Check session
+    if 'utm_data' in request.session:
+        messages.info(request, f"DEBUG LANDING: UTM Session Data: {request.session['utm_data']}")
+    else:
+        messages.info(request, "DEBUG LANDING: No UTM Data in Session")
 
     if request.user.is_authenticated:
         if hasattr(request.user, 'profile'):
