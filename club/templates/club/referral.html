@@ -33,8 +33,7 @@
   <section class="mb-8">
     <label class="block text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3">Your Referral Code</label>
     <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
-      <span class="text-xl font-bold text-melvins-gold tracking-wider">{{
-        profile.referral_code|default:"MELVINS123"}}</span>
+      <span class="text-xl font-bold text-melvins-gold tracking-wider">{{profile.referral_code|default:"MELVINS123"}}</span>
       <button @click="navigator.clipboard.writeText('{{ profile.referral_code|default:" MELVINS123" }}'); copied=true;
         setTimeout(()=> copied = false, 2000)"
         class="px-4 py-2 bg-melvins-gold hover:bg-melvins-gold-light text-[#1a0a0c] rounded-xl font-bold text-sm
