@@ -911,6 +911,19 @@ def referral_page(request):
         f'/?ref={profile.referral_code}'
     )
 
+    # Generate share URLs server-side
+    base_url = f"https://{request.get_host()}/"
+    ref_param = f"?ref={profile.referral_code}"
+    target_link = f"{base_url}{ref_param}"
+    
+    # WhatsApp
+    whatsapp_text = f"Join me on Melvins Club! Use my code {profile.referral_code} to join and we'll both earn rewards! {target_link}&utm_source=whatsapp"
+    whatsapp_url = f"https://wa.me/?text={quote(whatsapp_text)}"
+    
+    # Facebook
+    fb_target = f"{target_link}&utm_source=facebook"
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={quote(fb_target)}"
+
     context = {
         'profile': profile,
         'referral_settings': referral_settings,
@@ -920,6 +933,8 @@ def referral_page(request):
         'can_refer_more': profile.can_refer_more(),
         'referral_code': profile.referral_code,
         'referral_link': referral_link,
+        'whatsapp_share_url': whatsapp_url,
+        'facebook_share_url': facebook_url,
     }
 
     return render(request, 'club/referral.html', context)
