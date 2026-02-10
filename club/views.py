@@ -3133,6 +3133,7 @@ def my_collection(request):
     
     # Build card grid with collected status
     cards_with_status = []
+    for card in all_cards:
         cards_with_status.append({
             'card': card,
             'collected': card.id in user_collected_set
