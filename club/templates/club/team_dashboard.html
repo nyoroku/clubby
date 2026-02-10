@@ -175,8 +175,7 @@
                 </div>
                 <div class="flex-1">
                     <p class="font-medium text-white text-sm">{{ contrib.card.get_display_title }}</p>
-                    <p class="text-[10px] text-white/40">by {{
-                        contrib.contributed_by.first_name|default:contrib.contributed_by.phone }}</p>
+                    <p class="text-[10px] text-white/40">by {{contrib.contributed_by.first_name|default:contrib.contributed_by.phone }}</p>
                 </div>
                 <p class="text-[10px] text-white/30">{{ contrib.contributed_at|timesince }} ago</p>
             </div>

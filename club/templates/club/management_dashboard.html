@@ -241,15 +241,15 @@
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Regions</option>
                         {% for c in all_counties %}
-                        <option value="{{ c }}" {% if county_filter==c %}selected{% endif %}>{{ c|title }}</option>
+                        <option value="{{ c }}" {% if county_filter == c %}selected{% endif %}>{{ c|title }}</option>
                         {% endfor %}
                     </select>
 
                     <select name="status" onchange="this.form.submit()"
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Status</option>
-                        <option value="active" {% if status_filter=='active' %}selected{% endif %}>Active</option>
-                        <option value="inactive" {% if status_filter=='inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
                     </select>
                 </form>
             </div>
@@ -282,13 +282,11 @@
                             </td>
                             <td class="p-4 text-center">
                                 <span
-                                    class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.scan_count
-                                    }}</span>
+                                    class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.scan_count}}</span>
                             </td>
                             <td class="p-4 text-center">
                                 <span
-                                    class="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.redemption_count
-                                    }}</span>
+                                    class="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-md text-xs font-mono font-bold">{{user.redemption_count}}</span>
                             </td>
                             <td class="p-4">
                                 <span

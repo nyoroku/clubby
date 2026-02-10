@@ -35,8 +35,7 @@
                     <div class="flex items-start gap-4">
                         <div
                             class="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0 text-3xl">
-                            {% if redemption.status == 'fulfilled' %}✅{% elif redemption.status == 'cancelled' %}❌{%
-                            else %}⏳{% endif %}
+                            {% if redemption.status == 'fulfilled' %}✅{% elif redemption.status == 'cancelled' %}❌{%else %}⏳{% endif %}
                         </div>
                         <div class="flex-grow">
                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
@@ -59,8 +58,7 @@
                             <div class="bg-black/20 rounded-xl p-4 border border-white/5 mt-3">
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="text-melvins-gold">🏪</span>
-                                    <span class="text-white font-bold text-sm">{{ redemption.redeemed_at_shop.name
-                                        }}</span>
+                                    <span class="text-white font-bold text-sm">{{ redemption.redeemed_at_shop.name}}</span>
                                 </div>
 
                                 {% if redemption.status != 'fulfilled' and redemption.status != 'cancelled' %}
@@ -99,8 +97,7 @@
 
         <!-- Product Redemptions -->
         <div x-show="activeTab === 'products'" style="display: none;"
-            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4"
-            x-transition:enter-end="opacity-100 translate-y-0">
+            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
             {% if product_redemptions %}
             <div class="space-y-4">
                 {% for redemption in product_redemptions %}
@@ -154,14 +151,12 @@
                                 {% endif %}
 
                                 {% if redemption.fulfilled_at %}
-                                <p class="text-emerald-400 text-xs mt-2 font-bold">✓ Collected: {{
-                                    redemption.fulfilled_at|date:"M d, H:i" }}</p>
+                                <p class="text-emerald-400 text-xs mt-2 font-bold">✓ Collected: {{redemption.fulfilled_at|date:"M d, H:i" }}</p>
                                 {% endif %}
                             </div>
                             {% else %}
                             <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3">
-                                <p class="text-xs text-blue-200"><strong>Direct Redemption:</strong> Code {{
-                                    redemption.redemption_code }}</p>
+                                <p class="text-xs text-blue-200"><strong>Direct Redemption:</strong> Code {{redemption.redemption_code }}</p>
                             </div>
                             {% endif %}
                         </div>
