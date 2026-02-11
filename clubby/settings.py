@@ -70,6 +70,9 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('GOOGLE_OAUTH2_SECRET', '')
 # Force HTTPS for OAuth redirects (required for PythonAnywhere)
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
+# Security settings for PythonAnywhere/Production (handle SSL proxy)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
