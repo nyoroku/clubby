@@ -8,8 +8,8 @@ app_name = 'club'
 urlpatterns = [
     # ============ USER AUTHENTICATION (PIN-BASED) ============
     path('', views.landing_page, name='landing_page'),
-    path('request-otp/', views.landing_page),  # Legacy fallback
-    path('club/request-otp/', views.landing_page),  # Legacy fallback
+    path('request-otp/', views.request_otp, name='request_otp'),
+    path('club/request-otp/', views.request_otp),  # Legacy fallback
     path('login/', views.user_login, name='user_login'),
     path('pin/', views.user_pin, name='user_pin'),
     path('complete-profile/', views.complete_profile, name='complete_profile'),
