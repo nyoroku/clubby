@@ -321,6 +321,17 @@
     <!-- Main Content -->
     <main class="pt-16 pb-24 md:pb-8 min-h-screen relative z-10">
         {% block content %}{% endblock %}
+
+        <!-- Footer with Legal Links -->
+        <footer
+            class="mt-12 py-8 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-white/10">
+            <div class="space-x-4">
+                <a href="{% url 'club:terms' %}" class="hover:text-melvins-gold transition">Terms of Use</a>
+                <span>&bull;</span>
+                <a href="{% url 'club:privacy' %}" class="hover:text-melvins-gold transition">Privacy Policy</a>
+            </div>
+            <p class="mt-4 text-xs opacity-60">&copy; {% now "Y" %} Melvins Tea Club. All rights reserved.</p>
+        </footer>
     </main>
 
     <!-- Mobile Bottom Navigation -->

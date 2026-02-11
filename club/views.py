@@ -94,6 +94,18 @@ def partner_complete_profile(request):
     return render(request, 'club/partner_complete_profile.html', context)
 
 
+# ============ LEGAL PAGES ============
+
+def terms(request):
+    """Terms of Use page"""
+    return render(request, 'club/terms.html', {'now': timezone.now()})
+
+
+def privacy(request):
+    """Privacy Policy page"""
+    return render(request, 'club/privacy.html', {'now': timezone.now()})
+
+
 # ============ PARTNER DASHBOARD ============
 
 @login_required
@@ -394,110 +406,7 @@ def verify_otp(request):
     })
 
 
-# ADD ALL THESE MISSING VIEWS TO YOUR views.py FILE
-# Add after your existing views
 
-# ============ USER AUTHENTICATION & PROFILE ============
-
-@login_required
-def complete_profile(request):
-    """Complete user profile after OTP verification"""
-    profile = request.user.profile
-
-    if profile.profile_completed:
-        return redirect('club:dashboard')
-
-    # Get referral code from session (if came from referral link)
-    session_referral_code = request.session.get('referral_code', '').strip().upper()
-
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        second_name = request.POST.get('second_name', '').strip()
-        county = request.POST.get('county', '').strip()
-        buyer_type = request.POST.get('buyer_type', '').strip()
-        referral_code = request.POST.get('referral_code', '').strip().upper()
-
-        # Use session referral code if form field is empty
-        if not referral_code and session_referral_code:
-            referral_code = session_referral_code
-
-        if not all([first_name, second_name, county, buyer_type]):
-            messages.error(request, 'All fields are required')
-        else:
-            profile.first_name = first_name
-            profile.second_name = second_name
-            profile.county = county
-            profile.buyer_type = buyer_type
-            profile.profile_completed = True
-
-            # UTM / Traffic Source Tracking
-            # Update if empty OR if current source is 'Organic'/None
-            if not profile.utm_source or profile.utm_source in ['Organic', 'None', '']:
-                if 'utm_data' in request.session:
-                    utm_data = request.session['utm_data']
-                    profile.utm_source = utm_data.get('utm_source')
-                    profile.utm_medium = utm_data.get('utm_medium')
-                    profile.utm_campaign = utm_data.get('utm_campaign')
-                elif referral_code:
-                    # If referred and no UTM, mark source as Referral
-                    profile.utm_source = 'Referral'
-                    profile.utm_medium = 'Link'
-
-            if referral_code and not profile.referred_by:
-                try:
-                    referrer = Profile.objects.get(referral_code=referral_code)
-                    if referrer != profile and referrer.can_refer_more():
-                        profile.referred_by = referrer
-
-                        settings = ReferralSettings.get_settings()
-                        # Always award points if linked, unless explicitly disabled
-                        if settings.referral_enabled:
-                            referrer.points += settings.points_for_referrer
-                            referrer.referral_points_earned += settings.points_for_referrer
-                            referrer.save(update_fields=['points', 'referral_points_earned'])
-
-                            profile.points += settings.points_for_referee
-
-                            Referral.objects.create(
-                                referrer=referrer,
-                                referred=profile,
-                                points_awarded_to_referrer=settings.points_for_referrer,
-                                points_awarded_to_referred=settings.points_for_referee
-                            )
-
-                            messages.success(
-                                request,
-                                f'Referral applied! You earned {settings.points_for_referee} points!'
-                            )
-                        else:
-                            print(f"DEBUG: Referral system disabled. Points not awarded for {profile.phone}")
-                except Profile.DoesNotExist:
-                    messages.warning(request, 'Invalid referral code')
-
-            profile.save()
-
-            # Process pending invites
-            invites_processed = process_pending_invites(profile)
-            if invites_processed > 0:
-                messages.success(request, f'You received points from {invites_processed} pending invite(s)!')
-
-            # Clear referral code from session
-            request.session.pop('referral_code', None)
-
-            # Welcome message
-            welcome_msg = f'Welcome, {first_name}! Your profile is complete.'
-            if profile.partnership:
-                welcome_msg += f' Thanks for joining via {profile.partnership.name}!'
-
-            messages.success(request, welcome_msg)
-            return redirect('club:dashboard')
-
-    context = {
-        'profile': profile,
-        'prefilled_referral_code': session_referral_code,
-        'referral_link': request.build_absolute_uri(f'/?ref={profile.referral_code}') if profile.referral_code else '',
-    }
-    return render(request, 'club/profile.html', context)
 
 
 # ============ USER DASHBOARD & SCANNING VIEWS ============
@@ -2869,18 +2778,35 @@ def complete_profile(request):
         county = request.POST.get('county', '').strip()
         buyer_type = request.POST.get('buyer_type', '').strip()
         referral_code = request.POST.get('referral_code', '').strip().upper()
+        
+        # New: Phone number for Google Auth users
+        phone = request.POST.get('phone', '').strip()
 
         # Use session referral code if form field is empty
         if not referral_code and session_referral_code:
             referral_code = session_referral_code
 
+        # Validate basic fields
         if not all([first_name, second_name, county, buyer_type]):
             messages.error(request, 'All fields are required')
+        elif not profile.phone and not phone:
+             messages.error(request, 'Phone number is required')
         else:
+            # Update basic info
             profile.first_name = first_name
             profile.second_name = second_name
             profile.county = county
             profile.buyer_type = buyer_type
+            
+            # Update phone if missing
+            if not profile.phone and phone:
+                normalized_phone = normalize_phone(phone)
+                # Check uniqueness
+                if Profile.objects.filter(phone=normalized_phone).exclude(id=profile.id).exists():
+                    messages.error(request, 'This phone number is already registered.')
+                    return redirect('club:complete_profile')
+                profile.phone = normalized_phone
+            
             profile.profile_completed = True
 
             if referral_code and not profile.referred_by:
@@ -2929,11 +2855,6 @@ def complete_profile(request):
             messages.success(request, welcome_msg)
             return redirect('club:dashboard')
 
-    context = {
-        'profile': profile,
-        'prefilled_referral_code': session_referral_code,
-    }
-    return render(request, 'club/complete_profile.html', context)
 
 
 @login_required

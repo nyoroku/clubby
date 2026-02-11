@@ -14,6 +14,10 @@ urlpatterns = [
     path('pin/', views.user_pin, name='user_pin'),
     path('complete-profile/', views.complete_profile, name='complete_profile'),
     path('logout/', views.user_logout, name='logout'),
+    
+    # ============ LEGAL PAGES ============
+    path('terms/', views.terms, name='terms'),
+    path('privacy/', views.privacy, name='privacy'),
 
     # ============ PARTNER AUTHENTICATION (PIN-BASED) ============
     path('partner/login/', views.partner_login, name='partner_login'),
