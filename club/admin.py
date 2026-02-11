@@ -257,7 +257,7 @@ class PartnershipAdmin(admin.ModelAdmin):
             </div>
         </div>
         '''
-        return format_html(html)
+        return mark_safe(html)
 
     stats_display.short_description = 'Performance Statistics'
 
@@ -493,14 +493,14 @@ class ScanAdmin(admin.ModelAdmin):
 
     def partnership_status(self, obj):
         if obj.partnership_points_awarded:
-            return format_html(
+            return mark_safe(
                 '<span style="color: #10b981; font-weight: bold;">✓ Awarded</span>'
             )
         elif obj.profile.partnership:
-            return format_html(
+            return mark_safe(
                 '<span style="color: #f59e0b;">⚠ Pending</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="color: #94a3b8;">- N/A</span>'
         )
 
@@ -536,11 +536,11 @@ class PackCodeAdmin(admin.ModelAdmin):
 
     def used_badge(self, obj):
         if obj.used:
-            return format_html(
+            return mark_safe(
                 '<span style="background: #ef4444; color: white; padding: 3px 8px; '
                 'border-radius: 6px; font-size: 10px; font-weight: bold;">USED</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="background: #10b981; color: white; padding: 3px 8px; '
             'border-radius: 6px; font-size: 10px; font-weight: bold;">AVAILABLE</span>'
         )
@@ -622,10 +622,10 @@ class OTPAdmin(admin.ModelAdmin):
 
     def is_valid_display(self, obj):
         if obj.is_valid():
-            return format_html(
+            return mark_safe(
                 '<span style="color: #10b981; font-weight: bold;">✓ Valid</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="color: #ef4444;">✕ Expired/Used</span>'
         )
 
