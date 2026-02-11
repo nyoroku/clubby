@@ -1,5 +1,4 @@
-{% load static %
-}
+﻿{% load static %}
 {
     "name": "Melvins Club",
     "short_name": "Melvins Club",
