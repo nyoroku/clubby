@@ -450,7 +450,7 @@ class ProfileAdmin(admin.ModelAdmin):
             '''
 
         html += '</div>'
-        return format_html(html)
+        return mark_safe(html)
 
     user_stats.short_description = 'User Statistics'
 
@@ -1018,7 +1018,7 @@ class ChallengeWinnerAdmin(admin.ModelAdmin):
                 obj.prize_claimed_at.strftime('%b %d, %Y') if obj.prize_claimed_at else '-'
             )
 
-        return format_html(
+        return mark_safe(
             '<span style="background: #f59e0b; color: white; padding: 4px 10px; '
             'border-radius: 8px; font-size: 11px; font-weight: bold;">'
             '⏳ PENDING</span>'
@@ -1066,7 +1066,7 @@ class ChallengeWinnerAdmin(admin.ModelAdmin):
             </div>
         </div>
         '''
-        return format_html(html)
+        return mark_safe(html)
 
     winner_details_display.short_description = 'Winner Display Preview'
 
@@ -1237,7 +1237,7 @@ class ChallengeAdmin(admin.ModelAdmin):
         }
 
         if obj.draw_in_progress:
-            return format_html(
+            return mark_safe(
                 '<span style="background: #ef4444; color: white; padding: 4px 10px; '
                 'border-radius: 8px; font-size: 11px; font-weight: bold; '
                 'animation: pulse 2s ease-in-out infinite;">🔴 LIVE DRAW</span>'
@@ -1255,11 +1255,11 @@ class ChallengeAdmin(admin.ModelAdmin):
 
     def visibility_badge(self, obj):
         if obj.is_public_results:
-            return format_html(
+            return mark_safe(
                 '<span style="background: #10b981; color: white; padding: 4px 10px; '
                 'border-radius: 8px; font-size: 11px; font-weight: bold;">🌍 PUBLIC</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span style="background: #f59e0b; color: white; padding: 4px 10px; '
             'border-radius: 8px; font-size: 11px; font-weight: bold;">🔒 PRIVATE</span>'
         )
@@ -1296,7 +1296,7 @@ class ChallengeAdmin(admin.ModelAdmin):
                 obj.id
             )
 
-        return format_html('<span style="color: #6b7280; font-size: 11px;">Not Ready</span>')
+        return mark_safe('<span style="color: #6b7280; font-size: 11px;">Not Ready</span>')
 
     live_draw_actions.short_description = 'Actions'
 
@@ -1393,7 +1393,7 @@ class ChallengeAdmin(admin.ModelAdmin):
             '''
 
         html += '</div>'
-        return format_html(html)
+        return mark_safe(html)
 
     live_draw_links.short_description = 'Live Draw Links'
 
@@ -1574,17 +1574,17 @@ class EstateCollectionAdmin(admin.ModelAdmin):
     
     def collection_status(self, obj):
         if obj.is_currently_active():
-            return format_html(
+            return mark_safe(
                 '<span style="background: #10b981; color: white; padding: 4px 12px; '
                 'border-radius: 12px; font-size: 11px; font-weight: bold;">🟢 ACTIVE</span>'
             )
         elif obj.start_date > timezone.now():
-            return format_html(
+            return mark_safe(
                 '<span style="background: #f59e0b; color: white; padding: 4px 12px; '
                 'border-radius: 12px; font-size: 11px; font-weight: bold;">⏳ UPCOMING</span>'
             )
         else:
-            return format_html(
+            return mark_safe(
                 '<span style="background: #94a3b8; color: white; padding: 4px 12px; '
                 'border-radius: 12px; font-size: 11px; font-weight: bold;">⏹ ENDED</span>'
             )
