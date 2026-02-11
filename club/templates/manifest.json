@@ -1,0 +1,25 @@
+{% load static %
+}
+{
+    "name": "Melvins Club",
+    "short_name": "Melvins Club",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#faf8f5",
+    "theme_color": "#8b2332",
+    "description": "Join the Melvins Club tea community. Scan packs, earn points, and redeem amazing rewards.",
+    "icons": [
+        {
+            "src": "{% static 'images/favicon.svg' %}",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "{% static 'images/melvins-club-logo.svg' %}",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "orientation": "portrait"
+}

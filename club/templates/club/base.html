@@ -15,6 +15,10 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
 
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="{% url 'club:manifest' %}">
+    <meta name="theme-color" content="#8b2332">
+
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -378,6 +382,19 @@
     {% endif %}
 
     {% block extra_js %}{% endblock %}
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register("{% url 'club:service_worker' %}")
+                    .then(function (registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function (err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </body>
 
 </html>
