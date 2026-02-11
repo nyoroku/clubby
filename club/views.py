@@ -719,6 +719,9 @@ def scan_pack(request):
         with transaction.atomic():
             is_ajax = request.headers.get('HX-Request') or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             
+            # Lock profile to prevent race conditions on points
+            profile = Profile.objects.select_for_update().get(id=profile.id)
+            
             try:
                 pack = PackCode.objects.select_for_update().get(code=code)
             except PackCode.DoesNotExist:
@@ -734,8 +737,12 @@ def scan_pack(request):
                 messages.error(request, msg)
                 return redirect('club:scan_pack')
 
-            points = pack.points
-            profile.points += points
+            # Initial points from pack
+            pack_points = pack.points
+            
+            # We add points later after everything is successful, but keeping track
+            total_points = pack_points
+            profile.points += pack_points
             profile.save(update_fields=['points'])
 
             pack.mark_used(profile)
@@ -743,7 +750,7 @@ def scan_pack(request):
             scan = Scan.objects.create(
                 profile=profile,
                 pack=pack,
-                points_awarded=points
+                points_awarded=pack_points
             )
 
             # Award partnership points if applicable
@@ -754,10 +761,16 @@ def scan_pack(request):
             
             # Try to reveal a Tea Estates card
             revealed_card = None
+            card_points = 0
+            
             try:
                 from .models import reveal_card_for_scan
-                revealed_card = reveal_card_for_scan(scan, profile)
-                print(f"DEBUG VIEW: Card reveal returned: {revealed_card}")
+                # Now returns tuple: (user_card, points_added)
+                revealed_card, card_points = reveal_card_for_scan(scan, profile)
+                if card_points:
+                    total_points += card_points
+                    
+                print(f"DEBUG VIEW: Card reveal returned: {revealed_card}, Points: {card_points}")
             except Exception as e:
                 print(f"DEBUG VIEW: Card reveal crashed: {e}")
                 if is_ajax:
@@ -775,6 +788,7 @@ def scan_pack(request):
                     'is_duplicate': revealed_card.is_duplicate,
                     'reward_points': revealed_card.card.reward_points,
                     'image': revealed_card.card.card_image.url if revealed_card.card.card_image else None,
+                    'total_points': total_points,  # Pass total points to frontend
                 }
                 
                 # If HTMX/Ajax, return JSON directly for instant reveal
@@ -782,21 +796,21 @@ def scan_pack(request):
                     return JsonResponse({
                         'success': True,
                         'revealed_card': reveal_data,
-                        'points_awarded': points,
-                        'message': f'You unlocked {revealed_card.card.get_display_title()}!'
+                        'points_awarded': total_points,
+                        'message': f'You unlocked {revealed_card.card.get_display_title()} and earned {total_points} points!'
                     })
 
                 # Store in session for standard redirects
                 request.session['revealed_card'] = reveal_data
                 
                 if not revealed_card.is_duplicate:
-                    messages.success(request, f'✅ Code accepted! You unlocked {revealed_card.card.get_display_title()}!', extra_tags='card-reveal')
+                    messages.success(request, f'✅ Unlocked {revealed_card.card.get_display_title()}! Earned {total_points} total points.', extra_tags='card-reveal')
                 else:
-                    messages.success(request, f'✅ Code accepted! You got a duplicate (+5 bonus points)', extra_tags='card-reveal-duplicate')
+                    messages.success(request, f'✅ Duplicate card found! Earned {total_points} total points (includes {card_points} bonus).', extra_tags='card-reveal-duplicate')
             else:
                 if is_ajax:
-                    return JsonResponse({'success': True, 'points_awarded': points, 'message': f'You earned {points} points!'})
-                messages.success(request, f'✅ You earned {points} points! New balance: {profile.points} points')
+                    return JsonResponse({'success': True, 'points_awarded': total_points, 'message': f'You earned {total_points} points!'})
+                messages.success(request, f'✅ You earned {total_points} points! New balance: {profile.points} points')
             
             return redirect('club:scan_pack')
 

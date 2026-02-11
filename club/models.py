@@ -1311,7 +1311,7 @@ def reveal_card_for_scan(scan, profile):
         profile.points += points_to_add
         profile.save(update_fields=['points'])
     
-    return user_card
+    return user_card, points_to_add
 
 
 # ========================================
