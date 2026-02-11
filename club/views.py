@@ -648,11 +648,6 @@ def scan_pack(request):
 
             # Initial points from pack
             pack_points = pack.points
-            
-            # We add points later after everything is successful, but keeping track
-            total_points = pack_points
-            profile.points += pack_points
-            profile.save(update_fields=['points'])
 
             pack.mark_used(profile)
 
@@ -676,11 +671,26 @@ def scan_pack(request):
                 from .models import reveal_card_for_scan
                 # Now returns tuple: (user_card, points_added)
                 revealed_card, card_points = reveal_card_for_scan(scan, profile)
-                if card_points:
-                    total_points += card_points
+                
+                if card_points > 0:
+                    # Card reveal already added points to profile
+                    total_points = card_points
+                    # Update scan record to reflect actual points awarded
+                    scan.points_awarded = total_points
+                    scan.save(update_fields=['points_awarded'])
+                else:
+                    # Fallback: No card points, award pack points
+                    profile.points += pack_points
+                    profile.save(update_fields=['points'])
+                    total_points = pack_points
                     
                 print(f"DEBUG VIEW: Card reveal returned: {revealed_card}, Points: {card_points}")
             except Exception as e:
+                # Fallback on error: award pack points
+                profile.points += pack_points
+                profile.save(update_fields=['points'])
+                total_points = pack_points
+                
                 print(f"DEBUG VIEW: Card reveal crashed: {e}")
                 if is_ajax:
                     return JsonResponse({'success': False, 'message': f'Card reveal failed: {str(e)}'})
