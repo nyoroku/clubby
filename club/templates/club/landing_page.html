@@ -1,10 +1,8 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html lang="en" x-data="{ 
-    mobileMenu: false, 
-    darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-}" :class="{ 'dark': darkMode }" class="scroll-smooth">
+<html lang="en"
+    x-data="{ mobileMenu: false, darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches) }"
+    :class="{ 'dark': darkMode }" class="scroll-smooth">
 
 <head>
     <meta charset="utf-8">
@@ -12,28 +10,18 @@
     <title>Melvins Club - Every Cup Earns Rewards</title>
     <meta name="description"
         content="Join the Melvins Club tea community. Scan packs, earn points, collect rare Tea Estate cards, and redeem amazing rewards.">
-
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://melvinsclub.pythonanywhere.com/">
     <meta property="og:title" content="Melvins Club - Every Cup Earns Rewards">
     <meta property="og:description"
         content="Join the Melvins Club tea community. Scan packs, earn points, and redeem amazing rewards.">
-    <meta property="og:image" content="https://melvinsclub.pythonanywhere.com{% static 'images/melvins-logo.webp' %}">
-
-    <!-- Twitter -->
+    <meta property="og:image" content="https://melvinsclub.pythonanywhere.com{% static 'images/icon-512x512.png' %}">
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://melvinsclub.pythonanywhere.com/">
     <meta property="twitter:title" content="Melvins Club - Every Cup Earns Rewards">
-    <meta property="twitter:description"
-        content="Join the Melvins Club tea community. Scan packs, earn points, and redeem amazing rewards.">
-    <meta property="twitter:image"
-        content="https://melvinsclub.pythonanywhere.com{% static 'images/melvins-logo.webp' %}">
-
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
-
-    <!-- Tailwind CSS -->
+    <link rel="apple-touch-icon" href="{% static 'images/icon-192x192.png' %}">
+    <link rel="manifest" href="{% url 'club:manifest' %}">
+    <meta name="theme-color" content="#8b2332">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -41,12 +29,12 @@
             theme: {
                 extend: {
                     colors: {
-                        'melvins': {
+                        'mv': {
                             'maroon': '#8b2332',
-                            'maroon-dark': '#6a1b27',
-                            'maroon-light': '#a52d3c',
+                            'maroon-dk': '#6a1b27',
+                            'maroon-lt': '#a52d3c',
                             'gold': '#d4a536',
-                            'gold-light': '#e6bc52',
+                            'gold-lt': '#e6bc52',
                             'green': '#2d6a4f',
                             'dark': '#2d2424',
                             'cream': '#faf8f5',
@@ -56,23 +44,17 @@
                     fontFamily: {
                         'display': ['Playfair Display', 'serif'],
                         'body': ['Inter', 'system-ui', 'sans-serif'],
-                        'inter': ['Inter', 'system-ui', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-
-    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
     <style>
         body {
             font-family: 'Inter', system-ui, sans-serif;
@@ -82,21 +64,38 @@
             font-family: 'Playfair Display', serif;
         }
 
-        /* Animations */
         @keyframes float {
 
             0%,
             100% {
-                transform: translateY(0);
+                transform: translateY(0)
             }
 
             50% {
-                transform: translateY(-10px);
+                transform: translateY(-10px)
             }
         }
 
         .animate-float {
             animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translateX(0)
+            }
+
+            100% {
+                transform: translateX(-50%)
+            }
+        }
+
+        .animate-ticker {
+            animation: ticker 20s linear infinite;
+        }
+
+        .animate-ticker:hover {
+            animation-play-state: paused;
         }
 
         html {
@@ -109,177 +108,133 @@
     </style>
 </head>
 
-<body
-    class="bg-melvins-cream dark:bg-melvins-maroon-dark text-melvins-dark dark:text-white transition-colors duration-300">
+<body class="bg-mv-cream dark:bg-mv-maroon-dk text-mv-dark dark:text-white">
 
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-melvins-maroon shadow-lg transition-all duration-300">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-mv-maroon shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-20">
-                <!-- SVG Logo -->
+            <div class="flex items-center justify-between h-16">
                 <a href="/" class="flex items-center">
-                    <svg viewBox="0 0 180 50" class="h-12 w-auto">
-                        <!-- Tea Leaf Icon -->
+                    <svg viewBox="0 0 180 50" class="h-10 w-auto">
                         <g fill="#d4a536">
                             <path d="M12 25c0-7 5-12 12-14 1.5-0.5 3 0.5 3 2v24c0 1.5-1.5 2.5-3 2-7-2-12-7-12-14z" />
                             <path d="M30 13c0-1.5 1.5-2.5 3-2 7 2 12 7 12 14s-5 12-12 14c-1.5 0.5-3-0.5-3-2V13z"
                                 opacity="0.7" />
                         </g>
-                        <!-- Melvins Text -->
-                        <text x="52" y="32" font-family="Georgia, serif" font-size="22" font-weight="bold"
+                        <text x="52" y="32" font-family="Georgia,serif" font-size="22" font-weight="bold"
                             fill="white">Melvins</text>
-                        <!-- Club Text -->
-                        <text x="52" y="44" font-family="Arial, sans-serif" font-size="10" font-weight="600"
+                        <text x="52" y="44" font-family="Arial,sans-serif" font-size="10" font-weight="600"
                             fill="#d4a536" letter-spacing="3">CLUB</text>
                     </svg>
                 </a>
-
-                <!-- Desktop Nav -->
-                <div class="hidden md:flex items-center gap-8">
+                <div class="hidden md:flex items-center gap-6">
                     <a href="#how-it-works"
-                        class="text-white/90 hover:text-white font-medium uppercase tracking-wide text-sm transition">How
+                        class="text-white/90 hover:text-white font-medium text-sm uppercase tracking-wide transition">How
                         It Works</a>
-                    <a href="#collection"
-                        class="text-white/90 hover:text-white font-medium uppercase tracking-wide text-sm transition">Collection</a>
                     <a href="#rewards"
-                        class="text-white/90 hover:text-white font-medium uppercase tracking-wide text-sm transition">Rewards</a>
-
-                    <!-- Theme Toggle -->
-                    <button @click="darkMode = !darkMode; localStorage.setItem('theme', darkMode ? 'dark' : 'light')"
-                        class="p-2 rounded-lg text-white/70 hover:text-white transition-colors">
+                        class="text-white/90 hover:text-white font-medium text-sm uppercase tracking-wide transition">Rewards</a>
+                    <a href="#collection"
+                        class="text-white/90 hover:text-white font-medium text-sm uppercase tracking-wide transition">Collection</a>
+                    <a href="#faq"
+                        class="text-white/90 hover:text-white font-medium text-sm uppercase tracking-wide transition">FAQ</a>
+                    <button @click="darkMode=!darkMode;localStorage.setItem('theme',darkMode?'dark':'light')"
+                        class="p-2 rounded-lg text-white/70 hover:text-white transition">
                         <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
-                        <svg x-show="darkMode" x-cloak class="w-5 h-5 text-melvins-gold" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="darkMode" x-cloak class="w-5 h-5 text-mv-gold" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.95 17.05l.707.707M7.05 7.05l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
                         </svg>
                     </button>
-
                     <a href="{% url 'club:user_login' %}"
-                        class="px-6 py-2.5 bg-melvins-gold hover:bg-melvins-gold-light text-white font-bold rounded-full transition shadow-md text-sm uppercase tracking-wide">
-                        Join the Club
-                    </a>
+                        class="px-6 py-2.5 bg-mv-gold hover:bg-mv-gold-lt text-white font-bold rounded-full transition shadow-md text-sm uppercase tracking-wide">Join
+                        the Club</a>
                 </div>
-
-                <!-- Mobile Menu Button -->
-                <button @click="mobileMenu = !mobileMenu" class="md:hidden text-white text-2xl">
-                    <span x-show="!mobileMenu">☰</span>
-                    <span x-show="mobileMenu" x-cloak>✕</span>
+                <button @click="mobileMenu=!mobileMenu" class="md:hidden text-white text-2xl">
+                    <span x-show="!mobileMenu">☰</span><span x-show="mobileMenu" x-cloak>✕</span>
                 </button>
             </div>
         </div>
-
-        <!-- Mobile Menu -->
         <div x-show="mobileMenu" x-cloak x-transition
-            class="md:hidden border-t border-melvins-maroon-dark bg-melvins-maroon shadow-xl">
-            <div class="px-4 py-6 space-y-4">
-                <a href="#how-it-works" class="block text-lg text-white font-medium">How It Works</a>
-                <a href="#collection" class="block text-lg text-white font-medium">Collection</a>
-                <a href="#rewards" class="block text-lg text-white font-medium">Rewards</a>
-                <a href="#partner" class="block text-lg text-white font-medium">Partners & Vendors</a>
+            class="md:hidden border-t border-mv-maroon-dk bg-mv-maroon shadow-xl">
+            <div class="px-4 py-4 space-y-3">
+                <a href="#how-it-works" class="block text-white font-medium">How It Works</a>
+                <a href="#rewards" class="block text-white font-medium">Rewards</a>
+                <a href="#collection" class="block text-white font-medium">Collection</a>
+                <a href="#faq" class="block text-white font-medium">FAQ</a>
+                <a href="#partner" class="block text-white font-medium">Partners & Vendors</a>
                 <a href="{% url 'club:user_login' %}"
-                    class="block w-full py-3 bg-melvins-gold text-white text-center rounded-full font-bold shadow-md">
-                    Join the Club
-                </a>
+                    class="block w-full py-3 bg-mv-gold text-white text-center rounded-full font-bold shadow-md">Join
+                    the Club</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="min-h-screen flex items-center relative overflow-hidden pt-20 bg-melvins-maroon">
-        <!-- Background Pattern/Gradient -->
-        <div
-            class="absolute inset-0 bg-gradient-to-br from-melvins-maroon via-melvins-maroon-dark to-melvins-maroon opacity-100">
-        </div>
-
-        <!-- Decorative Elements -->
+    <!-- HERO -->
+    <section
+        class="min-h-screen flex items-center relative overflow-hidden pt-16 bg-gradient-to-br from-mv-maroon via-mv-maroon-dk to-mv-maroon">
         <div class="absolute top-20 right-10 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-melvins-gold/20 rounded-full blur-3xl">
-        </div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-20">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <!-- Left Content -->
+        <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-mv-gold/20 rounded-full blur-3xl"></div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
                 <div>
                     <div
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-black/20 backdrop-blur-md rounded-full mb-6 border border-white/10">
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-black/20 backdrop-blur-md rounded-full mb-5 border border-white/10">
                         <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
                         <span class="text-sm text-white font-medium uppercase tracking-wide">Limited Edition Collection
                             Live Now</span>
                     </div>
-
-                    <h1
-                        class="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-6 text-white drop-shadow-sm">
-                        Sip. Collect.<br>
-                        <span class="text-melvins-gold">Win Big.</span>
-                    </h1>
-
-                    <p class="text-xl text-white/90 leading-relaxed mb-8 max-w-lg font-light">
-                        Join 50,000+ tea lovers earning rewards with every cup. Invite friends, collect rare Tea Estate
-                        cards together, and unlock exclusive prizes before they're gone.
-                    </p>
-
-                    <div class="flex flex-row gap-3 sm:gap-4">
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-5 text-white">
+                        Sip. Collect.<br><span class="text-mv-gold">Win Big.</span></h1>
+                    <p class="text-lg md:text-xl text-white/90 leading-relaxed mb-7 max-w-lg font-light">Join 50,000+
+                        tea lovers earning rewards with every cup. Invite friends, collect rare Tea Estate cards, and
+                        unlock exclusive prizes.</p>
+                    <div class="flex flex-row gap-3">
                         <a href="{% url 'club:user_login' %}"
-                            class="px-5 sm:px-8 py-3 sm:py-4 bg-melvins-gold hover:bg-melvins-gold-light text-white rounded-full font-bold text-sm sm:text-lg transition transform hover:scale-105 shadow-lg">
-                            Start Earning
-                        </a>
+                            class="px-6 sm:px-8 py-3 sm:py-4 bg-mv-gold hover:bg-mv-gold-lt text-white rounded-full font-bold text-sm sm:text-lg transition transform hover:scale-105 shadow-lg">Start
+                            Earning</a>
                         <a href="#how-it-works"
-                            class="px-5 sm:px-8 py-3 sm:py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full font-semibold text-sm sm:text-lg transition backdrop-blur-sm">
-                            Learn More
-                        </a>
+                            class="px-6 sm:px-8 py-3 sm:py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full font-semibold text-sm sm:text-lg transition backdrop-blur-sm">Learn
+                            More</a>
                     </div>
-
-                    <!-- Stats with FOMO -->
-                    <div class="flex gap-8 mt-12">
+                    <div class="flex gap-8 mt-10">
                         <div>
                             <div class="text-3xl font-bold text-white">50K+</div>
-                            <div class="text-sm text-white/70 uppercase tracking-wider font-medium">Members</div>
+                            <div class="text-xs text-white/70 uppercase tracking-wider font-medium">Members</div>
                         </div>
                         <div class="w-px bg-white/20 h-12"></div>
                         <div>
-                            <div class="text-3xl font-bold text-melvins-gold">12</div>
-                            <div class="text-sm text-white/70 uppercase tracking-wider font-medium">Rare Cards</div>
+                            <div class="text-3xl font-bold text-mv-gold">12</div>
+                            <div class="text-xs text-white/70 uppercase tracking-wider font-medium">Rare Cards</div>
                         </div>
                         <div class="w-px bg-white/20 h-12"></div>
                         <div>
                             <div class="text-3xl font-bold text-white">2x</div>
-                            <div class="text-sm text-white/70 uppercase tracking-wider font-medium">Points w/ Friends
+                            <div class="text-xs text-white/70 uppercase tracking-wider font-medium">Points w/ Friends
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Right - Card Preview -->
                 <div class="relative flex justify-center">
                     <div class="relative animate-float">
-                        <!-- Main Card -->
                         <div
-                            class="w-72 h-96 bg-white rounded-3xl p-4 shadow-2xl transform rotate-3 hover:rotate-0 transition duration-500 border border-melvins-gold/20">
+                            class="w-64 md:w-72 h-80 md:h-96 bg-white rounded-3xl p-4 shadow-2xl transform rotate-3 hover:rotate-0 transition duration-500 border border-mv-gold/20">
                             <div
-                                class="h-full bg-gradient-to-br from-melvins-cream to-white rounded-2xl flex flex-col items-center justify-center relative overflow-hidden border border-melvins-cream">
-                                <!-- Tea Estate Image placeholder -->
-                                <div class="text-7xl mb-6 drop-shadow-md">🏔️</div>
+                                class="h-full bg-gradient-to-br from-mv-cream to-white rounded-2xl flex flex-col items-center justify-center relative overflow-hidden border border-mv-cream">
+                                <div class="text-7xl mb-6">🏔️</div>
                                 <div class="text-center z-10">
                                     <span
-                                        class="px-3 py-1 bg-melvins-gold text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-3 inline-block shadow-sm">Rare</span>
-                                    <h3 class="text-2xl font-display font-bold text-melvins-dark mb-1">Kericho Highlands
-                                    </h3>
-                                    <p class="text-sm text-melvins-green font-medium italic">Kenya's Premier Estate</p>
-                                </div>
-                                <!-- Background Pattern -->
-                                <div
-                                    class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+                                        class="px-3 py-1 bg-mv-gold text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-3 inline-block">Rare</span>
+                                    <h3 class="text-2xl font-display font-bold text-mv-dark mb-1">Kericho Highlands</h3>
+                                    <p class="text-sm text-mv-green font-medium italic">Kenya's Premier Estate</p>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Floating badge -->
                         <div
-                            class="absolute -bottom-6 -left-6 w-20 h-20 bg-melvins-green rounded-full flex items-center justify-center shadow-xl border-4 border-white">
+                            class="absolute -bottom-6 -left-6 w-20 h-20 bg-mv-green rounded-full flex items-center justify-center shadow-xl border-4 border-white">
                             <div class="text-center text-white">
                                 <div class="text-xl font-bold">+50</div>
                                 <div class="text-[9px] uppercase font-bold tracking-widest">Points</div>
@@ -291,291 +246,405 @@
         </div>
     </section>
 
-    <!-- How It Works -->
-    <section id="how-it-works"
-        class="py-24 relative bg-melvins-cream dark:bg-melvins-maroon-dark transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="text-center mb-16">
-                <span class="text-melvins-maroon font-bold uppercase tracking-widest text-sm">Simple Process</span>
-                <h2 class="text-4xl md:text-5xl font-display font-bold mt-2 text-melvins-dark">How It Works</h2>
-                <div class="w-24 h-1 bg-melvins-gold mx-auto mt-6 rounded-full"></div>
+    <!-- VALUE TICKER (Pampers-style scrolling banner) -->
+    <section class="bg-mv-gold py-3 overflow-hidden">
+        <div class="animate-ticker flex whitespace-nowrap">
+            <div class="flex items-center gap-12 px-6 text-white font-semibold text-sm">
+                <span class="flex items-center gap-2">📦 Buy Tea, Get Points</span>
+                <span class="text-white/40">•</span>
+                <span class="flex items-center gap-2">🃏 12 Rare Cards to Collect</span>
+                <span class="text-white/40">•</span>
+                <span class="flex items-center gap-2">🎁 Redeem for Exclusive Rewards</span>
+                <span class="text-white/40">•</span>
+                <span class="flex items-center gap-2">👥 Refer Friends for 2x Points</span>
+                <span class="text-white/40">•</span>
+                <span class="flex items-center gap-2">🏆 Complete Collections for Bonus</span>
+                <span class="text-white/40">•</span>
             </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Step 1 -->
-                <div
-                    class="bg-white dark:bg-white/5 rounded-3xl p-8 shadow-lg hover:shadow-xl transition group border border-melvins-beige dark:border-white/10">
-                    <div
-                        class="w-16 h-16 bg-melvins-maroon/10 text-melvins-maroon rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition">
-                        📦
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 text-melvins-dark">Buy Melvins Tea</h3>
-                    <p class="text-melvins-dark/70 leading-relaxed">Purchase any Melvins Tea product. Each pack contains
-                        a unique
-                        reward code inside.</p>
-                </div>
-
-                <!-- Step 2 -->
-                <div
-                    class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition group border border-melvins-beige">
-                    <div
-                        class="w-16 h-16 bg-melvins-gold/10 text-melvins-gold rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition">
-                        📱
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 text-melvins-dark">Scan or Enter Code</h3>
-                    <p class="text-melvins-dark/70 leading-relaxed">Enter your code in the app. Instantly earn points
-                        and unlock a new
-                        Tea Estate card!</p>
-                </div>
-
-                <!-- Step 3 -->
-                <div
-                    class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition group border border-melvins-beige">
-                    <div
-                        class="w-16 h-16 bg-melvins-green/10 text-melvins-green rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition">
-                        🎁
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 text-melvins-dark">Redeem Rewards</h3>
-                    <p class="text-melvins-dark/70 leading-relaxed">Exchange your points for exclusive rewards,
-                        products, vouchers, and
-                        experiences.</p>
-                </div>
+            <div class="flex items-center gap-12 px-6 text-white font-semibold text-sm" aria-hidden="true">
+                <span class="flex items-center gap-2">📦 Buy Tea, Get Points</span>
+                <span class="text-white/40">•</span>
+                <span class="flex items-center gap-2">🃏 12 Rare Cards to Collect</span>
+                <span class="text-white/40">•</span>
+                <span class="flex items-center gap-2">🎁 Redeem for Exclusive Rewards</span>
+                <span class="text-white/40">•</span>
+                <span class="flex items-center gap-2">👥 Refer Friends for 2x Points</span>
+                <span class="text-white/40">•</span>
+                <span class="flex items-center gap-2">🏆 Complete Collections for Bonus</span>
+                <span class="text-white/40">•</span>
             </div>
         </div>
     </section>
 
-    <!-- Tea Estates Collection -->
-    <section id="collection" class="py-24 bg-white dark:bg-black/10 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <span class="text-melvins-maroon font-bold uppercase tracking-widest text-sm">Digital
-                        Collectibles</span>
-                    <h2 class="text-4xl md:text-5xl font-display font-bold mt-2 mb-6 text-melvins-dark">
-                        Collect Rare<br>Tea Estate Cards
-                    </h2>
-                    <p class="text-lg text-melvins-dark/70 mb-8 leading-relaxed">
-                        Discover Kenya's finest tea estates through our digital collection. Each scan reveals a unique
-                        card from our 12 legendary estates. Complete the collection for exclusive rewards!
-                    </p>
-
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="w-8 h-8 rounded-full bg-melvins-green flex items-center justify-center text-white text-sm font-bold shadow-sm">
-                                ✓</div>
-                            <span class="text-melvins-dark font-medium">12 unique Tea Estate cards to collect</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="w-8 h-8 rounded-full bg-melvins-green flex items-center justify-center text-white text-sm font-bold shadow-sm">
-                                ✓</div>
-                            <span class="text-melvins-dark font-medium">Common, Uncommon & Rare rarities</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="w-8 h-8 rounded-full bg-melvins-green flex items-center justify-center text-white text-sm font-bold shadow-sm">
-                                ✓</div>
-                            <span class="text-melvins-dark font-medium">Bonus rewards for complete collections</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card Grid -->
-                <div class="grid grid-cols-3 gap-4">
-                    <!-- Kericho -->
-                    <div
-                        class="aspect-[3/4] bg-melvins-cream rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md hover:shadow-xl border border-melvins-beige">
-                        <div
-                            class="h-full bg-white rounded-lg flex flex-col items-center justify-center gap-2 border border-melvins-beige/50">
-                            <span class="text-3xl text-melvins-gold drop-shadow-sm">🍃</span>
-                            <span class="text-sm font-semibold text-melvins-green">Kericho</span>
-                        </div>
-                    </div>
-
-                    <!-- Nandi Hills -->
-                    <div
-                        class="aspect-[3/4] bg-melvins-cream rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md hover:shadow-xl border border-melvins-beige">
-                        <div
-                            class="h-full bg-white rounded-lg flex flex-col items-center justify-center gap-2 border border-melvins-beige/50">
-                            <span class="text-3xl text-melvins-gold drop-shadow-sm">🍃</span>
-                            <span class="text-sm font-semibold text-melvins-green">Nandi Hills</span>
-                        </div>
-                    </div>
-
-                    <!-- Limuru -->
-                    <div
-                        class="aspect-[3/4] bg-melvins-cream rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md hover:shadow-xl border border-melvins-beige">
-                        <div
-                            class="h-full bg-white rounded-lg flex flex-col items-center justify-center gap-2 border border-melvins-beige/50">
-                            <span class="text-3xl text-melvins-gold drop-shadow-sm">🍃</span>
-                            <span class="text-sm font-semibold text-melvins-green">Limuru</span>
-                        </div>
-                    </div>
-
-                    <!-- Mt Kenya -->
-                    <div
-                        class="aspect-[3/4] bg-melvins-cream rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md hover:shadow-xl border border-melvins-beige">
-                        <div
-                            class="h-full bg-white rounded-lg flex flex-col items-center justify-center gap-2 border border-melvins-beige/50">
-                            <span class="text-3xl text-melvins-gold drop-shadow-sm">🍃</span>
-                            <span class="text-sm font-semibold text-melvins-green">Mt Kenya</span>
-                        </div>
-                    </div>
-
-                    <!-- Nyambene -->
-                    <div
-                        class="aspect-[3/4] bg-melvins-cream rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md hover:shadow-xl border border-melvins-beige">
-                        <div
-                            class="h-full bg-white rounded-lg flex flex-col items-center justify-center gap-2 border border-melvins-beige/50">
-                            <span class="text-3xl text-melvins-gold drop-shadow-sm">🍃</span>
-                            <span class="text-sm font-semibold text-melvins-green">Nyambene</span>
-                        </div>
-                    </div>
-
-                    <!-- Kisii -->
-                    <div
-                        class="aspect-[3/4] bg-melvins-cream rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md hover:shadow-xl border border-melvins-beige">
-                        <div
-                            class="h-full bg-white rounded-lg flex flex-col items-center justify-center gap-2 border border-melvins-beige/50">
-                            <span class="text-3xl text-melvins-gold drop-shadow-sm">🍃</span>
-                            <span class="text-sm font-semibold text-melvins-green">Kisii</span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Rewards Section -->
-    <section id="rewards"
-        class="py-24 bg-melvins-cream dark:bg-melvins-maroon-dark relative overflow-hidden transition-colors duration-300">
-        <!-- Background decoration -->
-        <div class="absolute top-0 right-0 w-64 h-64 bg-melvins-gold/5 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-melvins-maroon/5 rounded-full blur-3xl"></div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-            <div class="text-center mb-16">
-                <span class="text-melvins-maroon font-bold uppercase tracking-widest text-sm">Exclusive Benefits</span>
-                <h2 class="text-4xl md:text-5xl font-display font-bold mt-2 text-melvins-dark">Amazing Rewards Await
-                </h2>
-                <div class="w-24 h-1 bg-melvins-gold mx-auto mt-6 rounded-full"></div>
-            </div>
-
-            <div class="grid md:grid-cols-4 gap-6">
-                <div
-                    class="bg-white dark:bg-white/5 rounded-2xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition border border-melvins-beige dark:border-white/10">
-                    <div class="text-5xl mb-4">🎁</div>
-                    <h3 class="font-bold mb-2 text-melvins-dark text-lg">Free Products</h3>
-                    <p class="text-sm text-melvins-dark/60">Redeem for Melvins Tea products</p>
-                </div>
-                <div
-                    class="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition border border-melvins-beige">
-                    <div class="text-5xl mb-4">🎟️</div>
-                    <h3 class="font-bold mb-2 text-melvins-dark text-lg">Vouchers</h3>
-                    <p class="text-sm text-melvins-dark/60">Shopping & dining vouchers</p>
-                </div>
-                <div
-                    class="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition border border-melvins-beige">
-                    <div class="text-5xl mb-4">🏆</div>
-                    <h3 class="font-bold mb-2 text-melvins-dark text-lg">Experiences</h3>
-                    <p class="text-sm text-melvins-dark/60">Tea estate tours & events</p>
-                </div>
-                <div
-                    class="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition border border-melvins-beige">
-                    <div class="text-5xl mb-4">📱</div>
-                    <h3 class="font-bold mb-2 text-melvins-dark text-lg">Airtime</h3>
-                    <p class="text-sm text-melvins-dark/60">Mobile airtime & data</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Partner With Us Section -->
-    <section id="partner" class="py-20 bg-white dark:bg-black/10 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="py-16 bg-mv-cream dark:bg-mv-dark/90">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-12">
-                <span class="text-melvins-maroon font-bold uppercase tracking-widest text-sm">Join Our Network</span>
-                <h2 class="text-4xl md:text-5xl font-display font-bold mt-2 text-melvins-dark">Partner With Us</h2>
-                <div class="w-24 h-1 bg-melvins-gold mx-auto mt-6 rounded-full"></div>
+                <span class="text-mv-maroon dark:text-mv-gold font-bold uppercase tracking-widest text-xs">Simple
+                    Process</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold mt-2">How It Works</h2>
+                <div class="w-16 h-1 bg-mv-gold mx-auto mt-4 rounded-full"></div>
             </div>
+            <div class="relative">
+                <!-- Connector Line -->
+                <div class="hidden md:block absolute top-16 left-[16%] right-[16%] h-0.5 bg-mv-gold/30"></div>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div
+                        class="bg-white dark:bg-white/5 rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition group border border-mv-beige dark:border-white/10 relative">
+                        <div
+                            class="w-12 h-12 bg-mv-maroon text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-4 relative z-10 shadow-md">
+                            1</div>
+                        <div class="text-3xl mb-3">📦</div>
+                        <h3 class="text-lg font-bold mb-2">Buy Melvins Tea</h3>
+                        <p class="text-sm text-mv-dark/60 dark:text-white/60">Each pack has a unique reward code inside.
+                            Purchase any Melvins Tea product.</p>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-white/5 rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition group border border-mv-beige dark:border-white/10 relative">
+                        <div
+                            class="w-12 h-12 bg-mv-gold text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-4 relative z-10 shadow-md">
+                            2</div>
+                        <div class="text-3xl mb-3">📱</div>
+                        <h3 class="text-lg font-bold mb-2">Scan or Enter Code</h3>
+                        <p class="text-sm text-mv-dark/60 dark:text-white/60">Enter your code in the app. Earn points
+                            instantly and unlock a Tea Estate card!</p>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-white/5 rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition group border border-mv-beige dark:border-white/10 relative">
+                        <div
+                            class="w-12 h-12 bg-mv-green text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-4 relative z-10 shadow-md">
+                            3</div>
+                        <div class="text-3xl mb-3">🎁</div>
+                        <h3 class="text-lg font-bold mb-2">Redeem Rewards</h3>
+                        <p class="text-sm text-mv-dark/60 dark:text-white/60">Exchange points for products, vouchers,
+                            airtime, and exclusive experiences.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- Vendors Card -->
+    <!-- REWARDS -->
+    <section id="rewards" class="py-16 bg-mv-maroon relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+            <div class="text-center mb-10">
+                <span class="text-mv-gold font-bold uppercase tracking-widest text-xs">Exclusive Benefits</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold mt-2 text-white">Amazing Rewards Await</h2>
+                <div class="w-16 h-1 bg-mv-gold mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div
+                    class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 text-center hover:-translate-y-1 transition border border-white/10">
+                    <div class="text-4xl mb-3">🎁</div>
+                    <h3 class="font-bold text-white mb-1">Free Products</h3>
+                    <p class="text-xs text-white/60">Redeem for Melvins Tea products</p>
+                </div>
+                <div
+                    class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 text-center hover:-translate-y-1 transition border border-white/10">
+                    <div class="text-4xl mb-3">🎟️</div>
+                    <h3 class="font-bold text-white mb-1">Vouchers</h3>
+                    <p class="text-xs text-white/60">Shopping & dining vouchers</p>
+                </div>
+                <div
+                    class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 text-center hover:-translate-y-1 transition border border-white/10">
+                    <div class="text-4xl mb-3">🏆</div>
+                    <h3 class="font-bold text-white mb-1">Experiences</h3>
+                    <p class="text-xs text-white/60">Tea estate tours & events</p>
+                </div>
+                <div
+                    class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 text-center hover:-translate-y-1 transition border border-white/10">
+                    <div class="text-4xl mb-3">📱</div>
+                    <h3 class="font-bold text-white mb-1">Airtime</h3>
+                    <p class="text-xs text-white/60">Mobile airtime & data</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COLLECTION -->
+    <section id="collection" class="py-16 bg-mv-cream dark:bg-mv-dark/90">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
+                <div>
+                    <span class="text-mv-maroon dark:text-mv-gold font-bold uppercase tracking-widest text-xs">Digital
+                        Collectibles</span>
+                    <h2 class="text-3xl md:text-4xl font-display font-bold mt-2 mb-5">Collect Rare<br>Tea Estate Cards
+                    </h2>
+                    <p class="text-mv-dark/70 dark:text-white/70 mb-6">Discover Kenya's finest tea estates through our
+                        digital collection. Each scan reveals a unique card. Complete the collection for exclusive
+                        rewards!</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-7 h-7 rounded-full bg-mv-green flex items-center justify-center text-white text-xs font-bold">
+                                ✓</div><span class="text-sm font-medium">12 unique Tea Estate cards to collect</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-7 h-7 rounded-full bg-mv-green flex items-center justify-center text-white text-xs font-bold">
+                                ✓</div><span class="text-sm font-medium">Common, Uncommon & Rare rarities</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-7 h-7 rounded-full bg-mv-green flex items-center justify-center text-white text-xs font-bold">
+                                ✓</div><span class="text-sm font-medium">Bonus rewards for complete collections</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    {% for estate in "Kericho,Nandi Hills,Limuru,Mt Kenya,Nyambene,Kisii"|make_list %}{% endfor %}
+                    <div
+                        class="aspect-[3/4] bg-white dark:bg-white/5 rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md border border-mv-beige dark:border-white/10">
+                        <div class="h-full rounded-lg flex flex-col items-center justify-center gap-1"><span
+                                class="text-2xl">🍃</span><span
+                                class="text-xs font-semibold text-mv-green dark:text-mv-gold">Kericho</span></div>
+                    </div>
+                    <div
+                        class="aspect-[3/4] bg-white dark:bg-white/5 rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md border border-mv-beige dark:border-white/10">
+                        <div class="h-full rounded-lg flex flex-col items-center justify-center gap-1"><span
+                                class="text-2xl">🍃</span><span
+                                class="text-xs font-semibold text-mv-green dark:text-mv-gold">Nandi Hills</span></div>
+                    </div>
+                    <div
+                        class="aspect-[3/4] bg-white dark:bg-white/5 rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md border border-mv-beige dark:border-white/10">
+                        <div class="h-full rounded-lg flex flex-col items-center justify-center gap-1"><span
+                                class="text-2xl">🍃</span><span
+                                class="text-xs font-semibold text-mv-green dark:text-mv-gold">Limuru</span></div>
+                    </div>
+                    <div
+                        class="aspect-[3/4] bg-white dark:bg-white/5 rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md border border-mv-beige dark:border-white/10">
+                        <div class="h-full rounded-lg flex flex-col items-center justify-center gap-1"><span
+                                class="text-2xl">🍃</span><span
+                                class="text-xs font-semibold text-mv-green dark:text-mv-gold">Mt Kenya</span></div>
+                    </div>
+                    <div
+                        class="aspect-[3/4] bg-white dark:bg-white/5 rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md border border-mv-beige dark:border-white/10">
+                        <div class="h-full rounded-lg flex flex-col items-center justify-center gap-1"><span
+                                class="text-2xl">🍃</span><span
+                                class="text-xs font-semibold text-mv-green dark:text-mv-gold">Nyambene</span></div>
+                    </div>
+                    <div
+                        class="aspect-[3/4] bg-white dark:bg-white/5 rounded-xl p-2 hover:scale-105 transition cursor-pointer shadow-md border border-mv-beige dark:border-white/10">
+                        <div class="h-full rounded-lg flex flex-col items-center justify-center gap-1"><span
+                                class="text-2xl">🍃</span><span
+                                class="text-xs font-semibold text-mv-green dark:text-mv-gold">Kisii</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL PROOF / TESTIMONIALS -->
+    <section class="py-16 bg-mv-maroon-dk">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <span class="text-mv-gold font-bold uppercase tracking-widest text-xs">Loved by Tea Fans</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold mt-2 text-white">Join 50,000+ Members</h2>
+                <div class="w-16 h-1 bg-mv-gold mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                    <div class="flex items-center gap-2 mb-3"><span class="text-mv-gold">★★★★★</span></div>
+                    <p class="text-sm text-white/90 mb-4 italic">"I've collected 8 out of 12 cards already! The thrill
+                        of each scan is addictive. Plus, the rewards are actually worth it."</p>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-mv-gold flex items-center justify-center text-white text-xs font-bold">
+                            JM</div>
+                        <div>
+                            <p class="text-white text-sm font-semibold">Jane M.</p>
+                            <p class="text-white/50 text-xs">Nairobi</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                    <div class="flex items-center gap-2 mb-3"><span class="text-mv-gold">★★★★★</span></div>
+                    <p class="text-sm text-white/90 mb-4 italic">"Referred my whole office. We're all competing to
+                        complete the collection first. The 2x points for referrals is genius!"</p>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-mv-green flex items-center justify-center text-white text-xs font-bold">
+                            PK</div>
+                        <div>
+                            <p class="text-white text-sm font-semibold">Peter K.</p>
+                            <p class="text-white/50 text-xs">Mombasa</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                    <div class="flex items-center gap-2 mb-3"><span class="text-mv-gold">★★★★★</span></div>
+                    <p class="text-sm text-white/90 mb-4 italic">"Redeemed my first reward — free tea delivered! Best
+                        loyalty program I've ever been part of. Keep it up Melvins!"</p>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-mv-maroon flex items-center justify-center text-white text-xs font-bold">
+                            AW</div>
+                        <div>
+                            <p class="text-white text-sm font-semibold">Amina W.</p>
+                            <p class="text-white/50 text-xs">Kisumu</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-16 bg-mv-cream dark:bg-mv-dark/90" x-data="{ open: null }">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <span class="text-mv-maroon dark:text-mv-gold font-bold uppercase tracking-widest text-xs">Got
+                    Questions?</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold mt-2">Frequently Asked Questions</h2>
+                <div class="w-16 h-1 bg-mv-gold mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="space-y-3">
+                <div
+                    class="bg-white dark:bg-white/5 rounded-xl border border-mv-beige dark:border-white/10 overflow-hidden shadow-sm">
+                    <button @click="open = open === 1 ? null : 1"
+                        class="w-full flex items-center justify-between p-4 text-left font-semibold text-sm"><span>How
+                            do I earn points?</span><span class="text-mv-gold transition-transform"
+                            :class="open===1?'rotate-45':''">+</span></button>
+                    <div x-show="open===1" x-collapse x-cloak
+                        class="px-4 pb-4 text-sm text-mv-dark/70 dark:text-white/70">Purchase any Melvins Tea product,
+                        find the unique code inside, and enter it in the app. Each code earns you points and reveals a
+                        Tea Estate card!</div>
+                </div>
+                <div
+                    class="bg-white dark:bg-white/5 rounded-xl border border-mv-beige dark:border-white/10 overflow-hidden shadow-sm">
+                    <button @click="open = open === 2 ? null : 2"
+                        class="w-full flex items-center justify-between p-4 text-left font-semibold text-sm"><span>What
+                            can I redeem points for?</span><span class="text-mv-gold transition-transform"
+                            :class="open===2?'rotate-45':''">+</span></button>
+                    <div x-show="open===2" x-collapse x-cloak
+                        class="px-4 pb-4 text-sm text-mv-dark/70 dark:text-white/70">Redeem your points for free Melvins
+                        Tea products, shopping vouchers, mobile airtime, data bundles, and exclusive tea estate tour
+                        experiences.</div>
+                </div>
+                <div
+                    class="bg-white dark:bg-white/5 rounded-xl border border-mv-beige dark:border-white/10 overflow-hidden shadow-sm">
+                    <button @click="open = open === 3 ? null : 3"
+                        class="w-full flex items-center justify-between p-4 text-left font-semibold text-sm"><span>Do my
+                            points expire?</span><span class="text-mv-gold transition-transform"
+                            :class="open===3?'rotate-45':''">+</span></button>
+                    <div x-show="open===3" x-collapse x-cloak
+                        class="px-4 pb-4 text-sm text-mv-dark/70 dark:text-white/70">Points remain active as long as
+                        your account has activity within the last 6 months. Keep scanning new packs to keep your points
+                        alive!</div>
+                </div>
+                <div
+                    class="bg-white dark:bg-white/5 rounded-xl border border-mv-beige dark:border-white/10 overflow-hidden shadow-sm">
+                    <button @click="open = open === 4 ? null : 4"
+                        class="w-full flex items-center justify-between p-4 text-left font-semibold text-sm"><span>How
+                            does the referral program work?</span><span class="text-mv-gold transition-transform"
+                            :class="open===4?'rotate-45':''">+</span></button>
+                    <div x-show="open===4" x-collapse x-cloak
+                        class="px-4 pb-4 text-sm text-mv-dark/70 dark:text-white/70">Share your unique referral link
+                        with friends. When they join and scan their first code, both of you earn 2x bonus points.
+                        There's no limit!</div>
+                </div>
+                <div
+                    class="bg-white dark:bg-white/5 rounded-xl border border-mv-beige dark:border-white/10 overflow-hidden shadow-sm">
+                    <button @click="open = open === 5 ? null : 5"
+                        class="w-full flex items-center justify-between p-4 text-left font-semibold text-sm"><span>What
+                            happens when I complete the card collection?</span><span
+                            class="text-mv-gold transition-transform" :class="open===5?'rotate-45':''">+</span></button>
+                    <div x-show="open===5" x-collapse x-cloak
+                        class="px-4 pb-4 text-sm text-mv-dark/70 dark:text-white/70">Collect all 12 Tea Estate cards to
+                        unlock a grand bonus reward! The complete collection earns you a premium prize, plus bragging
+                        rights among fellow collectors.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARTNER WITH US -->
+    <section id="partner" class="py-16 bg-white dark:bg-mv-maroon-dk/50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-10">
+                <span class="text-mv-maroon dark:text-mv-gold font-bold uppercase tracking-widest text-xs">Join Our
+                    Network</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold mt-2">Partner With Us</h2>
+                <div class="w-16 h-1 bg-mv-gold mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
                 <a href="{% url 'club:listing_partner_login' %}"
-                    class="bg-gradient-to-br from-melvins-cream to-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition group border border-melvins-beige hover:-translate-y-1">
+                    class="bg-gradient-to-br from-mv-cream to-white dark:from-white/10 dark:to-white/5 rounded-2xl p-6 shadow-md hover:shadow-lg transition group border border-mv-beige dark:border-white/10 hover:-translate-y-1">
                     <div
-                        class="w-16 h-16 bg-melvins-gold/20 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition">
-                        🏪
-                    </div>
-                    <h3 class="text-2xl font-bold text-melvins-dark mb-3">For Vendors</h3>
-                    <p class="text-melvins-dark/70 mb-6 leading-relaxed">
-                        List your shop as a Melvins tea stockist. Get discovered by tea lovers in your area and drive
-                        foot traffic to your store.
-                    </p>
+                        class="w-12 h-12 bg-mv-gold/20 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition">
+                        🏪</div>
+                    <h3 class="text-xl font-bold mb-2">For Vendors</h3>
+                    <p class="text-sm text-mv-dark/60 dark:text-white/60 mb-4">List your shop as a Melvins tea stockist.
+                        Get discovered by tea lovers near you.</p>
                     <span
-                        class="inline-flex items-center gap-2 text-melvins-maroon font-bold group-hover:gap-3 transition-all">
-                        Register as Vendor <span>→</span>
-                    </span>
+                        class="inline-flex items-center gap-2 text-mv-maroon dark:text-mv-gold font-bold text-sm group-hover:gap-3 transition-all">Register
+                        as Vendor <span>→</span></span>
                 </a>
-
-                <!-- Partners Card -->
                 <a href="{% url 'club:partner_login' %}"
-                    class="bg-gradient-to-br from-melvins-cream to-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition group border border-melvins-beige hover:-translate-y-1">
+                    class="bg-gradient-to-br from-mv-cream to-white dark:from-white/10 dark:to-white/5 rounded-2xl p-6 shadow-md hover:shadow-lg transition group border border-mv-beige dark:border-white/10 hover:-translate-y-1">
                     <div
-                        class="w-16 h-16 bg-melvins-maroon/10 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition">
-                        🤝
-                    </div>
-                    <h3 class="text-2xl font-bold text-melvins-dark mb-3">For Partners</h3>
-                    <p class="text-melvins-dark/70 mb-6 leading-relaxed">
-                        Become a Melvins brand partner. Manage promotions, track rewards, and grow your business with
-                        our loyalty platform.
-                    </p>
+                        class="w-12 h-12 bg-mv-maroon/10 dark:bg-mv-maroon/30 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition">
+                        🤝</div>
+                    <h3 class="text-xl font-bold mb-2">For Partners</h3>
+                    <p class="text-sm text-mv-dark/60 dark:text-white/60 mb-4">Become a Melvins brand partner. Manage
+                        promotions and grow your business.</p>
                     <span
-                        class="inline-flex items-center gap-2 text-melvins-maroon font-bold group-hover:gap-3 transition-all">
-                        Partner Portal <span>→</span>
-                    </span>
+                        class="inline-flex items-center gap-2 text-mv-maroon dark:text-mv-gold font-bold text-sm group-hover:gap-3 transition-all">Partner
+                        Portal <span>→</span></span>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="py-16 bg-melvins-maroon text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                <div class="flex items-center">
-                    <svg viewBox="0 0 180 50" class="h-10 w-auto">
-                        <g fill="#d4a536">
-                            <path d="M12 25c0-7 5-12 12-14 1.5-0.5 3 0.5 3 2v24c0 1.5-1.5 2.5-3 2-7-2-12-7-12-14z" />
-                            <path d="M30 13c0-1.5 1.5-2.5 3-2 7 2 12 7 12 14s-5 12-12 14c-1.5 0.5-3-0.5-3-2V13z"
-                                opacity="0.7" />
-                        </g>
-                        <text x="52" y="32" font-family="Georgia, serif" font-size="22" font-weight="bold"
-                            fill="white">Melvins</text>
-                        <text x="52" y="44" font-family="Arial, sans-serif" font-size="10" font-weight="600"
-                            fill="#d4a536" letter-spacing="3">CLUB</text>
-                    </svg>
-                </div>
+    <!-- CTA BANNER -->
+    <section class="py-14 bg-gradient-to-r from-mv-maroon to-mv-maroon-dk text-center">
+        <div class="max-w-2xl mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-display font-bold text-white mb-4">Ready to Start Earning?</h2>
+            <p class="text-white/80 mb-6">Join thousands of tea lovers already collecting cards and winning rewards.</p>
+            <a href="{% url 'club:user_login' %}"
+                class="inline-block px-8 py-4 bg-mv-gold hover:bg-mv-gold-lt text-white rounded-full font-bold text-lg transition transform hover:scale-105 shadow-lg">Join
+                Melvins Club — It's Free</a>
+        </div>
+    </section>
 
-                <div class="flex flex-wrap justify-center gap-8 text-sm font-medium text-white/80">
-                    <a href="{% url 'club:partner_login' %}" class="hover:text-white hover:underline transition">Partner
+    <!-- FOOTER -->
+    <footer class="py-10 bg-mv-dark text-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <svg viewBox="0 0 180 50" class="h-9 w-auto">
+                    <g fill="#d4a536">
+                        <path d="M12 25c0-7 5-12 12-14 1.5-0.5 3 0.5 3 2v24c0 1.5-1.5 2.5-3 2-7-2-12-7-12-14z" />
+                        <path d="M30 13c0-1.5 1.5-2.5 3-2 7 2 12 7 12 14s-5 12-12 14c-1.5 0.5-3-0.5-3-2V13z"
+                            opacity="0.7" />
+                    </g>
+                    <text x="52" y="32" font-family="Georgia,serif" font-size="22" font-weight="bold"
+                        fill="white">Melvins</text>
+                    <text x="52" y="44" font-family="Arial,sans-serif" font-size="10" font-weight="600" fill="#d4a536"
+                        letter-spacing="3">CLUB</text>
+                </svg>
+                <div class="flex flex-wrap justify-center gap-6 text-sm text-white/70">
+                    <a href="{% url 'club:partner_login' %}" class="hover:text-white transition">Partner Portal</a>
+                    <a href="{% url 'club:listing_partner_login' %}" class="hover:text-white transition">Vendor
                         Portal</a>
-                    <a href="{% url 'club:listing_partner_login' %}"
-                        class="hover:text-white hover:underline transition">Vendor Portal</a>
-                    <a href="{% url 'club:terms' %}" class="hover:text-white hover:underline transition">Terms of
-                        Service</a>
-                    <a href="{% url 'club:privacy' %}" class="hover:text-white hover:underline transition">Privacy
-                        Policy</a>
+                    <a href="{% url 'club:terms' %}" class="hover:text-white transition">Terms</a>
+                    <a href="{% url 'club:privacy' %}" class="hover:text-white transition">Privacy</a>
                 </div>
-
-                <p class="text-sm text-white/60">
-                    © 2026 Melvins Club. All rights reserved.
-                </p>
+                <p class="text-xs text-white/40">© 2026 Melvins Club. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register("{% url 'club:service_worker' %}")
+                    .then(function (reg) { console.log('SW registered:', reg.scope); })
+                    .catch(function (err) { console.log('SW failed:', err); });
+            });
+        }
+    </script>
 </body>
 
 </html>

@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-p003$lulb0&1u3c)xa-sg1fy!j03-w^^5j1dl&7x8_-z!!i-2=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['melvinsclub.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['melvinsclub.pythonanywhere.com', 'localhost', '127.0.0.1', 'www.minichefenglish.com']
 
 CSRF_TRUSTED_ORIGINS = ['https://melvinsclub.pythonanywhere.com']
 
