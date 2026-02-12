@@ -443,7 +443,9 @@
                 <h2 class="text-3xl md:text-4xl font-display font-bold mt-2 text-white">Join 50,000+ Members</h2>
                 <div class="w-16 h-1 bg-mv-gold mx-auto mt-4 rounded-full"></div>
             </div>
-            <div class="grid md:grid-cols-3 gap-4">
+
+            <!-- Desktop: Grid -->
+            <div class="hidden md:grid md:grid-cols-3 gap-4">
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
                     <div class="flex items-center gap-2 mb-3"><span class="text-mv-gold">★★★★★</span></div>
                     <p class="text-sm text-white/90 mb-4 italic">"I've collected 8 out of 12 cards already! The thrill
@@ -485,6 +487,79 @@
                             <p class="text-white/50 text-xs">Kisumu</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Mobile: Carousel -->
+            <div class="md:hidden relative" x-data="{ current: 0, total: 3 }"
+                x-init="setInterval(() => { current = (current + 1) % total }, 5000)">
+                <div class="overflow-hidden">
+                    <div class="flex transition-transform duration-500"
+                        :style="`transform: translateX(-${current * 100}%)`">
+                        <!-- Testimonial 1 -->
+                        <div class="w-full flex-shrink-0 px-2">
+                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                                <div class="flex items-center gap-2 mb-3"><span class="text-mv-gold">★★★★★</span></div>
+                                <p class="text-sm text-white/90 mb-4 italic">"I've collected 8 out of 12 cards already!
+                                    The thrill
+                                    of each scan is addictive. Plus, the rewards are actually worth it."</p>
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-mv-gold flex items-center justify-center text-white text-xs font-bold">
+                                        JM</div>
+                                    <div>
+                                        <p class="text-white text-sm font-semibold">Jane M.</p>
+                                        <p class="text-white/50 text-xs">Nairobi</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Testimonial 2 -->
+                        <div class="w-full flex-shrink-0 px-2">
+                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                                <div class="flex items-center gap-2 mb-3"><span class="text-mv-gold">★★★★★</span></div>
+                                <p class="text-sm text-white/90 mb-4 italic">"Referred my whole office. We're all
+                                    competing to
+                                    complete the collection first. The 2x points for referrals is genius!"</p>
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-mv-green flex items-center justify-center text-white text-xs font-bold">
+                                        PK</div>
+                                    <div>
+                                        <p class="text-white text-sm font-semibold">Peter K.</p>
+                                        <p class="text-white/50 text-xs">Mombasa</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Testimonial 3 -->
+                        <div class="w-full flex-shrink-0 px-2">
+                            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                                <div class="flex items-center gap-2 mb-3"><span class="text-mv-gold">★★★★★</span></div>
+                                <p class="text-sm text-white/90 mb-4 italic">"Redeemed my first reward — free tea
+                                    delivered! Best
+                                    loyalty program I've ever been part of. Keep it up Melvins!"</p>
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-mv-maroon flex items-center justify-center text-white text-xs font-bold">
+                                        AW</div>
+                                    <div>
+                                        <p class="text-white text-sm font-semibold">Amina W.</p>
+                                        <p class="text-white/50 text-xs">Kisumu</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Carousel dots -->
+                <div class="flex justify-center gap-2 mt-6">
+                    <button @click="current = 0" :class="current === 0 ? 'bg-mv-gold w-6' : 'bg-white/30 w-2'"
+                        class="h-2 rounded-full transition-all"></button>
+                    <button @click="current = 1" :class="current === 1 ? 'bg-mv-gold w-6' : 'bg-white/30 w-2'"
+                        class="h-2 rounded-full transition-all"></button>
+                    <button @click="current = 2" :class="current === 2 ? 'bg-mv-gold w-6' : 'bg-white/30 w-2'"
+                        class="h-2 rounded-full transition-all"></button>
                 </div>
             </div>
         </div>
