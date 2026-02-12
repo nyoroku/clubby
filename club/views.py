@@ -864,6 +864,7 @@ def referral_page(request):
         'settings': referral_settings,  # Alias for template compatibility
         'referral_history': referral_history,
         'referral_count': profile.successful_referrals_count(),
+        'referral_points': profile.referral_points_earned,  # Add points earned from referrals
         'can_refer_more': profile.can_refer_more(),
         'referral_code': profile.referral_code,
         'referral_link': referral_link,
