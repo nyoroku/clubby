@@ -2989,7 +2989,7 @@ def landing_page(request):
         # NEW: Redirect unauthenticated users directly to registration to reduce friction
         if not request.user.is_authenticated:
             # Preserve UTM data in the redirect URL
-            target_url = reverse('club:request_otp')
+            target_url = reverse('club:user_login')
             params = [f"ref={referral_code}"]
             if utm_source: params.append(f"utm_source={utm_source}")
             if utm_medium: params.append(f"utm_medium={utm_medium}")
