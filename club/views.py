@@ -3714,6 +3714,11 @@ def management_dashboard(request):
     traffic_sources = Profile.objects.values('utm_source').annotate(
         count=Count('id')
     ).order_by('-count')
+
+    # NEW: Scans by Channel (UTM Source)
+    scan_sources = Scan.objects.values('profile__utm_source').annotate(
+        count=Count('id')
+    ).order_by('-count')
     
     # NEW: Generate Management Share Links with UTMs
     base_url = request.build_absolute_uri(reverse('club:landing_page'))
@@ -3828,6 +3833,7 @@ def management_dashboard(request):
         'all_counties': all_counties,
         'county_data': county_data,
         'traffic_sources': traffic_sources,
+        'scan_sources': scan_sources,
         'organic_users': organic_users,
         'total_referred': total_referred,
         'activity_feed': activity_feed,
