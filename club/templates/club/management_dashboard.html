@@ -241,15 +241,15 @@
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Regions</option>
                         {% for c in all_counties %}
-                        <option value="{{ c }}" {% if county_filter == c %}selected{% endif %}>{{ c|title }}</option>
+                        <option value="{{ c }}" {% if county_filter==c %}selected{% endif %}>{{ c|title }}</option>
                         {% endfor %}
                     </select>
 
                     <select name="status" onchange="this.form.submit()"
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Status</option>
-                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
-                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="active" {% if status_filter=='active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status_filter=='inactive' %}selected{% endif %}>Inactive</option>
                     </select>
                 </form>
             </div>
@@ -338,6 +338,58 @@
 
         <!-- Sidebar Feeds -->
         <div class="lg:col-span-1 space-y-8">
+            <!-- Campaign Share Hub -->
+            <div class="glass-card-adaptive rounded-2xl p-6 shadow-xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="text-6xl">📣</span>
+                </div>
+                <h3 class="text-gray-900 dark:text-white font-bold text-lg mb-4 flex items-center gap-2">
+                    <span class="w-1.5 h-6 bg-melvins-gold rounded-full"></span>
+                    Campaign Hub
+                </h3>
+                <p class="text-xs text-gray-500 mb-6">Generated tracking links for social media sharing. All links
+                    include UTM attribution.</p>
+
+                <div class="space-y-3">
+                    {% for link in share_links %}
+                    <div
+                        class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-melvins-gold/30 transition-all group/item">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">{{ link.icon }}</span>
+                            <div>
+                                <div class="text-xs font-bold text-gray-800 dark:text-gray-200">{{ link.name }}</div>
+                                <div class="text-[10px] text-gray-400 font-mono truncate w-24">...utm_source={{ link.id
+                                    }}</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button
+                                @click="navigator.clipboard.writeText('{{ link.url }}'); $dispatch('notify', {message: '{{ link.name }} link copied!', type: 'success'})"
+                                class="p-2 hover:bg-melvins-gold/10 text-gray-400 hover:text-melvins-gold rounded-lg transition-colors"
+                                title="Copy Link">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3">
+                                    </path>
+                                </svg>
+                            </button>
+                            {% if link.share_url %}
+                            <a href="{{ link.share_url }}" target="_blank"
+                                class="p-2 hover:bg-melvins-gold/10 text-gray-400 hover:text-melvins-gold rounded-lg transition-colors"
+                                title="Share Directly">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z">
+                                    </path>
+                                </svg>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
             <!-- Region Breakdown -->
             <div class="glass-card-adaptive rounded-2xl p-6 shadow-xl">
                 <h3 class="text-gray-900 dark:text-white font-bold text-lg mb-6">🌎 Hot Regions</h3>

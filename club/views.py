@@ -1,6 +1,7 @@
 # views.py - Complete with Partner Registration
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -2985,6 +2986,17 @@ def landing_page(request):
     if referral_code:
         request.session['referral_code'] = referral_code
         
+        # NEW: Redirect unauthenticated users directly to registration to reduce friction
+        if not request.user.is_authenticated:
+            # Preserve UTM data in the redirect URL
+            target_url = reverse('club:request_otp')
+            params = [f"ref={referral_code}"]
+            if utm_source: params.append(f"utm_source={utm_source}")
+            if utm_medium: params.append(f"utm_medium={utm_medium}")
+            if utm_campaign: params.append(f"utm_campaign={utm_campaign}")
+            
+            return redirect(f"{target_url}?{'&'.join(params)}")
+        
     if utm_source:
         request.session['utm_data'] = {
             'utm_source': utm_source,
@@ -3695,7 +3707,7 @@ def management_dashboard(request):
     # Distinct counties for filter dropdown
     all_counties = [c['county'] for c in county_data if c['county']]
     
-    # 4. Channel Tracking
+    # 4. Channel Tracking & Tracking Links
     total_referred = Profile.objects.filter(referred_by__isnull=False).count()
     organic_users = total_users - total_referred
     
@@ -3703,6 +3715,38 @@ def management_dashboard(request):
         count=Count('id')
     ).order_by('-count')
     
+    # NEW: Generate Management Share Links with UTMs
+    base_url = request.build_absolute_uri(reverse('club:landing_page'))
+    platforms = [
+        {'id': 'whatsapp', 'name': 'WhatsApp', 'icon': '📱', 'color': '#25D366'},
+        {'id': 'facebook', 'name': 'Facebook', 'icon': '📘', 'color': '#1877F2'},
+        {'id': 'x', 'name': 'X (Twitter)', 'icon': '🐦', 'color': '#000000'},
+        {'id': 'instagram', 'name': 'Instagram', 'icon': '📸', 'color': '#E4405F'},
+        {'id': 'linkedin', 'name': 'LinkedIn', 'icon': '💼', 'color': '#0077B5'},
+    ]
+    
+    share_links = []
+    for p in platforms:
+        utm_params = f"utm_source={p['id']}&utm_medium=staff_share&utm_campaign=management_dashboard"
+        target_link = f"{base_url}?{utm_params}"
+        
+        share_url = ""
+        if p['id'] == 'whatsapp':
+            msg = quote(f"Join Melvins Club & Earn Rewards! {target_link}")
+            share_url = f"https://wa.me/?text={msg}"
+        elif p['id'] == 'facebook':
+            share_url = f"https://www.facebook.com/sharer/sharer.php?u={quote(target_link)}"
+        elif p['id'] == 'linkedin':
+            share_url = f"https://www.linkedin.com/sharing/share-offsite/?url={quote(target_link)}"
+        elif p['id'] == 'x':
+            share_url = f"https://twitter.com/intent/tweet?url={quote(target_link)}&text={quote('Join Melvins Club!')}"
+            
+        share_links.append({
+            **p,
+            'url': target_link,
+            'share_url': share_url
+        })
+
     top_shops = Partnership.objects.filter(partner_type='shop').annotate(
         redemption_count=Count('productredemption')
     ).order_by('-redemption_count')[:10]
@@ -3764,10 +3808,7 @@ def management_dashboard(request):
         redemption_data.append(redemption_dict.get(d, 0))
     
     # Internal Management Sharing
-    base_url = f"https://{request.get_host()}/"
-    management_link = f"{base_url}management/dashboard/"
-    
-    # WhatsApp
+    management_link = request.build_absolute_uri(reverse('club:management_dashboard'))
     whatsapp_text = f"Check out the Melvins Club Management Dashboard: {management_link}"
     whatsapp_url = f"https://wa.me/?text={quote(whatsapp_text)}"
     
@@ -3780,22 +3821,23 @@ def management_dashboard(request):
         'total_redemptions': total_redemptions,
         'redemptions_24h': redemptions_24h,
         'total_revenue': total_revenue,
-        'county_data': county_data,
-        'organic_users': organic_users,
-        'total_referred': total_referred,
-        'traffic_sources': traffic_sources,
-        'top_shops': top_shops,
         'recent_users': recent_users,
-        'activity_feed': activity_feed,
-        'chart_labels': chart_labels,
-        'scan_data': scan_data,
-        'redemption_data': redemption_data,
-        'all_counties': all_counties, # For dropdown
         'search_query': search_query,
         'county_filter': county_filter,
         'status_filter': status_filter,
+        'all_counties': all_counties,
+        'county_data': county_data,
+        'traffic_sources': traffic_sources,
+        'organic_users': organic_users,
+        'total_referred': total_referred,
+        'activity_feed': activity_feed,
+        'share_links': share_links,
+        'chart_labels': chart_labels,
+        'scan_data': scan_data,
+        'redemption_data': redemption_data,
         'whatsapp_share_url': whatsapp_url,
         'management_link': management_link,
+        'top_shops': top_shops,
     }
     
     return render(request, 'club/management_dashboard.html', context)
