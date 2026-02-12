@@ -2865,6 +2865,12 @@ def complete_profile(request):
             messages.success(request, welcome_msg)
             return redirect('club:dashboard')
 
+    context = {
+        'profile': profile,
+        'prefilled_referral_code': session_referral_code,
+    }
+    return render(request, 'club/complete_profile.html', context)
+
 
 
 @login_required
