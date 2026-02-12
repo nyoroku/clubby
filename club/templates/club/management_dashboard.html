@@ -275,15 +275,15 @@
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Regions</option>
                         {% for c in all_counties %}
-                        <option value="{{ c }}" {% if county_filter==c %}selected{% endif %}>{{ c|title }}</option>
+                        <option value="{{ c }}" {% if county_filter == c %}selected{% endif %}>{{ c|title }}</option>
                         {% endfor %}
                     </select>
 
                     <select name="status" onchange="this.form.submit()"
                         class="px-2 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-melvins-gold/50 outline-none">
                         <option value="">All Status</option>
-                        <option value="active" {% if status_filter=='active' %}selected{% endif %}>Active</option>
-                        <option value="inactive" {% if status_filter=='inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
                     </select>
                 </form>
             </div>
@@ -392,8 +392,7 @@
                             <span class="text-xl">{{ link.icon }}</span>
                             <div>
                                 <div class="text-xs font-bold text-gray-800 dark:text-gray-200">{{ link.name }}</div>
-                                <div class="text-[10px] text-gray-400 font-mono truncate w-24">...utm_source={{ link.id
-                                    }}</div>
+                                <div class="text-[10px] text-gray-400 font-mono truncate w-24">...utm_source={{ link.id}}</div>
                             </div>
                         </div>
                         <div class="flex gap-1">
